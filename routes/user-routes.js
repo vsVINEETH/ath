@@ -41,7 +41,7 @@ router.get('/forgot_password_otp/resend', otpController.forgotResendOtp);
 
 router.get('/user_profile',userCheck, userController.userProfile);
 router.post('/user_profile/:user_id',userCheck, userController.userProfileUpdate);
-
+//hell0
 router.get('/user_profile_address',userCheck,userController.userProfileAddress);
 router.post('/user_profile_address/:user_id',userCheck, userController.userProfileAddressAdd);
 router.get('/user_profile_address_edit/:index',userCheck, userController.userProfileAddressEdit);
