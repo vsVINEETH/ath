@@ -1,0 +1,51 @@
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="page">Category</h1>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="/admin/admin_dashboard">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a href="/admin/category">Category</a>
+                </li>
+                <li class="breadcrumb-item active">Add category</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+
+        <form action="/admin/add_category" method="post">
+          <div class="row form-group mb-4 justify-content-center">
+            <label for="Category Name" class="text-center fw-bold" >you can add your category here!</label>
+            <span class="text-secondary text-center">maximum 20 characters is allowed</span>
+            <div class="col-md-8 text-center fw-bold">
+
+              <% if (errors && errors.category) { %>
+              <span class="text-danger text-start"><%= errors.category.msg %></span>
+              <% } %>
+              <span class="text-danger"><%= mes %></span>
+              <input type="text" class="form-control form-control-md mt-4 text-center" id="categoryname" name="category" value="" placeholder="Enter category name" required>
+
+              <button type="submit" class="btn btn-outline-dark mt-4">submit</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer.ejs') %>

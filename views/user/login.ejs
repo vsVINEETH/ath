@@ -1,0 +1,79 @@
+<style>
+  .btn-google{
+    box-shadow:0 0 3px 3px rgba(185, 187, 189, 0.3) ;
+  }
+.btn-google:hover {
+    box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3); /* Add shadow on hover */
+    
+}
+.btn-facebook{
+    box-shadow:0 0 3px 3px rgba(185, 187, 189, 0.3) ;
+  }
+.btn-facebook:hover {
+    box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3); /* Add shadow on hover */
+}
+</style>
+<%- include('nav-bar') %>
+<section class="vh-100" style="background-color: #ffffff;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5" >
+          <div class="card shadow-2-strong" style="border-radius: 1rem; background-color: hsl(0, 0%, 100%);">
+            <div class="card-body px-5 py-3 text-center">
+  
+              <h3 class="mb-4 mt-2">Login</h3>
+              <span class="text-danger fw-bold"><%= mes %></span>
+              <form action="/login" method="post">
+              <div class="form-outline mb-4 text-start">
+                <label class="form-label" for="typeEmailX-2">Email</label>
+                <input type="email" id="typeEmailX-2" name="email" class="form-control" required />                
+              </div>
+  
+              <div class="form-outline mb-4 text-start">
+                <label class="form-label" for="typePasswordX-2">Password</label>
+                <input type="password" id="typePasswordX-2" name="password" class="form-control "  required/> 
+              </div>
+
+              <div class="form-check d-flex mb-4 justify-content-end">
+                <label class="form-check-label" for="form1Example3"> <a href="/forgot_password">Forgot password?</a></label>
+              </div>
+
+              <button class="btn btn-outline-dark btn-md btn-block" type="submit">&nbsp;&nbsp;Login&nbsp;&nbsp;</button>
+
+            </form>
+            <hr class="my-4">
+
+
+            <a href="/auth/google">
+              <button class="btn  btn-google text-dark mb-2  me-2" style="background-color: #ffffff; color: #ffffff;"type="submit">
+                <i class="fab fa-google me-2"></i>
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="22px" heigth="22px" viewBox="0 0 48 48">
+                <defs><path id="a" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></defs><clipPath id="b"><use xlink:href="#a" overflow="visible"/></clipPath><path clip-path="url(#b)" fill="#FBBC05" d="M0 37V11l17 13z"/><path clip-path="url(#b)" fill="#EA4335" d="M0 11l17 13 7-6.1L48 14V0H0z"/><path clip-path="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z"/><path clip-path="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z"/>
+              </svg>
+              Sign in with google
+            </button>
+           </a>
+
+
+           <a href="/auth/facebook">
+            <button class="btn  btn-facebook  mb-2  " style="background-color: #3b5998; color: #ffffff;"type="submit">
+            <i class="fab fa-facebook-f me-2"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32" version="1">
+              <path fill="#FFFFFF" d="M32 30a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h28a2 2 0 0 1 2 2v28z"/>
+              <path fill="#4267b2" d="M22 32V20h4l1-5h-5v-2c0-2 1.002-3 3-3h2V5h-4c-3.675 0-6 2.881-6 7v3h-4v5h4v12h5z"/>
+            </svg>
+            Sign in with facebook
+          </button>
+           </a>
+           <hr>
+
+           <a href="/user_signup"><button class="btn  btn-outline-dark  mb-2 mt-4"
+            type="submit"><i class="fab  me-2"></i>Sign Up</button>
+         </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <%- include('footer.ejs') %>

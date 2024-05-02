@@ -1,0 +1,427 @@
+<%- include('nav-bar') %>
+<div class="container-xl px-4 mt-2">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4  ">
+    <h1 class="page">My orders</h1>
+  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb border-bottom">
+      <li class="breadcrumb-item">
+        <a href="/home">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/order_history">My orders</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Order details</li>
+    </ol>
+  </nav>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <% let productCount = 0; %>
+      <% let productId = 0; %>
+      <% let itemId = 0; %>
+      <% orderData.forEach((cartItem) => {
+                cartItem.items.forEach((item) => {
+                    if (item.product._id.toString()) {
+                        productCount++;
+                    }
+                })
+            }) %>
+
+      <% if (productCount > 0) { %>
+      <div class="card mb-4">
+        <div class="card-header fw-bold">Order product details</div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="table-responsive">
+              <div style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-striped table  justify-content-center ">
+                  <thead class="text-center">
+                    <tr>
+
+                      <th scope="col" class="">Image</th>
+                      <th scope="col" class="">Product Name</th>
+                      <th scope="col" class="">Price</th>
+                      <th scope="col" class="">Quantity</th>
+                      <th scope="col" class="">Total price</th>
+                      <th scope="col" class="">Order Status</th>
+                      <th scope="col" class="">Rate now</th>
+                      <th scope="col" class="">Action</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <% let productId = 0; %>
+                    <% let returnProductId = 0; %>
+                    <% let returnItemId = 0; %>
+                    <% let cancelProductId = 0; %>
+                    <% let cancelItemId = 0; %>
+                    <% orderData.forEach((orderItem, orderIndex) => { %>
+                    <% orderItem.items.forEach((item, itemIndex) => { %>
+
+                    <tr class="align-middle text-center">
+                      <td class="">
+                        <img src="/uploads/<%= item.product.image[0] %>" alt="Product Image" style="width: 90px; height: 90px;">
+                      </td>
+                      <td class=""><%= item.product.product_name + " " + item.product.model %></td>
+
+                      <td class=""><%= item.product.price %></td>
+                      <td class=""><%= Math.abs(item.quantity) %></td>
+                      <td class=""><%= Math.abs(item.total) %></td>
+                      <!-- <td><%= orderItem.payment_details.payment_method %></td> -->
+                      <td><%= item.status %></td>
+                      <td>
+                        <% if (item.status == "delivered" || item.status == "shipped") { %>
+
+                        <button class="btn btn-sm btn-dark rating-btn" data-modal-id="ratingModal_<%= orderIndex %>_<%= itemIndex %>">Rate</button>
+                        <!-- modal for rating -->
+                        <div class="modal fade" id="ratingModal_<%= orderIndex %>_<%= itemIndex %>" tabindex="-1" aria-labelledby="rating" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h6 class="modal-title" id="ratingModalLabel">Rate Product &#129300;</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <form name="ratingForm" action="/product_rating/<%= item.product._id %>" method="post" onsubmit="return validateFormRating('ratingForm','reviewComment')" >
+
+                                  <p>Rate out of five : </p>
+                                  <div class="form-check col-auto">
+
+                                    <input class="form-check-input" type="radio" name="rating" value="1" id="flexRadioDefault7" required>
+                                    <label class="form-check-label" for="flexRadioDefault7">
+                                      &#9733;&#9734;&#9734;&#9734;&#9734;(1)
+                                    </label>
+                                  </div>
+                                  <div class="form-check col-auto">
+                                    <input class="form-check-input" type="radio" name="rating" value="2" id="flexRadioDefault8" required>
+                                    <label class="form-check-label" for="flexRadioDefault8">
+                                      &#9733;&#9733;&#9734;&#9734;&#9734;(2)
+                                    </label>
+                                  </div>
+                                  <div class="form-check col-auto">
+                                    <input class="form-check-input" type="radio" name="rating" value="3" id="flexRadioDefault9" required>
+                                    <label class="form-check-label" for="flexRadioDefault9">
+                                      &#9733;&#9733;&#9733;&#9734;&#9734;(3)
+                                    </label>
+                                  </div>
+                                  <div class="form-check col-auto">
+                                    <input class="form-check-input" type="radio" name="rating" value="4" id="flexRadioDefault10" required>
+                                    <label class="form-check-label" for="flexRadioDefault10">
+                                      &#9733;&#9733;&#9733;&#9733;&#9734;(4)
+                                    </label>
+                                  </div>
+                                  <div class="form-check col-auto">
+                                    <input class="form-check-input" type="radio" name="rating" value="5" id="flexRadioDefault11" required>
+                                    <label class="form-check-label" for="flexRadioDefault11">
+                                      &#9733;&#9733;&#9733;&#9733;&#9733;(5)
+
+                                    </label>
+                                  </div>
+                                  <hr>
+
+                                  <div class="mb-3 text-center">
+                                    <label for="review" class="form-label">Product Review</label>
+                                    <input type="text" id="reviewComment" name="reviewComment" class="form-control form-control-sm" pattern="^[A-Za-z0-9\s]+$" required>
+                                  </div>
+                                  <div id="reasonErrorRating" class="invalid-feedback" style="display: none;">
+                                    This field is required.
+                                  </div>
+
+                                  <button type="submit" class="btn btn-sm btn-dark" id="confirmBtn">Submit</button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <% } else { %>
+                        <button class="btn btn-sm btn-dark">waiting</button>
+                        <% } %>
+                      </td>
+                      <td class="">
+                        <div class="d-flex">
+                          <% if ( item.status !== "delivered" && item.status !== "shipped" && item.status !== "cancelled" && item.status !== "returned" && item.status !== "return_requested" && orderItem.payment_details.payment_status !== "failed") { %>
+
+                          <button class="btn cat-btn btn-sm btn-danger me-2 cancel-btn" data-modal-id="cancelModal_<%= orderIndex %>_<%= itemIndex %>">cancel</button>
+                          <!-- cancel modal -->
+                          <div class="modal fade" id="cancelModal_<%= orderIndex %>_<%= itemIndex %>" tabindex="-1" aria-labelledby="cancel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h6 class="modal-title" id="cancelModalLabel">Cancel Product &#129300;</h6>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <form name="cancelReasonForm" action="/order_cancel/<%= item.product._id %>/<%= item._id %>" method="post" onsubmit="return validateFormCancel('cancelReasonForm','otherCancelReason')">
+
+                                    <p>Reason for cancel : </p>
+                                    <div class="form-check col-auto">
+
+                                      <input class="form-check-input" type="radio" name="cancelReason" value="Not interested" id="flexRadioDefault4" required>
+                                      <label class="form-check-label" for="flexRadioDefault4">
+                                        Not interested
+                                      </label>
+                                    </div>
+                                    <div class="form-check col-auto">
+                                      <input class="form-check-input" type="radio" name="cancelReason" value="I found another product" id="flexRadioDefault5" required>
+                                      <label class="form-check-label" for="flexRadioDefault5">
+                                        I found another product
+                                      </label>
+                                    </div>
+                                    <div class="form-check col-auto">
+                                      <input class="form-check-input" type="radio" name="cancelReason" value="Accidently done" id="flexRadioDefault6" required>
+                                      <label class="form-check-label" for="flexRadioDefault6">
+                                        Accidently done
+                                      </label>
+                                    </div>
+                                    <hr>
+
+                                    <div class="mb-3 text-center">
+                                      <label for="reason" class="form-label">Comment your reason</label>
+                                      <input type="text" id="otherCancelReason" name="otherCancelReason" class="form-control form-control-sm" pattern="^[A-Za-z0-9\s]+$">
+                                    </div>
+                                    <div id="reasonErrorCancel" class="invalid-feedback " style="display: none;">
+                                      This field is required.
+                                    </div>
+
+                                    <button type="submit" class="btn btn-sm btn-dark" id="confirmBtn">Confirm Cancel</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <% } else if ( item.status == "cancelled") { %>
+                          <button class="btn cat-btn btn-sm btn-dark me-2">cancelled</button>
+                          <% } else if ( item.status == "return_requested") { %>
+                          <button class="btn cat-btn  btn-sm btn-dark me-2">processing</button>
+                          <% } %>
+
+                          <% if (item.status == "delivered" || item.status == "shipped") { %>
+                          <button class="btn cat-btn btn-sm btn-danger return-btn" data-modal-id="returnModal_<%= orderIndex %>_<%= itemIndex %>">Return</button>
+                          <!-- modal for return-->
+                          <div class="modal fade" id="returnModal_<%= orderIndex %>_<%= itemIndex %>" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h6 class="modal-title" id="returnModalLabel">Return Product &#129300;</h6>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body row">
+                                  <form name="reasonForm" action="/order_return/<%= item.product._id %>/<%= item._id %>" method="post" onsubmit="return validateFormReturn('reasonForm','otherReturnReason')">
+
+                                    <p>Reason for return  </p>
+                                    <div class="form-check col-auto">
+
+                                      <input class="form-check-input" type="radio" name="returnReason" value="damaged product" id="flexRadioDefault1" required>
+                                      <label class="form-check-label" for="flexRadioDefault1">
+                                        Product damage
+                                      </label>
+                                    </div>
+                                    <div class="form-check col-auto">
+                                      <input class="form-check-input" type="radio" name="returnReason" value="size mismatch" id="flexRadioDefault2" required>
+                                      <label class="form-check-label" for="flexRadioDefault2">
+                                        Size mismatch
+                                      </label>
+                                    </div>
+                                    <div class="form-check col-auto">
+                                      <input class="form-check-input" type="radio" name="returnReason" value="wrong produt" id="flexRadioDefault3" required>
+                                      <label class="form-check-label" for="flexRadioDefault3">
+                                        Wrong product
+                                      </label>
+                                    </div>
+                                    <hr>
+
+                                    <div class="mb-3 text-center">
+                                      <label for="reason" class="form-label">Comment your reason</label>
+                                      <input type="text" id="otherReturnReason" name="otherReturnReason" class="form-control form-control-sm" pattern="^[A-Za-z0-9\s]+$">
+                                    </div>
+                                    <div id="reasonErrorReturn" class="invalid-feedback " style="display: none;">
+                                      This field is required.
+                                    </div>
+
+                                    <button type="submit" class="btn btn-sm btn-dark" id="confirmBtn">Confirm Return</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <% } else if (item.status == "returned"){ %>
+                          <button class="btn cat-btn btn-sm btn-dark return-btn">Returned</button>
+                          <% } %>
+                        </div>
+
+
+                      </td>
+
+
+                    </tr>
+
+                    <% }) %>
+                    <% }) %>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <% }else { %>
+      <h1 class="text-center">Products left</h1>
+      <% } %>
+    </div>
+
+    <% if (productCount > 0) { %>
+    <div class="col-lg-4">
+
+      <div class="card mb-4">
+        <div class="card-header text-center fw-bold ">Order Details</div>
+        <div class="card-body">
+          <p class="text-start ">Order Id : <span class="text-secondary"> <%= orderData[0]._id.toString().slice( -6) %></span></p>
+          <p class="text-start ">Order Date : <span class="text-secondary"> <%= orderData[0].createdAt.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' }) %></span></p>
+          <p class="text-start "> purchase amount : <span class=""> &#8377;<%= orderData[0].total_price %></span></p>
+          <p class="text-start "> purchase quantity : <span class=""> <%= orderData[0].total_quantity %></span></p>
+          <p class="text-start">Payment method : <%= orderData[0].payment_details.payment_method %></p>
+          <hr>
+          <p class="text-center fw-bold">Shipping Address</p>
+          <hr>
+          <p class="mb-0"><span class="fw-bold"><%= orderData[0].shipping_address.full_name %></span></p>
+          <p class="mb-0"><span><%= orderData[0].shipping_address.street %></span></p>
+          <p class="mb-0"><span><%= orderData[0].shipping_address.city %></span></p>
+          <span><%= orderData[0].shipping_address.district %>, </span>
+          <span> <%= orderData[0].shipping_address.state %></span>
+          <p class="mb-0"><span><%= orderData[0].shipping_address.country %></span></p>
+          <p class="mb-0"><span>phone: <%= orderData[0].shipping_address.phone_number %></span></p>
+          <hr>
+          <% if (orderData[0]._id) { %>
+          <a href="/download_order_invoice/<%= orderData[0]._id %>">
+            <button class="btn btn-dark btn-sm">Download Invoice</button>
+          </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <% } %>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var returnButtons = document.querySelectorAll('.return-btn');
+    returnButtons.forEach(function(returnButton) {
+      returnButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        var modalId = this.getAttribute('data-modal-id');
+        //'returnModal';
+        var returnModal = new bootstrap.Modal(document.getElementById(modalId));
+        returnModal.show();
+      });
+    });
+
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    var cancelButtons = document.querySelectorAll('.cancel-btn');
+    cancelButtons.forEach(function(cancelButton) {
+      cancelButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        var modalId = this.getAttribute('data-modal-id');
+        //'returnModal';
+        var cancelModal = new bootstrap.Modal(document.getElementById(modalId));
+        cancelModal.show();
+      });
+    });
+
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    var ratingButtons = document.querySelectorAll('.rating-btn');
+    ratingButtons.forEach(function(ratingButton) {
+      ratingButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        var modalId = this.getAttribute('data-modal-id');
+       // var modalId = 'ratingModal';
+        //'returnModal';
+        var ratingModal = new bootstrap.Modal(document.getElementById(modalId));
+        ratingModal.show();
+      });
+    });
+
+  });
+
+
+  // function validateForm(formData,reason,dynamicId) {
+  //   let x = document.forms[formData][reason].value;
+  //   console.log(x,"helll")
+  //  let errorId = "reasonError_"+ dynamicId
+  //  console.log(errorId)
+  //   //let x = document.forms["cancelReasonForm"||"reasonForm"||"ratingForm"]["otherCancelReason"||"otherReturnReason"|| "reviewComment"].value;
+  //   let reasonError = document.getElementById(errorId);
+  //   console.log(x,"helll0")
+  //   if (x.trim() == "") {
+  //     reasonError.innerHTML = "This field is required.";
+  //     reasonError.style.display = 'block';
+  //     console.log("its working")
+  //     return false;
+  //   } else {
+  //     reasonError.style.display = 'none';
+  //     return true;
+  //   }
+  // }
+
+  function validateFormRating(formData,reason) {
+    let x = document.forms[formData][reason].value;
+    let reasonError = document.getElementById("reasonErrorRating");
+
+    if (x.trim() == "") {
+      reasonError.innerHTML = "This field is required.";
+      reasonError.style.display = 'block';
+      console.log("its working")
+      return false;
+    } else {
+      reasonError.style.display = 'none';
+      return true;
+    }
+  }
+
+  function validateFormCancel(formData,reason) {
+    let x = document.forms[formData][reason].value;
+    //let x = document.forms["cancelReasonForm"||"reasonForm"||"ratingForm"]["otherCancelReason"||"otherReturnReason"|| "reviewComment"].value;
+    let reasonError = document.getElementById('reasonErrorCancel');
+    console.log(x,"helll0")
+    if (x.trim() == "") {
+      reasonError.innerHTML = "This field is required.";
+      reasonError.style.display = 'block';
+      console.log("its working")
+      return false;
+    } else {
+      reasonError.style.display = 'none';
+      return true;
+    }
+  }
+
+  function validateFormReturn(formData,reason) {
+    let x = document.forms[formData][reason].value;
+    //let x = document.forms["cancelReasonForm"||"reasonForm"||"ratingForm"]["otherCancelReason"||"otherReturnReason"|| "reviewComment"].value;
+    let reasonError = document.getElementById('reasonErrorReturn');
+    console.log(x,"helll0")
+    if (x.trim() == "") {
+      reasonError.innerHTML = "This field is required.";
+      reasonError.style.display = 'block';
+      console.log("its working")
+      return false;
+    } else {
+      reasonError.style.display = 'none';
+      return true;
+    }
+  }
+
+</script>
+
+<%- include('footer') %>

@@ -1,0 +1,86 @@
+<style>
+    #cont{
+        height: 400px;
+        width: 400px;
+        overflow: hidden;
+    }
+    #img-fluid-main{
+        transform-origin: center;
+        object-fit: cover ;
+        height: 400px;
+        width: 400px;
+    }
+    
+    </style>
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+<%- include('nav-side') %>
+
+
+
+<div class="col-md-10">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="page">Products</h1>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="/admin/admin_dashboard">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="/admin/product">Products</a>
+              </li>
+              <li class="breadcrumb-item active">Product detail</li>
+            </ol>
+          </nav>  
+        </div>
+
+    <div class="container mt-3 pt-0 d-inline-flex"  >  
+        <div class="row">
+            <div class="col-md-2 ms-5 mt-3">
+                <% productData.image.forEach((element) => { %>
+                    <img src="/uploads/<%=element%>" class="img-fluid shadow mt-2" alt="Product Image" style="width:100px; height: 80px;">
+                <% }) %>
+            </div>
+            <div id="cont" class="col-md-4 ms-0 shadow ">
+              <img src="/uploads/<%= productData.image[0] %>" class="img-fluid-main " id="img-fluid-main" alt="Product Image" style="width: 400px; height: 400px;">
+            </div>
+
+            <div class="col-md-4 ms-5">
+                <p class="fw-normal mb-2">Product Id  : <%= productData._id %></p>
+                <p class="fw-normal mb-2">product name : <%= productData.product_name %></p>
+                <p class="fw-normal mb-2">Model : <%= productData.model %></p>
+                <p class="fw-normal mb-2">Rating : &#9733;&#9733;&#9733;&#9733;&#9734;</p>
+                <% if (productData.offer_applied) { %>
+                  <p class="fw-normal mb-0">Price: &#8377; <%= productData.price %></p>
+                  <p class="fw-normal mb-0 small text-secondary" >MRP: <span class=""style="text-decoration: line-through;">&#8377; <%= productData.mrp %></span> </p>
+                <% } else {%>
+                  <p class="fw-normal mb-0">Price: &#8377; <%= productData.price %></p>
+                <% }%>
+
+
+
+
+                <p class="fw-normal mb-2">colour: <%= productData.colour %></p>
+                
+                <p class="fw-normal ">Stock : <%= productData.quantity <= 0 ? "Out of Stock" : productData.quantity + " left" %></p>
+                <p class="fw-normal mb-2"> Description : <%= productData.description %></p>
+                <a href="/admin/edit_product/<%= productData._id %>">
+                    <button class="btn cat-btn btn-sm btn-secondary">Edit</button>
+                      </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+    <div class="mb-5"></div>
+    <script src="/js/side-slide.js"></script>
+    <script src="/js/zoom.js"></script>   
+    <%- include('footer') %>
+

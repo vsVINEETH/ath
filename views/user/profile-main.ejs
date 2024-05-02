@@ -1,0 +1,215 @@
+<style>
+body{
+        margin-top:20px;
+background-color:#f2f6fc;
+color:#69707a;
+}
+.img-account-profile {
+    height: 10rem;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+}
+.card .card-header {
+    font-weight: 500;
+}
+.card-header:first-child {
+    border-radius: 0.35rem 0.35rem 0 0;
+}
+.card-header {
+    padding: 1rem 1.35rem;
+    margin-bottom: 0;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+}
+.form-controls, .dataTable-input {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #69707a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #c5ccd6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.nav-borders .nav-link.active {
+    color: #040a12;
+    border-bottom-color: #010408;
+}
+.nav-borders .nav-link {
+    color: #69707a;
+    border-bottom-width: 0.125rem;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+
+  .hidden{
+    display: none;
+  }
+
+</style>
+
+<link rel="stylesheet" href="/css/profile-main.css">
+<%- include('nav-bar') %>
+
+<div class="container-xl px-4 mt-4">
+    <!-- Account page navigation-->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4  ">
+        <h1 class="page">My profile</h1>
+      </div>
+    <nav class="nav nav-borders">
+        <a class="nav-link active ms-0 " href="/user_profile">My profile</a>
+        <a class="nav-link" href="/user_profile_address">Address management</a>
+        <a class="nav-link" href="/user_profile_security">Password management</a>
+    </nav>
+    <hr class="mt-0 mb-4">
+    <div id="alertContainer"></div>
+    <div class="row justify-content-center">
+        <div class="col-xl-8 ">
+            <!-- Account details card-->
+            <div class="card mb-4">
+                <div class="card-header">Account Details</div>
+                <div class="card-body">
+                    <form action="/user_profile/<%= user._id %>" method="post" id="editProfileForm">
+                        <!-- Form Group (username)-->
+                        <div class="row gx-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="small mb-1" for="inputUsername">Full name</label>
+                            <input class="form-control form-controls" id="inputUsername" type="text" placeholder="Enter your username" value="<%= user.first_name +" "+ user.last_name %>" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small mb-1" for="refferal">Reffer and Earn</label>
+                            <input class="form-control form-controls" id="refferal" type="text"  value="<%= user.refferalId %>" disabled>
+                        </div>
+
+                      </div>
+                        <!-- Form Row-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (first name)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputFirstName">First name</label>
+                                <input class="form-control form-controls" id="inputFirstName" type="text" name="first_name" placeholder="Enter your first name" value="<%= user.first_name %>">
+                            </div>
+                            <!-- Form Group (last name)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputLastName">Last name</label>
+                                <input class="form-control form-controls" id="inputLastName" type="text" name="last_name" placeholder="Enter your last name" value="<%= user.last_name %>">
+                                <% if (errors&&errors.last_name) { %>
+                                    <span class="text-danger"><%= errors.last_name.msg %></span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <!-- Form Row        -->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (organization name)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputOrgName">Gender</label>
+                                <select class="form-control form-controls" id="inputOrgName" name="gender" required>
+                                    <option value="<%= user.gender %>" ><%= user.gender %></option>
+                                    <option value="male">male</option>
+                                    <option value="female">female</option>
+                                    <option value="others">others</option>
+                                </select>
+                            </div>
+                            <!-- Form Group (location)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputPhone">Phone number</label>
+                                <input class="form-control form-controls" id="inputPhone" type="tel" name="phone_number" placeholder="Enter your phone number" value="<%= user.phone_number %>">
+                            </div>
+                        </div>
+                        <!-- Form Group (email address)-->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                            <label class="small mb-1" for="inputEmailAddress">Email address</label>
+                            <input class="form-control form-controls" id="inputEmailAddress" type="email" placeholder="Enter your email address" value="<%= user.email %>" disabled>
+                           </div>
+                            
+                        </div>
+                        <div>
+                            <% let userRefferalId = user.refferalId %>
+                        <button class="btn btn-dark" type="submit">Update</button>
+                        <% if (user.refferal_applied === false) { %>
+                        <button class="btn btn-dark" type="button" id="refferal" onclick="toggleForms()"> use refferal code</button>
+                        <% } %>
+                       </div>
+                    </form>
+                                
+                        <div class="col-md-6 ">
+                           <form action="/refferal" id="addRefferalForm" method="post" class="hidden"  >
+                           <label class="small mb-1" for="inputEmailAddress">Apply refferal code</label>
+                           <input class="form-control form-controls" id="refferalIn" type="email" name="refferal_code" placeholder="Enter your refferal code" value="" >
+                           <div id="refferalError" class="text-danger"></div>
+                           <button class="btn btn-dark mt-3" type="button" onclick="validateOffer()">apply</button>
+                           <button class="btn btn-dark mt-3" onclick="toggleForms()">back</button>
+                           </form>
+                           
+                       </div>
+                       
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+ function toggleForms() {
+  var refferal = document.getElementById('refferal');
+  var editProfileForm = document.getElementById('editProfileForm');
+  var addRefferalForm = document.getElementById('addRefferalForm');
+
+  // Toggle the 'hidden' class on the forms
+  editProfileForm.classList.toggle('hidden');
+  addRefferalForm.classList.toggle('hidden');
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const addRefferalForm = document.getElementById('addRefferalForm');
+    addRefferalForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+        applyReferral(); // Call the applyReferral function
+    });
+});
+
+function validateOffer() {
+    var refferalIn = document.getElementById('refferalIn');
+    var refferalError = document.getElementById('refferalError');
+    var refferalValue = refferalIn.value;
+    const userRefferalId = '<%= userRefferalId %>'
+
+    // Check if referral value is empty
+    if (refferalValue.trim() === '') {
+        
+        refferalError.textContent = 'Referral code is required';
+        return;
+    }
+
+    if(refferalValue === userRefferalId){
+        refferalError.textContent = 'You cant use your own refferal code';
+        return;
+    }
+
+    document.getElementById('addRefferalForm').submit();
+}
+
+</script>
+<%- include('footer') %>

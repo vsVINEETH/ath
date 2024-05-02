@@ -1,0 +1,220 @@
+<style>
+.hidden-form {
+    height: 0;
+    overflow: hidden;
+    /* transition: height 3s ease; */
+  }
+
+.show-form {
+    height: 50px;
+ }
+
+ @keyframes shining {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.9; 
+    }
+    50% {
+      transform: scale(1);
+      opacity: 1.1; 
+    }
+    100% {
+      transform: scale(0.9);
+      opacity: 0.9; 
+    }
+  }
+
+  
+  .shining-effect {
+    animation: shining 3s infinite;
+  }
+</style>
+<%- include('header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+      <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center  ">
+          <h1 class="page">Reports</h1>
+        </div>
+
+        <div class="row">
+          <div class="col-md-9">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="/admin/admin_dashboard">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Reports</li>
+              </ol>
+            </nav>  
+          </div>
+          
+        </div>
+        <hr>
+
+        <div class="col-auto d-flex justify-content-evenly">
+          <div class=" rounded shadow col-md-2  text-light text-center bg-dark shining-effect">
+            <p class="">Overall sales count</p>
+            <hr>
+            <% let saleCount = 0 %>
+            <% let orderAmonut = 0 %>
+            <% let discountAmonut = 0 %>
+            <% orderData.forEach((element) => { %>
+              <% element.items.forEach((item) => { %>
+              <%saleCount += item.quantity %>
+              <%orderAmonut += item.total %>
+              <%discountAmonut += item.each_discount %>
+            <% }) %>
+            <% }) %>
+            <span style="color: #e8e8e8;"><%= saleCount %></span>
+          </div>
+
+          <div class="ms-3 rounded shadow col-md-2 text-light text-center bg-dark shining-effect" >
+            <p>Overall order amount</p>
+            <hr>
+            <span style="color: #e8e8e8;"><%=orderAmonut %></span>
+          </div>
+          <div class="ms-3 rounded shadow col-md-2 text-white text-center bg-dark shining-effect">
+            <p>Overall discount amount</p>
+            <hr>
+            <span style="color: #e8e8e8;" ><%=discountAmonut %></span>
+          </div>
+        </div>
+        <hr>
+        
+
+       
+
+        <div class="row  ms-3">
+            <div class="row d-block align-items-center text-start">
+              <div class="col-auto d-flex justify-content-between">
+              <button id="filterBtn" class="btn btn-dark col-auto mb-2 mt-2 shadow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z" />
+                </svg>
+                Filter & Sort
+              </button>
+
+              <div class="col-md-3 mt-2 ">
+                <div class="input-group">
+                  <input type="text" class="form-control form-control-sm rounded me-3" placeholder="Search...">
+                  <!-- <a href="/admin/add_product"><button class="btn btn-sm btn-secondary" type="button">+add</button></a> -->
+                </div>
+              </div>
+
+            <div class="dropdown">
+              <button class="btn btn-dark btn-sm mt-2 ms-3 shadow dropdown-toggle" type="button" style="height: 37px;" data-bs-toggle="dropdown" aria-expanded="false">
+                Download Report
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/admin/download_report_pdf">Download PDF</a></li>
+                <li><a class="dropdown-item" href="/admin/download_report_excel">Download Excel</a></li>
+                <li><a class="dropdown-item" href="/admin/download_report_csv">Download CSV</a></li>
+              </ul>
+            </div>
+
+            </div>
+              
+              <form name="form1" id="form1" action="/admin/filter_report" method="post"
+                class="hidden-form row align-items-center justify-content-between bg-dark rounded">
+                <div class="col-auto justify-content-between">
+                  <label for="" class="text-white">Sort By:</label>
+                  <select name="sort" id="sort" class="rounded border-1">
+                    <option selected disabled>Select an option</option>
+                    <option value="2">Date: low - high</option>
+                    <option value="3">Date: high - low</option>
+                    <option value="4">Quantity: low - high</option>
+                    <option value="5">Quantity: high - low</option>
+                    <option value="6">Discount: low - high</option>
+                    <option value="7">Discount: high - low</option>
+                    <option value="8">Amount: low - high</option>
+                    <option value="9">Amount: high - low</option>
+                  </select>
+                </div>
+                <div class="col-auto justify-content-between">
+                  <label for="" class="text-white">View:</label>
+                  <select name="period" id="period" class="rounded border-1">
+                    <option selected disabled>Select an option</option>
+                    <option value="1">Day</option>
+                    <option value="7">Weekly</option>
+                    <option value="30">Monthly</option>
+                    <option value="365">Yearly</option>
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <label for="" class="text-white">From date:</label>
+                 <input type="date" name="fromDate" value="" class="rounded border-1">
+                </div>
+
+                <div class="col-auto">
+                  <label for="" class="text-white">End date: </label>
+                  <input type="date" name="endDate" value="" class="rounded border-1">
+                </div>
+
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-outline-light btn-sm">
+                    Submit
+                  </button>
+                  <a href="/admin/sales_report">
+                    <button class="btn btn-outline-light btn-sm" type="button">Reset filter</button>
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
+
+
+        <div class="table-responsive" >
+          <div style="max-height: 500px; overflow-y: auto;">
+          <table class="table table-striped table-sm  justify-content-center border">
+            <thead class="text-center">
+              <tr>
+                <th scope="col" class="border">Pro-ID</th>
+                <th scope="col" class="border">Date</th>
+                <th scope="col" class="border">Quantity</th>
+                <th scope="col" class="border">Discount</th>
+                <th scope="col" class="border">Amount</th>
+              </tr>
+            </thead>
+            <tbody >
+                
+                <% orderData.forEach((element, index) => { %>
+                  <% element.items.forEach((item, index) => { %>
+                    <tr class="align-middle text-center">
+                      <td class="border"><%= item.product._id.toString().slice(-6) %></td>                  
+                      <td class="border"><%= new Date(element.createdAt).toLocaleDateString() %></td>
+                      <td class="border"><%= item.quantity %></td>
+                      <td class="border"><%= item.each_discount %></td>
+                      <td class="border"><%= item.total %></td>
+                    </tr>
+                    <% }) %>
+                    <% }) %>
+            </tbody>
+          </table>
+        </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function () {
+      const filterBtn = document.getElementById("filterBtn");
+      const form = document.getElementById("form1");
+
+      filterBtn.addEventListener("click", function () {
+        form.classList.toggle("show-form");
+      });
+    });
+</script>
+<%- include('footer.ejs') %>

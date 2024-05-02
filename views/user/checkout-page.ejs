@@ -1,0 +1,778 @@
+<style>
+  body {
+    margin-top: 20px;
+    background-color: #f2f6fc;
+    color: #69707a;
+  }
+
+  .img-account-profile {
+    height: 10rem;
+  }
+
+  .rounded-circle {
+    border-radius: 50% !important;
+  }
+
+  .card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+  }
+
+  .card .card-header {
+    font-weight: 500;
+  }
+
+  .card-header:first-child {
+    border-radius: 0.35rem 0.35rem 0 0;
+  }
+
+  .card-header {
+    padding: 1rem 1.35rem;
+    margin-bottom: 0;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+  }
+
+  .form-control,
+  .dataTable-input {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #69707a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #c5ccd6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .nav-borders .nav-link.active {
+    color: #040a12;
+    border-bottom-color: #010408;
+  }
+
+  .nav-borders .nav-link {
+    color: #69707a;
+    border-bottom-width: 0.125rem;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0px;
+  }
+</style>
+<%- include('nav-bar') %>
+<div class="container-xl px-4 mt-2 mb-4">
+  <!-- Account page navigation-->
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4  ">
+    <h1 class="page">My cart</h1>
+  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb border-bottom">
+      <li class="breadcrumb-item">
+        <a href="/product_cart">Cart</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+    </ol>
+  </nav>
+  <div id="alertContainer"></div>
+  <div class="row justify-content-center">
+    
+    <div class="col-xl-6 ">
+      <!-- Account details card-->
+      <div class="card mb-4 mt-2">
+        <div id="userData" data-user='<%- JSON.stringify(user) %>'></div>
+        <div class="card-header text-center">Choose your delivery address </div>
+        <div class="card-body">
+
+          <form action="/checkout_address_add_edit_update/" method="post" id="addressForm">
+            <!-- Form Row-->
+            <% if (mes !== "Please confirm your address" && mes !== "") { %>
+            <p class="text-success fw-bold text-center"><%= mes %></p>
+            <% } else {%>
+            <p class="text-danger fw-bold text-center"><%= mes %></p>
+            <% }%>
+            <div class="col-auto justify-content-between">
+
+              <label for="" class="text-dark ">Select:</label>
+              <select name="address" id="address" class="rounded border-1">
+                <option selected disabled>Select an address</option>
+                <option value="new" name="address">-Add new address-</option>
+                <!-- in get this index and find const selectedAddressIndex = req.body.addressIndex; const selectedAddressId = user.address[selectedAddressIndex]._id; try it -->
+                <% user.address.forEach((element,index) => { %>
+                <option value="<%=index %>"><%= element.street %> <%= element.city %> <%= element.district %> <%= element.state %> <%= element.country %> <%= element.zip_code %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="row gx-3 mb-2">
+              <!-- Form Group (first name)-->
+              <div class="col-md-6">
+                <label class="small mb-1" for="street">Street</label>
+                <input class="form-control" id="street" type="text" name="street" placeholder="" value="" required>
+                <div id="streetError" class="text-danger"></div>
+              </div>
+              <!-- Form Group (last name)-->
+              <div class="col-md-6">
+                <label class="small mb-1" for="city">City</label>
+                <input class="form-control" id="city" type="text" name="city" placeholder="" value="" required>
+                <div id="cityError" class="text-danger"></div>
+              </div>
+            </div>
+            <!-- Form Row        -->
+            <div class="row gx-3 mb-3">
+              <!-- Form Group (organization name)-->
+              <div class="col-md-6">
+                <label class="small mb-1" for="district">District</label>
+                <input class="form-control" id="district" type="text" name="district" placeholder="" value="" required>
+                <div id="districtError" class="text-danger"></div>
+              </div>
+              <!-- Form Group (location)-->
+              <div class="col-md-6">
+                <label class="small mb-1" for="state">State</label>
+                <input class="form-control" id="state" type="text" name="state" placeholder="" value="" required>
+                <div id="stateError" class="text-danger"></div>
+              </div>
+            </div>
+
+            <div class="row gx-3 mb-3">
+              <!-- Form Group (phone number)-->
+              <div class="col-md-6">
+                <label class="small mb-1" for="country">Country</label>
+                <input class="form-control" id="country" type="text" name="country" placeholder="" value="" required>
+                <div id="countryError" class="text-danger"></div>
+              </div>
+              <!-- Form Group (birthday)-->
+              <div class="col-md-6">
+                <label class="small mb-1" for="zip_code">Zip code</label>
+                <input class="form-control" id="zip_code" type="text" name="zip_code" placeholder="" value="" required>
+                <div id="zip_codeError" class="text-danger"></div>
+              </div>
+            </div>
+            <!-- Save changes button-->
+
+            <button class="btn btn-dark " type="submit" id="submitButton">Confirm</button>
+            <span class="ms-5 text-secondary">You can edit the selected address and confirm.</span>
+
+
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <!-- Profile picture card-->
+      <div class="card mb-4 mb-xl-0 mt-2">
+        <div class="card-header text-center">Order summary</div>
+        <div class="card-body text-center">
+          <!-- Profile picture image-->
+          <div style="max-height: 230px; overflow-y: auto; overflow-x: hidden;">
+          <% cartData.items.forEach((element,index) => { %>
+          <div class="text-start d-inline-flex bg-light">
+            <img src="/uploads/<%= element.product.image[0]%>" alt="Product Image" style="width: 100px; height: 100px;">
+            <div class="row ms-3">
+              <span class="fw-normal">product name : <%= element.product.product_name %></span>
+              <span class="fw-normal">Price : &#8377; <%= element.product.price %></span>
+              <span class="fw-normal">Quantity : <%=element.quantity %></span>
+              <span class="fw-normal">Total : &#8377; <%=element.total %></span>
+            </div>
+          </div>
+          <hr>
+          <% }) %>
+        </div>
+
+          <div class="row d-flex justify-content-evenly mt-4">
+
+            <p class="fw-bold text-start"> purchase amount : <span class="text-end fw-bold">&#8377; <%= cartData.total_price %></span></p>
+
+            <p class="fw-bold text-start">purchase quantity : <span class="text-end fw-bold"><%= cartData.total_quantity %></span></p>
+
+            <p class="fw-bold text-start"> Shipping amount : <span class="text-success text-end fw-bold"><%= "Free" %></span></p>
+          </div>
+          <hr>
+
+          <div>
+            <p class="fw-bold text-start">Total payment : <span>&#8377; <%= cartData.total_price %></span></p>
+          </div>
+
+          <hr>
+
+          <p class="fw-bold">Payment method</p>
+          <div class="row justify-content-evenly mt-4">
+
+            <div class="form-check col-auto">
+              <input class="form-check-input" type="radio" name="paymentMethod" name="flexRadioDefault" name="cash_on_delivery" value="COD" id="flexRadioDefault1" required>
+              <label class="form-check-label" for="flexRadioDefault1">
+                Cash on delivery
+              </label>
+            </div>
+            <div class="form-check col-auto">
+              <input class="form-check-input" type="radio" name="paymentMethod" name="flexRadioDefault" name="online" value="online" id="flexRadioDefault2">
+              <label class="form-check-label" for="flexRadioDefault2">
+                Online Payment
+              </label>
+            </div>
+            <div class="form-check col-auto">
+              <input class="form-check-input" type="radio" name="paymentMethod" name="flexRadioDefault" name="wallet" value="wallet" id="flexRadioDefault3" >
+              <label class="form-check-label" for="flexRadioDefault3">
+                Wallet
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-center mb-4 pt-3">
+          <form action="/place_order_checkout/<%= cartData._id %>" method="post">
+            <input type="hidden" name="paymentMethod" id="paymentMethodInput">
+            <!-- <button class="btn btn-dark  me-1" type="submit" id="placeOrderButton" disabled>Place order</button> -->
+          </form>
+          <button class="btn btn-dark me-1" id="placeOrderButton" disabled>Place order</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="modal" id="exampleModal-2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Payment failed..! &#128542;</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-danger">
+          <!-- Modal body content -->
+          Please check your order history to know more..!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+
+   const form = document.getElementById('addressForm');
+    const submitButton = document.getElementById('submitButton');
+    
+    form.addEventListener('submit', function(event) {
+        // Prevent form submission if there are validation errors
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        // Validate street
+        const streetInput = document.getElementById('street');
+        const streetError = document.getElementById('streetError');
+        if (streetInput.value.trim() === '') {
+            streetError.textContent = 'Street is required';
+        } else {
+            streetError.textContent = '';
+        }
+
+        // Validate city
+        const cityInput = document.getElementById('city');
+        const cityError = document.getElementById('cityError');
+        if (cityInput.value.trim() === '') {
+            cityError.textContent = 'City is required';
+        } else {
+            cityError.textContent = '';
+        }
+
+        // Validate district
+        const districtInput = document.getElementById('district');
+        const districtError = document.getElementById('districtError');
+        if (districtInput.value.trim() === '') {
+            districtError.textContent = 'District is required';
+        } else {
+            districtError.textContent = '';
+        }
+
+        // Validate state
+        const stateInput = document.getElementById('state');
+        const stateError = document.getElementById('stateError');
+        if (stateInput.value.trim() === '') {
+            stateError.textContent = 'State is required';
+        } else {
+            stateError.textContent = '';
+        }
+
+        // Validate country
+        const countryInput = document.getElementById('country');
+        const countryError = document.getElementById('countryError');
+        if (countryInput.value.trim() === '') {
+            countryError.textContent = 'Country is required';
+        } else {
+            countryError.textContent = '';
+        }
+
+        // Validate zip code
+        const zipCodeInput = document.getElementById('zip_code');
+        const zipCodeError = document.getElementById('zip_codeError');
+        if (zipCodeInput.value.trim() === '') {
+            zipCodeError.textContent = 'Zip code is required';
+        } else {
+            zipCodeError.textContent = '';
+        }
+
+        form.classList.add('was-validated');
+    });
+//form validation
+  /////////////////////////////////////////
+  var userDataElement = document.getElementById('userData');
+  var user = JSON.parse(userDataElement.getAttribute('data-user'));
+
+  document.getElementById('address').addEventListener('change', function() {
+    var selectedOptionIndex = this.value;
+    var selectedAddress = user.address[selectedOptionIndex];
+
+    document.getElementById('street').value = selectedAddress.street || '';
+    document.getElementById('city').value = selectedAddress.city || '';
+    document.getElementById('district').value = selectedAddress.district || '';
+    document.getElementById('state').value = selectedAddress.state || '';
+    document.getElementById('country').value = selectedAddress.country || '';
+    document.getElementById('zip_code').value = selectedAddress.zip_code || '';
+  });
+
+
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(radioButton => {
+    radioButton.addEventListener('change', function() {
+      var placeOrderButton = document.getElementById('placeOrderButton');
+      var paymentMethodInput = document.getElementById('paymentMethodInput');
+      if (this.checked) {
+        placeOrderButton.disabled = false;
+        var paymentMethod = this.value;
+        paymentMethodInput.value = paymentMethod; // Update the hidden input field value
+      } else {
+        placeOrderButton.disabled = true;
+      }
+    });
+  });
+
+
+  // Frontend script in EJS
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const placeOrderButton = document.getElementById('placeOrderButton');
+
+    placeOrderButton.addEventListener('click', async () => {
+      try {
+        const sate = JSON.parse('<%-JSON.stringify(stockAvailable)%>')
+        console.log(sate)
+
+        if(sate == false){
+          const alertContainer = document.getElementById('alertContainer');
+              // Clear existing alerts
+              alertContainer.innerHTML = '';
+
+              const alertElement = document.createElement('div');
+              alertElement.className = 'alert alert-warning alert-dismissible fade show'; // Add Bootstrap classes
+              alertElement.setAttribute('role', 'alert');
+              alertElement.style.opacity = '0';
+
+              // Create the content for the alert
+              alertElement.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              "Oops, it seems that some items in your order are now out of stock.".
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+
+              // Append the alert to the container
+              alertContainer.appendChild(alertElement);
+              alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              let opacity = 0;
+              const fadeInInterval = setInterval(() => {
+                opacity += 0.1; // Increase opacity gradually
+                alertElement.style.opacity = `${opacity}`; // Set the new opacity
+                if (opacity >= 1) {
+                  clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+                }
+              }, 50);
+              return
+        }
+        
+        
+
+
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (!selectedPaymentMethod) {
+          console.error('No payment method selected');
+          return;
+        }
+
+        if (selectedPaymentMethod.value === 'online') {
+          // If online payment selected, initiate Razorpay payment
+          const cartDataId = '<%= cartData._id %>'
+          const response = await fetch(`/razorpayInstance/${cartDataId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: '<%= cartData.total_price %>',
+            }),
+          });
+
+          if (response.ok) {
+            const responseData = await response.json();
+            const {
+              orderId
+            } = responseData;
+
+            // Initiate Razorpay payment with orderId
+            const razorpayOptions = {
+              key: '<%= process.env.PAYMENT_KEY_ID %>',
+              amount: '<%= cartData.total_price %>',
+              currency: 'INR',
+              name: 'ath.',
+              description: 'Payment for Order',
+              order_id: orderId,
+              handler: async function(response) {
+                // Handle Razorpay response
+                if (response.razorpay_payment_id) {
+                  // Payment successful, proceed to place order
+                  await placeOrder();
+                } else {
+                  console.error('Razorpay payment failed');
+                  // await placeOrder();
+
+
+                }
+              },
+              prefill: {
+                name: 'User Name',
+                email: 'user@example.com',
+                contact: '9876543210',
+              },
+              notes: {
+                address: 'User Address',
+              },
+              theme: {
+                color: '#3399cc',
+              },
+            };
+
+            const rzp = new Razorpay(razorpayOptions);
+            rzp.on('payment.failed', function(response) {
+              // rzp1.close();
+              handlePaymentFailure();
+            });
+
+            rzp.open();
+
+          } else {
+
+            const orderData = await response.json();
+            if (orderData.address) {
+              const alertContainer = document.getElementById('alertContainer');
+
+              // Clear existing alerts
+              alertContainer.innerHTML = '';
+
+              const alertElement = document.createElement('div');
+              alertElement.className = 'alert alert-warning alert-dismissible fade show'; // Add Bootstrap classes
+              alertElement.setAttribute('role', 'alert');
+              alertElement.style.opacity = '0';
+
+              // Create the content for the alert
+              alertElement.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              Please confirm your shipping address.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+
+              // Append the alert to the container
+              alertContainer.appendChild(alertElement);
+              alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              let opacity = 0;
+              const fadeInInterval = setInterval(() => {
+                opacity += 0.1; // Increase opacity gradually
+                alertElement.style.opacity = `${opacity}`; // Set the new opacity
+                if (opacity >= 1) {
+                  clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+                }
+              }, 50);
+              // const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+              // modal.show();
+            }
+
+            console.error('Failed to initiate address');
+          }
+//
+        } else if(selectedPaymentMethod.value === 'wallet' ){
+          
+          const cartDataId = '<%= cartData._id %>';
+          const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+        const requestBody = {
+          paymentMethod: selectedPaymentMethod ? selectedPaymentMethod.value : null,
+        };
+        const response = await fetch(`/place_order_checkout/${cartDataId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+  
+        if(response.ok){
+          const orderData = await response.json();
+        console.log('Product order placed successfully');
+
+        const redirectUrl = `/order_history?showModal=${orderData.showModal}`;
+        window.location.href = redirectUrl;
+
+        } else {
+
+          const responseData = await response.json();
+
+          if(responseData.address){
+
+            const alertContainer = document.getElementById('alertContainer');
+              // Clear existing alerts
+              alertContainer.innerHTML = '';
+
+              const alertElement = document.createElement('div');
+              alertElement.className = 'alert alert-warning alert-dismissible fade show'; // Add Bootstrap classes
+              alertElement.setAttribute('role', 'alert');
+              alertElement.style.opacity = '0';
+
+              // Create the content for the alert
+              alertElement.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              Please confirm your shipping address.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+
+              // Append the alert to the container
+              alertContainer.appendChild(alertElement);
+              alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              let opacity = 0;
+              const fadeInInterval = setInterval(() => {
+                opacity += 0.1; // Increase opacity gradually
+                alertElement.style.opacity = `${opacity}`; // Set the new opacity
+                if (opacity >= 1) {
+                  clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+                }
+              }, 50);
+              
+          }
+
+          if (responseData.balance == false) {
+              const alertContainer = document.getElementById('alertContainer');
+              // Clear existing alerts
+              alertContainer.innerHTML = '';
+
+              const alertElement = document.createElement('div');
+              alertElement.className = 'alert alert-warning alert-dismissible fade show'; // Add Bootstrap classes
+              alertElement.setAttribute('role', 'alert');
+              alertElement.style.opacity = '0';
+
+              // Create the content for the alert
+              alertElement.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              Insufficient wallet balance.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+
+              // Append the alert to the container
+              alertContainer.appendChild(alertElement);
+              alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              let opacity = 0;
+              const fadeInInterval = setInterval(() => {
+                opacity += 0.1; // Increase opacity gradually
+                alertElement.style.opacity = `${opacity}`; // Set the new opacity
+                if (opacity >= 1) {
+                  clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+                }
+              }, 50);
+              
+            }
+         }
+
+        } else {
+          await placeOrder();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+
+    async function handlePaymentFailure() {
+      try {
+        const cartDataId = '<%= cartData._id %>';
+        const paymentStatus = '<%= true %>'
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+        const requestBody = {
+          paymentMethod: selectedPaymentMethod ? selectedPaymentMethod.value : null,
+          paymentStatus: paymentStatus
+        };
+        const response = await fetch(`/place_order_checkout/${cartDataId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+
+          const modal = new bootstrap.Modal(document.getElementById('exampleModal-2'));
+
+          // Add an event listener to the modal for the 'hidden.bs.modal' event
+          modal._element.addEventListener('hidden.bs.modal', async function() {
+            const orderData = await response.json();
+            const redirectUrl = `/order_history`;
+            window.location.href = redirectUrl;
+            console.log('Payment failure handled successfully');
+          });
+
+          // Show the modal
+          await modal.show();
+        } else {
+          console.error('Failed to handle payment failure');
+        }
+      } catch (error) {
+        console.error('Error handling payment failure:', error);
+      }
+    }
+
+    async function placeOrder() {
+      const cartDataId = '<%= cartData._id %>';
+      const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+      const requestBody = {
+        paymentMethod: selectedPaymentMethod ? selectedPaymentMethod.value : null
+      };
+
+      const response = await fetch(`/place_order_checkout/${cartDataId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (response.ok) {
+        const orderData = await response.json();
+        console.log('Product order placed successfully');
+
+        const redirectUrl = `/order_history?showModal=${orderData.showModal}`;
+        window.location.href = redirectUrl;
+      } else {
+        const orderData = await response.json();
+        console.log('Product order placed successfully');
+
+        if (orderData.address) {
+          // const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+          // modal.show();
+          const alertContainer = document.getElementById('alertContainer');
+
+          // Clear existing alerts
+          alertContainer.innerHTML = '';
+
+          const alertElement = document.createElement('div');
+          alertElement.className = 'alert alert-warning alert-dismissible fade show'; // Add Bootstrap classes
+          alertElement.setAttribute('role', 'alert');
+          alertElement.style.opacity = '0';
+
+          // Create the content for the alert
+          alertElement.innerHTML = `
+         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+         </svg>
+         Please confirm your shipping address.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         `;
+
+          // Append the alert to the container
+          alertContainer.appendChild(alertElement);
+          alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          let opacity = 0;
+          const fadeInInterval = setInterval(() => {
+            opacity += 0.1; // Increase opacity gradually
+            alertElement.style.opacity = `${opacity}`; // Set the new opacity
+            if (opacity >= 1) {
+              clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+            }
+          }, 50);
+
+        }
+
+        if (orderData.minAmount) {
+          const alertContainer = document.getElementById('alertContainer');
+
+          // Clear existing alerts
+          alertContainer.innerHTML = '';
+
+          const alertElement = document.createElement('div');
+          alertElement.className = 'alert alert-warning alert-dismissible fade show'; // Add Bootstrap classes
+          alertElement.setAttribute('role', 'alert');
+          alertElement.style.opacity = '0';
+
+          // Create the content for the alert
+          alertElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        Maximum  purchase amount for COD upto &#8377;1000 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+          // Append the alert to the container
+          alertContainer.appendChild(alertElement);
+          alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          let opacity = 0;
+          const fadeInInterval = setInterval(() => {
+            opacity += 0.1; // Increase opacity gradually
+            alertElement.style.opacity = `${opacity}`; // Set the new opacity
+            if (opacity >= 1) {
+              clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+            }
+          }, 50); // Adjust the interval for smoothness
+
+        }
+
+        // const redirectUrl = `/place_order_checkout/:cart_id?/?address=${orderData.address}`;
+        // window.location.href = redirectUrl;
+        console.error('Failed to place product order');
+      }
+    }
+
+    
+  });
+
+</script>
+<%- include('footer') %>

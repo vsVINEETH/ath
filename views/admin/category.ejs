@@ -1,0 +1,78 @@
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+      <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="page">Category</h1>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="/admin/admin_dashboard">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Category</li>
+              </ol>
+            </nav>  
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="input-group">
+              <input type="text" class="form-control form-control-sm rounded me-3" placeholder="Search...">
+              <a href="/admin/add_category"><button class="btn btn-sm btn-secondary" type="button">+add</button></a>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="table-responsive" >
+          <div style="max-height: 500px; overflow-y: auto;">
+          <table class="table table-striped table  justify-content-center border">
+            <thead class="text-center">
+              <tr>
+                <th scope="col" class="border">ID</th>
+                <th scope="col" class="border">Category</th>
+                <th scope="col" class="border">Offer</th>
+                <th scope="col" class="border">Status</th>
+                <th scope="col" class="border">Action</th>
+                
+              </tr>
+            </thead>
+            <tbody >
+                <% categoryData.forEach((element, index) => { %>
+                    <tr class="align-middle text-center">
+                      <td class="border"><%= index +1 %></td>
+                      <td class="border"><%= element.category_name %></td>
+                      <td class="border"><%= element.offer_applied ? "Applied" : "Not applied"%></td>
+                      <td class="border"><%= element.is_listed ?'Listed' : 'Not Listed' %></td>
+                      <td class="border"><a href="/admin/category_action/<%= element._id %>"> 
+                        <% if (!element.is_listed) { %>
+                          <button class="btn cat-btn btn-sm btn-primary">List</button>
+                        <% } else if (element.is_listed) { %>
+                          <button class="btn cat-btn btn-sm btn-danger">Unlist</button>
+                          </a>
+                        <% } %> 
+                        <a href="/admin/edit_category/<%= element._id %>">
+                        <button class="btn cat-btn btn-sm btn-secondary">Edit</button>
+                          </a>
+                    </td>
+                    </tr>
+                    <% }) %>
+                    
+            </tbody>
+          </table>
+        </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer.ejs') %>

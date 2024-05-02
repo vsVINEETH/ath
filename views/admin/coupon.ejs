@@ -1,0 +1,82 @@
+<%- include('header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+      <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="page">Coupons</h1>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="/admin/admin_dashboard">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Coupons</li>
+              </ol>
+            </nav>
+          </div>
+          
+         
+          <div class="col-md-3 mb-3">
+            <div class="input-group">
+              <input type="text" class="form-control form-control-sm rounded me-3" placeholder="Search...">
+              <a href="/admin/add_coupon"><button class="btn btn-sm btn-secondary" type="button">+add</button></a>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="table-responsive" >
+          <div style="max-height: 500px; overflow-y: auto;">
+          <table class="table table-striped table-sm  justify-content-center border">
+            <thead class="text-center">
+              <tr>
+                <th scope="col" class="border">ID</th>
+                <th scope="col" class="border">Coupon Code</th>
+                <th scope="col" class="border">Discount percentage</th>
+                <th scope="col" class="border">Expiary Date</th>
+                <th scope="col" class="border">Status</th>
+                <th scope="col" class="border">Action</th>
+              </tr>
+            </thead>
+            <tbody >
+                <% couponData.forEach((element, index) => { %>
+                    <tr class="align-middle text-center">
+                      <td class="border"><%= index +1 %></td>
+                      <td class="border"><%= element.coupon_code %></td>
+                      <td class="border"><%= element.discount_percentage %></td>
+                      <td class="border"><%= element.expire_date.toLocaleDateString() %></td>
+                      <td class="border"><%= element.status %></td>
+                      <td class="border"><a href="/admin/coupon_action/<%= element._id %>"> 
+                        <% if (element.status == 'active' && element.status !== "expired" ) { %>
+                          <button class="btn  btn-sm btn-danger">Deactivate</button>
+                        <% } else if (element.status == "deactive" && element.status !== "expired" ) { %>
+                          <button class="btn  btn-sm btn-primary">Activate</button>
+                          </a>
+                        <% } %>
+                         <a href="/admin/delete_coupon/<%= element._id %>">
+                        <button class="btn  btn-sm btn-secondary">Delete</button>
+                          </a>
+                      </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+          </table>
+        </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%- include('footer.ejs') %>

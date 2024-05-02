@@ -1,0 +1,346 @@
+<style>
+  .hidden-form {
+    height: 0;
+    overflow: hidden;
+    /* transition: height 3s ease; */
+  }
+
+  .show-form {
+    height: 50px;
+  }
+ 
+  @keyframes shining {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.9; 
+    }
+    50% {
+      transform: scale(1);
+      opacity: 1.1; 
+    }
+    100% {
+      transform: scale(0.9);
+      opacity: 0.9; 
+    }
+  }
+
+  
+  .shining-effect {
+    animation: shining 3s infinite;
+  }
+
+</style>
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <%- include('nav-side') %>
+    <!-- Main content -->
+
+
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center ">
+          <h1 class="page">Dashboard</h1>
+        </div>
+      <hr>
+
+      <div class="col-auto d-flex justify-content-evenly">
+        <div class=" rounded shadow col-md-2  text-light text-center bg-dark shining-effect">
+          <p class="">Top selling product</p>
+          <hr>
+          <% topProduct.forEach((element) => { %>
+            <span style="color: #e8e8e8;"><%= element.product_name+element.model %></span> <br>
+          <% }) %>
+        </div>
+        <div class="ms-3 rounded shadow col-md-2 text-light text-center bg-dark shining-effect" >
+          <p>Top selling category</p>
+          <hr>
+          <% topCategory.forEach((element) => { %>
+          <span style="color: #e8e8e8;"><%= element.category_name %></span> <br>
+          <% }) %>
+        </div>
+        <div class="ms-3 rounded shadow col-md-2 text-white text-center bg-dark shining-effect">
+          <p>Top selling model</p>
+          <hr>
+          <% topProduct.forEach((element) => { %>
+          <span style="color: #e8e8e8;" ><%=element.model %></span> <br>
+          <% }) %>
+        </div>
+      </div>
+
+
+        <div class="row">
+          <div class="row  ms-3">
+            <div class="row d-block align-items-center text-start">
+              <div class="col-auto d-flex">
+                <button id="filterBtn" class="btn btn-dark col-auto mb-2 mt-2 shadow">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z" />
+                  </svg>
+                  Filter
+                </button>
+
+              </div>
+
+              <form name="form1" id="form1" action="/admin/dashboard_filter" method="post" class="hidden-form row align-items-center justify-content-between bg-dark rounded">
+
+                <div class="col-auto justify-content-between">
+                  <label for="" class="text-white">View:</label>
+                  <select name="period" id="period" class="rounded border-1">
+                    <option selected disabled>Select an option</option>
+                    <option value="1">Day</option>
+                    <option value="7">Weekly</option>
+                    <option value="30">Monthly</option>
+                    <option value="365">Yearly</option>
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <label for="" class="text-white">From date:</label>
+                  <input type="date" name="fromDate" value="" class="rounded border-1">
+                </div>
+
+                <div class="col-auto">
+                  <label for="" class="text-white">End date: </label>
+                  <input type="date" name="endDate" value="" class="rounded border-1">
+                </div>
+
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-outline-light btn-sm">
+                    Submit
+                  </button>
+                  <a href="/admin/admin_dashboard">
+                    <button class="btn btn-outline-light btn-sm" type="button">Reset filter</button>
+                  </a>
+                </div>
+              </form>
+
+              <div class="outer-div" style="height: 325px; display: flex; justify-content: center; align-items: center;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <canvas id="myChartSales"></canvas>
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <div>
+                    <h3>sales detail chart</h3>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur enim officiis eaque temporibus repellat modi rem sapiente blanditiis ipsa doloribus perferendis deserunt impedit, exercitationem culpa porro voluptates earum fuga quaerat.</p>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="outer-div" style="height: 325px; display: flex; justify-content: center; align-items: center;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <div>
+                    <h3>Payment contribution</h3>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur enim officiis eaque temporibus repellat modi rem sapiente blanditiis ipsa doloribus perferendis deserunt impedit, exercitationem culpa porro voluptates earum fuga quaerat.</p>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <canvas id="myChartPayment"></canvas>
+                </div>
+              </div>
+
+              <div class="outer-div" style="height: 325px; display: flex; justify-content: center; align-items: center;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <canvas id="myChartOrder"></canvas>
+                </div>
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <div>
+                    <h3>order status</h3>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur enim officiis eaque temporibus repellat modi rem sapiente blanditiis ipsa doloribus perferendis deserunt impedit, exercitationem culpa porro voluptates earum fuga quaerat.</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+          const filterBtn = document.getElementById("filterBtn");
+          const form = document.getElementById("form1");
+
+          filterBtn.addEventListener("click", function() {
+            form.classList.toggle("show-form");
+          });
+
+          let orderChartData = [];
+          const orderData = JSON.parse('<%- JSON.stringify(orderData) %>')
+          if (orderData) {
+            orderChartData = orderData;
+          } else {
+            // If orderData is not an array, log a warning
+            console.warn("orderData is not an array:", typeof orderChartData);
+          }
+
+          console.log(orderChartData);
+
+          const sales = document.getElementById('myChartSales');
+          const payment = document.getElementById('myChartPayment');
+          const order = document.getElementById('myChartOrder');
+          const category = document.getElementById('myChartCategory');
+
+          const salesData = []
+          const salesLabels = []
+
+          const paymentData = {
+            'COD': 0,
+            'wallet': 0,
+            'online': 0
+          };
+
+
+          orderChartData.forEach((item) => {
+            salesData.push(item.total_price);
+            const createdAtDate = new Date(item.createdAt);
+            const formattedDate = `${createdAtDate.getFullYear()}-${(createdAtDate.getMonth() + 1).toString().padStart(2, '0')}-${createdAtDate.getDate().toString().padStart(2, '0')} ${createdAtDate.getHours().toString().padStart(2, '0')}:${createdAtDate.getMinutes().toString().padStart(2, '0')}:${createdAtDate.getSeconds().toString().padStart(2, '0')}`;
+            salesLabels.push(formattedDate);
+
+            const paymentMethod = item.payment_details.payment_method;
+            if (paymentMethod in paymentData) {
+              paymentData[paymentMethod]++;
+            }
+          });
+
+
+          const orderStatusData = {
+            "pending": 0,
+            "shipped": 0,
+            "delivered": 0,
+            "cancelled": 0,
+            "return_requested": 0,
+            "returned": 0,
+            "return_reject": 0,
+          }
+
+
+
+          orderChartData.forEach((item) => {
+            item.items.forEach((ele) => {
+              const orderStatus = ele.status;
+              if (orderStatus in orderStatusData) {
+                orderStatusData[orderStatus]++
+              }
+            })
+          });
+
+
+          const paymentLabels = Object.keys(paymentData);
+          const paymentCounts = Object.values(paymentData);
+
+          const orderLabels = Object.keys(orderStatusData);
+          const orderCounts = Object.values(orderStatusData);
+
+          new Chart(sales, {
+            type: 'line',
+            data: {
+              labels: salesLabels,
+              datasets: [{
+                label: 'sales',
+                data: salesData,
+                backgroundColor: [
+                  // ' rgba(0, 0, 0, 0.2)',
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+          new Chart(payment, {
+            type: 'doughnut',
+            data: {
+              labels: paymentLabels,
+              datasets: [{
+                label: 'payments',
+                data: paymentCounts,
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(54, 162, 235)',
+                  'rgb(255, 205, 86)'
+                ],
+                hoverOffset: 4
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+          new Chart(order, {
+            type: 'bar',
+            data: {
+              labels: orderLabels,
+              datasets: [{
+                label: 'order status',
+                data: orderCounts,
+                backgroundColor: [
+                  // ' rgba(0, 0, 0, 0.2)',
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+        });
+      </script>
+
+      <%- include('footer.ejs') %>

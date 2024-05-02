@@ -1,0 +1,39 @@
+<%- include('nav-bar') %>
+<div class="container-fluid bg-body-tertiary d-block pt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+            <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+                <div class="card-body p-5 text-center">
+                    <h4>Verify</h4>
+                    <p>Your code was sent to you via email</p>
+                    <span class="text-danger"><%= mes %></span>
+                    <form action="/forgot_password_otp" method="post">
+                        <div class="otp-field mb-4">
+                            <input type="number" name="otp1" />
+                            <input type="number" name="otp2" disabled />
+                            <input type="number" name="otp3" disabled />
+                            <input type="number" name="otp4" disabled />
+                            <input type="number" name="otp5" disabled />
+                            <input type="number" name="otp6" disabled />
+                        </div>
+
+                        <button class="btn btn-primary mb-3" type="submit">
+                            Verify
+                        </button>
+                    </form>
+                   
+                    <p id="resendTimer" class="resend text-muted mb-0">
+                        <span id="timer">60</span> seconds remaining. 
+                    </p>
+                    <p id="resendLink" class="resend text-muted mb-0" style="display:none;">
+                        Didn't receive code? <a href="/forgot_password_otp/resend" onclick="resendOTP()">Request again</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+<script src="/js/otp-timer.js"></script>
+<div class="fixed-bottom"><%- include('footer') %></div>

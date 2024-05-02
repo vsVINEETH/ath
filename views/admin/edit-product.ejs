@@ -1,0 +1,293 @@
+<style>
+  .hidden{
+    display: none;
+  }
+</style>
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+      <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="page">Products</h1>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/admin/admin_dashboard">Dashboard</a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/admin/product">Products</a>
+                  </li>
+                  <li class="breadcrumb-item active">Edit product</li>
+                </ol>
+              </nav>
+          </div>
+        </div>
+
+        <div id="cropper110Modal">
+          <div id="imageCropBox">
+              <div style="text-align: end;">
+                  <button class="cropper110-close">close</button>
+              </div>
+              <section class="cropper110-page">
+                  <div class="cropper110-box">
+                      <div class="cropper110-cropping-box"></div>
+                  </div>
+  
+                  <div>
+                      <button class="cropper110-crop mx-3">Crop</button>
+                  </div>
+              </section>
+          </div>
+      </div>
+      <button class="btn btn-sm btn-outline-dark mb-2" id="offer" type="button" onclick="toggleForms()">Add offer</button>
+        <form id="editProductForm" action="/admin/edit_product" method="post" enctype="multipart/form-data">
+            <div class="row form-group mb-2">
+                <div class="col text-start fw-bold">
+                  
+                    <label for="product_name">Product Name</label>
+                    <input type="text" class="form-control form-control-md mt-2" id="product_name" name="product_name" value="<%= productData.product_name %>" placeholder="Enter product name" required>
+                    <div id="productNameError" class="text-danger"></div>
+                    <% if (errors && errors.product_name) { %>
+                        <span class="text-danger"><%= errors.product_name.msg %></span>
+                    <% } %>
+                  
+                </div>
+                <div class="col text-start fw-bold">
+                    <label for="model"  >Model</label>
+                    <input type="text" class="form-control form-control-md mt-2" id="model" name="model" value="<%= productData.model %>" placeholder="Enter product model" required>
+                    <div id="modelError" class="text-danger"></div>
+                    <% if (errors && errors.model) { %>
+                        <span class="text-danger"><%= errors.model.msg %></span>
+                    <% } %> 
+                </div>
+            </div>
+
+            <div class="row form-group mb-2">
+                <div class="col text-start fw-bold">
+                    <label for="price"  >Price</label>
+                    <input type="text" class="form-control form-control-md mt-2" id="price" name="price" value="<%= productData.price %>" placeholder="Enter product price" required>
+                    <div id="priceError" class="text-danger"></div>
+                    <% if (errors && errors.price) { %>
+                        <span class="text-danger"><%= errors.price.msg %></span>
+                    <% } %> 
+                </div>
+                <div class="col text-start fw-bold">
+                  <label for="colour">Colour</label>
+                  <select class="form-select form-control-md mt-2" id="colour" name="colour" required="true">
+                      <option value=<%= productData.colour %>><%= productData.colour %></option>
+                      <option value="Red">Red</option>
+                      <option value="Blue">Blue</option>
+                      <option value="Green">Green</option>
+                      <option value="Yellow">Yellow</option>
+                      <option value="Orange">Orange</option>
+                      <option value="Purple">Purple</option>
+                      <option value="Pink">Pink</option>
+                      <option value="Brown">Brown</option>
+                      <option value="Black">Black</option>
+                      <option value="White">white</option>
+                      <option value="Gray">Gray</option>
+                      <option value="Cyan">Cyan</option>
+
+                  </select>
+                  <div id="colourError" class="text-danger"></div>
+                  <% if (errors && errors.colour) { %>
+                    <span class="text-danger"><%= errors.colour.msg %></span>
+                <% } %> 
+              </div>              
+            </div>
+
+            <div class="row form-group mb-2">
+                <div class="col text-start fw-bold">
+                    <label for="quantity"  >Quantity</label>
+                    <input type="text" class="form-control form-control-md mt-2" id="quantity" name="quantity" value="<%= productData.quantity %> %>" placeholder="Enter product quantity" required>
+                    <div id="quantityError" class="text-danger"></div>
+                    <% if (errors && errors.quantity) { %>
+                        <span class="text-danger"><%= errors.quantity.msg %></span>
+                    <% } %> 
+                </div>
+                <div class="col text-start fw-bold">
+                    <label for="category">Category</label>
+                    <select class="form-select mt-2" aria-label="Default select example" id="category" name="category" >
+                      <option value=<%= productData.category._id %>><%= productData.category.category_name %></option>
+                        <% categoryData.forEach(element => { %>
+                            <option value="<%= element._id %>"><%= element.category_name%></option>
+                        <% }) %>
+                      </select>
+                      <div id="categoryError" class="text-danger"></div>
+                      <% if (errors && errors.category) { %>
+                        <span class="text-danger"><%= errors.category.msg %></span>
+                    <% } %> 
+                </div>
+              
+                <div class="row form-group mb-2">
+                    <div class="col text-start fw-bold">
+                        <label for="description" class="mt-2">Description</label>
+                        <input type="text" class="form-control form-control-md" id="description" name="description" value="<%=productData.description %>" placeholder="Enter product description" required>
+                        <div id="descriptionError" class="text-danger"></div>
+                        <% if (errors && errors.description) { %>
+                            <span class="text-danger"><%= errors.description.msg %></span>
+                        <% } %>   
+                    </div>
+                </div>
+
+                <div class="row form-group mb-2">
+                    <div class="col text-start fw-bold">
+                        <label for="fileUploader" class="mt-2" >Images &emsp;<span class="text-danger"><%= typeof mes != 'undefined' ? mes : "" %></span></label>
+                        <input type="file" id="fileUploader" class="form-control form-control-md mt-2" data-image-preview="#imagePreview" name="image" value="<%= %>" accept=".jpg,.png,.jpeg" multiple  >
+                        <div id="imagePreview" class="mt-2 ">
+                          
+                          <% if (productData.image) { %>
+                            <% productData.image.forEach((element,index) => { %>
+                              <div class="position-relative d-inline-block">
+                                <img src="/uploads/<%= element %>" alt="Image" id="image<%= index %>" class="mr-2">
+                               <a href="/admin/product_image_delete/<%= productData._id %>/<%= element %>"><span style="position: absolute; top: 0; right: 0; background-color: rgba(255, 249, 249, 0); color: white; padding: 2px; border-radius: 50%; cursor: pointer;" >&#10006;</span></a> 
+                              </div>
+                            <% }); %>
+                        <% } %>
+                        </div>
+                        <button type="button" class="btn btn-outline-dark mt-4" onclick="editProductFormValidation()">submit</button>
+                    </div>
+                </div>
+            </div>
+    
+        </form>
+
+        <form  id="addOfferForm" action="/admin/product_offer" method="post" class="hidden" >
+          <div class="row form-group mb-4 justify-content-center">
+            <label for="productOffer" class="text-center fw-bold" >you can add offer to your product here!</label>
+            <span class="text-center text-secondary">maximum 100 percentage is allowed</span>
+
+              <div class="col-md-8 text-center fw-bold">
+                  <input type="text" class="form-control form-control-md mt-3 text-center " id="productOffer" name="productOffer" value="<%= productData.offer_percentage %>" placeholder="Enter offer percentage" required>
+                  <div id="offerError" class="text-danger"></div>
+                  <button type="button" class="btn btn-outline-dark mt-4" onclick="validateOffer()">submit</button>
+              </div>
+          </div>
+      </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+<script src="/js/crop.js"></script>
+<script>
+function toggleForms() {
+  var offer = document.getElementById('offer');
+  var editProductForm = document.getElementById('editProductForm');
+  var addOfferForm = document.getElementById('addOfferForm');
+
+  // Toggle the 'hidden' class on the forms
+  editProductForm.classList.toggle('hidden');
+  addOfferForm.classList.toggle('hidden');
+
+  // Update the button text based on the form visibility
+  if (editProductForm.classList.contains('hidden')) {
+    offer.innerText = "Edit produts";
+  } else {
+    offer.innerText = "Add offer";
+  }
+}
+
+  function validateOffer() {
+    var offerInput = document.getElementById('productOffer');
+    var offerError = document.getElementById('offerError');
+    var offerValue = offerInput.value;
+
+    // Check if offer value is empty
+    if (offerValue.trim() === '') {
+      offerError.textContent = 'Offer percentage is required';
+      return;
+    }
+
+    // Check if offer value is a valid number
+    if (isNaN(offerValue)) {
+      offerError.textContent = 'Offer percentage must be a number';
+      return;
+    }
+
+    // Check if offer value is within range (0 to 100)
+    if (offerValue < 0 || offerValue > 100) {
+      offerError.textContent = 'Offer percentage must be between 0 and 100';
+      return;
+    }
+
+    // If all validations pass, submit the form
+    document.getElementById('addOfferForm').submit();
+  }
+
+function editProductFormValidation(){
+  var productName = document.getElementById('product_name').value.trim();
+    var model = document.getElementById('model').value.trim();
+    var price = document.getElementById('price').value.trim();
+    var quantity = document.getElementById('quantity').value.trim();
+    var description = document.getElementById('description').value.trim();
+    var colour = document.getElementById('colour').value.trim();
+    var category = document.getElementById('category').value.trim();
+
+    var productNameError = document.getElementById('productNameError');
+    var modelError = document.getElementById('modelError');
+    var priceError = document.getElementById('priceError');
+    var quantityError = document.getElementById('quantityError');
+    var descriptionError = document.getElementById('descriptionError');
+    var colourError = document.getElementById('colourError');
+    var categoryError = document.getElementById('categoryError');
+    // Reset error messages
+    productNameError.textContent = '';
+    modelError.textContent = '';
+    priceError.textContent = '';
+    quantityError.textContent = '';
+    descriptionError.textContent = '';
+    colourError.textContent = '';
+
+    if (productName.trim() === '') {
+      productNameError.textContent = 'This field is required';
+      return;
+    }
+
+    if (model === '') {
+      modelError.textContent = 'This field is required';
+      return;
+    }
+    if (price === '') {
+      priceError.textContent = 'This field is required';
+      return;
+    }
+
+    if (quantity === '') {
+      quantityError.textContent = 'This field is required';
+      return;
+    }
+    if (description === '') {
+      descriptionError.textContent = 'This field is required';
+      return;
+    }
+
+    if (colour === '' || colour === 'select') {
+        colourError.textContent = 'Please select a color';
+        return;
+    }
+
+    if (colour.trim()  === '') {
+      colourError.textContent = 'This field is required';
+      return;
+    }
+
+    if(category === ''){
+      categoryError.textContent = 'This field is required';
+      return;
+    }
+    document.getElementById('editProductForm').submit();
+}
+
+</script>
+<%- include('footer.ejs') %>

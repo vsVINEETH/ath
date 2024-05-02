@@ -1,0 +1,337 @@
+<%- include('nav-bar') %>
+<div class="container-xl px-4 mt-2 mb-5">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4  ">
+    <h1 class="page">My orders</h1>
+  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb border-bottom">
+      <li class="breadcrumb-item">
+        <a href="/home">Home</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">My orders</li>
+    </ol>
+  </nav>
+  <div id="alertContainer"></div>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Change password card-->
+      <!-- in here we want to check item field length -->
+      <% if (orderData.length > 0) { %>
+      <div class="card mb-4">
+        <div class="card-header text-center fw-bold ">Order History</div>
+        <div class="card-body">
+
+          <div class="row mb-3">
+            <div class="table-responsive">
+              <div style="max-height: 400px; overflow-y: auto;">
+              <table class="table table-striped table  justify-content-center border">
+                <thead class="text-center">
+                  <tr>
+
+                    <th scope="col" class="">Order ID</th>
+                    <th scope="col" class="">Order Date</th>
+                    <th scope="col" class="">Total Items</th>
+                    <th scope="col" class="">Totla Amount</th>
+                    <th scope="col" class="">Payment Method</th>
+                    <th scope="col" class="">Payment Status</th>
+                    
+          
+                    <th scope="col" class="">View orders</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% var orderId = "" %>
+                  <% orderData.forEach((orderItem) => { %>   
+                  <tr class="align-middle text-center">
+                    <td class=""><%= orderItem._id.toString().slice( -6) %></td>
+                    <td class=""><%= orderItem.createdAt.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' }) %></td>
+                    
+                    <td class=""><%= orderItem.total_quantity %></td>
+                    <td class=""><%= orderItem.total_price %></td>
+                    <td class=""><%= orderItem.payment_details.payment_method %></td>
+                    <% if (orderItem.payment_details.payment_status === "failed") { %>
+                      <td class="">
+                        <%= orderItem.payment_details.payment_status %>
+                        <% orderId = orderItem._id %>
+             
+                        <form class="row" action="/retry_payment" method="post" >
+                          <input type="text" id="retryPayment" name="retryPayment" class="form-control rounded  form-control-sm ms-3" value="<%= orderItem.total_price %>" hidden>
+                        <button id="retry_payment" class="btn btn-outline-dark btn-sm text-sm" type="button" style="height: auto; width: auto; margin-left: 38px;" >Try again</button>
+                      </form>
+                      </td>
+                    <% } else { %>
+                      <td class=""><%= orderItem.payment_details.payment_status %></td>
+                    <% } %>
+                    
+                    <td class="">
+                      <a href="/order_detail/<%= orderItem._id  %>">
+                        <button class="btn cat-btn btn-sm btn-dark">View</button>
+                      </a>
+                    </td>
+
+                  </tr>
+             
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <% }else { %>
+      <h1 class="text-center">NO Orders</h1>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Bootstrap modal -->
+  <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Thank you for Shopping With Us &#128522;</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-success">
+          <!-- Modal body content -->
+          Your order has been placed successfully!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const retryPaymentBtn = document.getElementById('retry_payment');
+    const orderId = '<%= orderId %>'
+
+    retryPaymentBtn.addEventListener('click', async () => {
+      try {
+        const amountInput = document.querySelector('input[name="retryPayment"]');
+        const amountValue = parseInt(amountInput.value);
+
+  
+        console.log(amountValue)
+        // If online payment selected, initiate Razorpay payment
+        
+        const response = await fetch(`/retry_payment_razorpayInstance`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount: amountValue,
+          }),
+        });
+
+        if (response.ok) {
+          const responseData = await response.json();
+          const {
+            orderId
+          } = responseData;
+
+          // Initiate Razorpay payment with orderId
+          const razorpayOptions = {
+            key:'<%= process.env.PAYMENT_KEY_ID %>' ,
+            amount: amountValue,
+            currency: 'INR',
+            name: 'ath.',
+            description: 'Payment for Order',
+            order_id: orderId,
+            handler: async function(response) {
+              // Handle Razorpay response
+              if (response.razorpay_payment_id) {
+                // Payment successful, proceed to place order
+                await placeOrder();
+              } else {
+                console.error('Razorpay payment failed');
+              }
+            },
+            prefill: {
+              name: 'User Name',
+              email: 'user@example.com',
+              contact: '9876543210',
+            },
+            notes: {
+              address: 'User Address',
+            },
+            theme: {
+              color: '#3399cc',
+            },
+          };
+
+          const rzp = new Razorpay(razorpayOptions);
+          rzp.on('payment.failed', function(response) {
+            // rzp1.close();
+            handlePaymentFailure();
+          });
+
+          rzp.open();
+        } else {
+          // Handle failed response
+          console.error('Failed to initiate Razorpay payment');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+
+    async function handlePaymentFailure() {
+      try {
+        const amountInput = document.querySelector('input[name="retryPayment"]');
+        const amountValue = parseInt(amountInput.value);
+        const status = false
+
+        const response = await fetch(`/retry_payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({amount: amountValue, status:status, order_id: orderId})
+        });
+
+        if (response.ok) {
+
+          const paymentState = await response.json();
+          console.log('payment Faild');
+
+          const alertContainer = document.getElementById('alertContainer');
+
+// Clear existing alerts
+           alertContainer.innerHTML = '';
+
+          const alertElement = document.createElement('div');
+          alertElement.className = 'alert alert-danger alert-dismissible fade show'; // Add Bootstrap classes
+          alertElement.setAttribute('role', 'alert');
+          alertElement.style.opacity = '0';
+
+          alertElement.innerHTML = `
+                   
+         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+         </svg>
+         Payment failed.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         `;
+
+          // Append the alert to the container
+          alertContainer.appendChild(alertElement);
+          alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          let opacity = 0;
+          const fadeInInterval = setInterval(() => {
+            opacity += 0.1; // Increase opacity gradually
+            alertElement.style.opacity = `${opacity}`; // Set the new opacity
+            if (opacity >= 1) {
+              clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+            }
+          }, 50);
+
+          setInterval(() => {
+            window.location.reload();
+              
+          },2000)
+
+        } else {
+          console.error('Failed to handle payment failure');
+        }
+      } catch (error) {
+        console.error('Error handling payment failure:', error);
+      }
+    }
+
+    async function placeOrder() {
+     
+      const amountInput = document.querySelector('input[name="retryPayment"]');
+      const amountValue = parseInt(amountInput.value);
+      const status = true
+
+      const response = await fetch(`/retry_payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({amount: amountValue ,status:status, order_id:orderId})
+      });
+
+      if (response.ok) {
+        const paymentState = await response.json();
+        console.log('payment completed successfully');
+
+          // const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+          // modal.show();
+          const alertContainer = document.getElementById('alertContainer');
+
+          // Clear existing alerts
+           alertContainer.innerHTML = '';
+
+          const alertElement = document.createElement('div');
+          alertElement.className = 'alert alert-success alert-dismissible fade show'; // Add Bootstrap classes
+          alertElement.setAttribute('role', 'alert');
+          alertElement.style.opacity = '0';
+
+          // Create the content for the alert
+          alertElement.innerHTML = `
+         
+         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+         </svg>
+         payment completed successfully.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         `;
+
+          // Append the alert to the container
+          alertContainer.appendChild(alertElement);
+          alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          let opacity = 0;
+          const fadeInInterval = setInterval(() => {
+            opacity += 0.1; // Increase opacity gradually
+            alertElement.style.opacity = `${opacity}`; // Set the new opacity
+            if (opacity >= 1) {
+              clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+              
+              
+            }
+          }, 50);
+
+          setInterval(() => {
+            window.location.reload();
+              
+          },2000)
+
+      } else {
+
+        console.error('Failed to place product order');
+      }
+    }
+  
+  });
+
+  
+  // Parse the URL query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  // Get the 'showModal' parameter value
+  const showModal = urlParams.get('showModal');
+  const showModalRes = urlParams.get('showModalRes');
+  // Check if the modal should be shown
+  if (showModal) {
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+    modal.show();
+  }
+
+
+</script>
+<%- include('footer') %>

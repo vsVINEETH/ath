@@ -1,0 +1,119 @@
+<style>
+  .hidden{
+    display: none;
+  }
+</style>
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+      <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="page">Category</h1>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/admin/admin_dashboard">Dashboard</a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/admin/category">Category</a>
+                  </li>
+                  <li class="breadcrumb-item active">Edit category</li>
+                </ol>
+              </nav>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-dark" id="offer" type="button" onclick="toggleForms()">Add offer</button>
+        <form id="editCategoryForm" action="/admin/edit_category" method="post">
+            <div class="row form-group mb-4 justify-content-center">
+              <label for="categoryMod" class="text-center fw-bold" >you can edit your category here!</label>
+              <span class="text-center text-secondary">maximum 20 characters is allowed</span>
+
+                <div class="col-md-8 text-center fw-bold">
+                    
+                    <% if (errors && errors.categoryMod) { %>
+                      <span class="text-danger"><%= errors.categoryMod.msg %></span>
+                  <% } %>
+                    <input type="text" class="form-control form-control-md mt-3 text-center " id="categoryMod" name="categoryMod" value="<%= categoryData.category_name %>" placeholder="Edit category name" required>
+                    <button type="submit" class="btn btn-outline-dark mt-4">submit</button>
+                </div>
+            </div>
+        </form>
+
+
+        <form  id="addOfferForm" action="/admin/category_offer" method="post" class="hidden" >
+          <div class="row form-group mb-4 justify-content-center">
+            <label for="categoryOffer" class="text-center fw-bold" >you can add offer to your category here!</label>
+            <span class="text-center text-secondary">maximum 100 percentage is allowed</span>
+
+              <div class="col-md-8 text-center fw-bold">
+                  
+                  <input type="text" class="form-control form-control-md mt-3 text-center " id="categoryOffer" name="categoryOffer" value="<%= categoryData.offer_percentage %>" placeholder="Enter offer percentage" required>
+                  <div id="offerError" class="text-danger"></div>
+                  <button type="button" class="btn btn-outline-dark mt-4" onclick="validateOffer()">submit</button>
+              </div>
+          </div>
+      </form>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function toggleForms() {
+    var offer = document.getElementById('offer')
+    var editCategoryForm = document.getElementById('editCategoryForm');
+    var addOfferForm = document.getElementById('addOfferForm');
+  
+    if (editCategoryForm.style.display === 'none') {
+      
+      editCategoryForm.style.display = 'block';
+      addOfferForm.style.display = 'none';
+      offer.innerText = "Add offer"
+    } else {
+      // Show edit category form and hide add offer form
+
+      addOfferForm.style.display = 'block';
+      editCategoryForm.style.display = 'none';
+      offer.innerText = "Edit category name"
+    }
+  }
+
+
+  function validateOffer() {
+    var offerInput = document.getElementById('categoryOffer');
+    var offerError = document.getElementById('offerError');
+    var offerValue = offerInput.value;
+
+    // Check if offer value is empty
+    if (offerValue.trim() === '') {
+      offerError.textContent = 'Offer percentage is required';
+      return;
+    }
+
+    // Check if offer value is a valid number
+    if (isNaN(offerValue)) {
+      offerError.textContent = 'Offer percentage must be a number';
+      return;
+    }
+
+    // Check if offer value is within range (0 to 100)
+    if (offerValue < 0 || offerValue > 100) {
+      offerError.textContent = 'Offer percentage must be between 0 and 100';
+      return;
+    }
+
+    // If all validations pass, submit the form
+    document.getElementById('addOfferForm').submit();
+  }
+</script>
+
+<%- include('footer.ejs') %>

@@ -1,0 +1,309 @@
+<!-- <style>
+  body {
+    margin-top: 20px;
+    background-color: #f2f6fc;
+    color: #69707a;
+  }
+
+  .card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+  }
+
+  .card .card-header {
+    font-weight: 500;
+  }
+
+  .card-header:first-child {
+    border-radius: 0.35rem 0.35rem 0 0;
+  }
+
+  .card-header {
+    padding: 1rem 1.35rem;
+    margin-bottom: 0;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+  }
+
+  .btn-danger-soft {
+    color: #000;
+    background-color: #f1e0e3;
+    border-color: #f1e0e3;
+  }
+</style> -->
+
+<%- include('nav-bar') %>
+<div class="container-xl px-4 mt-2">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4  ">
+    <h1 class="page">My cart</h1>
+  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb border-bottom">
+      <li class="breadcrumb-item">
+        <a href="/home">Home</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">cart </li>
+    </ol>
+  </nav>
+  <div id="alertContainer"></div>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <% let productCount = 0; %>
+      <% cartData.forEach((cartItem) => {
+                cartItem.items.forEach((item) => {
+                    if (item.product._id.toString()) {
+                        productCount++;
+
+                    }
+                })
+            }) %>
+      <!-- Change password card-->
+      <!-- in here we want to check item field length -->
+      <% let totalPrice = 0; %>
+      <% if (productCount > 0) { %>
+      <% totalPrice = cartData[0].total_price; %>
+      <div class="card mb-4">
+        <div class="card-header">Cart total &#8377;<span id="totalAmountHead"><%= cartData[0].total_price %></span> &emsp; Cart quantity <%= cartData[0].total_quantity %></div>
+        <div class="card-body">
+
+          <div class="row mb-3">
+            <div class="table-responsive">
+              <div style="max-height: 400px; overflow-y: auto;">
+              <table class="table table-striped table  justify-content-center ">
+                <thead class="text-center">
+                  <tr>
+                    <th scope="col" class="">Product Name</th>
+                    <th scope="col" class="">Price</th>
+                    <th scope="col" class="">Total price</th>
+                    <th scope="col" class="">Image</th>
+                    <th scope="col" class="">Quantity</th>
+                    <% if (cartData[0].applied_coupon === false) { %>
+                    <th scope="col" class="">Action</th>
+                    <% } %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% cartData.forEach((cartItem) => { %>
+                  <% cartItem.items.forEach((item, index) => { %>
+                  <tr class="align-middle text-center">
+                    <td class=""><%= item.product.product_name + " " + item.product.model %></td>
+                    <td class=""><%= item.product.price %></td>
+                    <td class="" id="totalEachAmountProduct<%= index %>"><%= item.total %></td>
+                    <td class="">
+                      <img src="/uploads/<%= item.product.image[0] %>" alt="Product Image" style="width: 100px; height: 100px;">
+                    </td>
+                    <td class="scroll-box">
+                      <div class="">
+                        <% if (cartData[0].applied_coupon === false) { %>
+
+                        <a href="/product_cart_update/<%= item.product._id %>?quantityChange=-1">
+                          <button id="decrementer" class="btn btn-dark btn-sm ms-1 " style="height:30px ; width: 25px;">-</button>
+                        </a>
+                        <% } %>
+
+                        <%= item.quantity %>
+
+                        <% if (cartData[0].applied_coupon === false) { %>
+                        <a href="/product_cart_update/<%= item.product._id %>?quantityChange=1">
+                          <button id="incrementer" class="btn btn-dark btn-sm me-1  align-items-center justify-content-center" style="height:30px ; width: 25px;">+</button>
+                        </a>
+                        <% } %>
+                      </div>
+                    </td>
+                    <td class="">
+                      <% if (cartData[0].applied_coupon === false) { %>
+                      <!-- <a href="/product_cart_delete/<%= item.product._id %>"> -->
+                        <button class="btn cat-btn btn-sm btn-dark remove-btn">Remove</button>
+                      <!-- </a> -->
+                      <% } %>
+
+                      <!-- remove modal -->
+                      <div class="modal fade" id="removeModal_<%= index %>" tabindex="-1" aria-labelledby="removeModalLabel_<%= index %>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="removeModalLabel_<%= index %>">Confirm Remove</h5>
+                                    <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to remove this product?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                                    <a href="/product_cart_delete/<%= item.product._id %>">
+                                        <button type="button" class="btn btn-dark">Remove</button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    </td>
+                  </tr>
+                  <% }) %>
+                  <% }) %>
+
+                </tbody>
+              </table>
+             </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <% }else { %>
+      <h1 class="text-center">Your cart is empty</h1>
+      <% } %>
+    </div>
+
+    <% if (productCount > 0) { %>
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <div class="card-header text-center">Happy shopping &#128522;</div>
+        <div class="card-body">
+          <form class="row" action="/coupon_apply" method="post">
+            <div class="mt-2 col-sm-8">
+              <label class="small mb-1 me-3 fw-bold" for="couponSelect">Apply coupon</label>
+              <% if (totalPrice > 0 && cartData[0].applied_coupon === false && couponData.length !== 0 ) { %>
+              <select name="coupon_value" id="couponSelect" class=" rounded col-sm-6 text-center" style="border-color: rgb(20, 220, 20); border-width: 2px;">
+                <% couponData.forEach((element, index) => { %>
+                  <% if (cartData[0].total_price >= element.min_amount) { %>
+                    <option selected disabled>Available</option>
+                    <option value="0">None</option>
+                    <option value="<%= element.discount_percentage %>"><%= element.coupon_code %></option>
+                  <% } else { %>
+                    <option value="0">Ineligible</option>
+                    <% } %>
+
+                <% }) %>
+              </select>
+              <% } else if(cartData[0].applied_coupon === true) { %>
+              <select name="orderStatus" class="order_status rounded col-sm-6 text-center" style="border-color: rgb(20, 220, 20); border-width: 2px;">
+                <option selected disabled>Applied</option>
+              </select>
+              <% } else if (couponData.length == 0) { %>
+                <select name="orderStatus" class="order_status rounded col-sm-6 text-center" style="border-color: rgb(227, 36, 36); border-width: 2px;">
+                  <option selected disabled>No coupons</option>
+                </select>
+                <% } %>
+            </div>
+            <% if (cartData[0].applied_coupon === false) { %>
+            <div class="col-sm-4 align-self-end">
+              <button id="applyCouponBtn" class="btn btn-md btn-dark" type="submit">Apply</button>
+            </div>
+            <% } else{ %>
+            <div class="col-sm-4 align-self-end">
+              <a href="/coupon_remove"><button id="removeCouponBtn" class="btn btn-md btn-danger" type="button">Remove</button></a>
+            </div>
+            <% } %>
+          </form>
+          <p class="small text-center text-">Apply coupon after selecting products</p>
+
+          <% if (cartData[0].applied_coupon !== false) { %>
+          <hr>
+          <p class="small text-center text-danger">Note: If you wish to add or remove a product, please remove the coupon.</p>
+          <% } %>
+          <hr>
+          <p class="fw-bold">Cart summary detail</p>
+          <p class="text-start">Total purchase amount: <span class="text-end" id="totalAmount"><%= cartData[0].total_price %></span></p>
+          <p class="text-start">Total purchase quantity: <span class="text-end"><%= cartData[0].total_quantity %></span></p>
+          <p class="text-start">Total Shipping amount: <span class="text-end">Free</span></p>
+          <hr>
+          <div class="col-sm-8  justify-content-center">
+            <a href="/checkout/<%= cartData[0]._id %>"><button class="btn btn-dark btn-md">Checkout</button></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% } %>
+  </div>
+
+</div>
+
+
+<script> 
+
+document.addEventListener("DOMContentLoaded", function() {
+    var removeButtons = document.querySelectorAll('.remove-btn');
+    removeButtons.forEach(function(removeButton, index) {
+      removeButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            var modalId = 'removeModal_' + index; // Constructing modal id based on index
+            var removeModal = new bootstrap.Modal(document.getElementById(modalId));
+            removeModal.show();
+        });
+    });
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const outStockCheck = urlParams.get('stockAvailable')
+const productLimit = urlParams.get('productLimit');
+
+// Check if productLimit is true, then show the alert
+if (productLimit === 'true') {
+    const alertContainer = document.getElementById('alertContainer');
+    const alertElement = document.createElement('div');
+    alertElement.className = 'alert alert-warning alert-dismissible'; // Add Bootstrap classes
+    alertElement.setAttribute('role', 'alert');
+    alertElement.style.opacity = '0'; // Set initial opacity to 0
+
+    // Create the content for the alert
+    alertElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        "You have reached the limit for this product, either minimum or maximum."
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    // Append the alert to the container
+    alertContainer.appendChild(alertElement);
+    alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Fade in the alert
+    let opacity = 0;
+    const fadeInInterval = setInterval(() => {
+        opacity += 0.1; // Increase opacity gradually
+        alertElement.style.opacity = `${opacity}`; // Set the new opacity
+        if (opacity >= 1) {
+            clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+        }
+    }, 50); // Adjust the interval for smoothness
+}
+
+if (outStockCheck === 'false') {
+    const alertContainer = document.getElementById('alertContainer');
+    const alertElement = document.createElement('div');
+    alertElement.className = 'alert alert-warning alert-dismissible'; // Add Bootstrap classes
+    alertElement.setAttribute('role', 'alert');
+    alertElement.style.opacity = '0'; // Set initial opacity to 0
+
+    // Create the content for the alert
+    alertElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>      
+        "Oops, it seems that some items in your cart are now out of stock."
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    // Append the alert to the container
+    alertContainer.appendChild(alertElement);
+    alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Fade in the alert
+    let opacity = 0;
+    const fadeInInterval = setInterval(() => {
+        opacity += 0.1; // Increase opacity gradually
+        alertElement.style.opacity = `${opacity}`; // Set the new opacity
+        if (opacity >= 1) {
+            clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+        }
+    }, 50); // Adjust the interval for smoothness
+}
+
+
+</script>
+
+<!-- <div class="fixed-bottom" hidden><%- include('footer') %></div> -->
+
+

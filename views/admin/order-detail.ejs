@@ -1,0 +1,180 @@
+<%- include('header') %>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <%- include('nav-side') %>
+    <!-- Main content -->
+    <div class="col-md-10">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 ">
+          <h1 class="page">Orders</h1>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="/admin/admin_dashboard">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/admin/order_list">Orders</a>
+                  </li>
+                <li class="breadcrumb-item active">Order details</li>
+              </ol>
+              <hr>
+            </nav>   
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <% let productCount = 0; %>
+            <% orderData.forEach((cartItem) => {
+                        cartItem.items.forEach((item) => {
+                            if (item.product._id.toString()) {
+                                productCount++;
+                            }
+                        })
+                    }) %>
+
+            <% if (productCount > 0) { %>
+            <div class="card mb-4">
+              <div class="card-header fw-bold">Order product details</div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="table-responsive">
+                    <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-striped table-sm  justify-content-center ">
+                      <thead class="text-center">
+                        <tr>
+
+                          <th scope="col" class="">Image</th>
+                          <th scope="col" class="">Product</th>
+                          <th scope="col" class="">Price</th>
+                          <th scope="col" class="">Quantity</th>
+                          <th scope="col" class="">Total price</th>
+                          <th scope="col" class="">Order Status</th>
+                          <!-- <th scope="col" class="">Status Action</th> -->
+                          <th scope="col" class="">Order action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                     
+                        <% orderData.forEach((orderItem) => { %>
+                        <% orderItem.items.forEach((item, index) => { %>
+                 
+                        <tr class="align-middle text-center">
+                          <td class="">
+                            <img src="/uploads/<%= item.product.image[0] %>" alt="Product Image" style="width: 70px; height: 70px;">
+                          </td>
+                          <td class=""><%= item.product.product_name + " " + item.product.model %></td>
+
+                          <td class=""><%= item.product.price %></td>
+                          <td class=""><%=  Math.abs(item.quantity) %></td>
+                          <td class=""><%= Math.abs(item.total)  %></td>
+                          <!-- <td><%= item.status %></td> -->
+
+                          <td class="">
+                            <select name="orderStatus" class="order_status rounded text-center" onchange="updateOrderStatus('<%= item._id %>','<%=orderItem._id%>')">
+                              <option selected disabled><%= item.status %></option>
+                              <% if (item.status !== "return_requested" && item.status !== "returned" && item.status !== "cancelled") { %>                          
+                               <option value="pending">pending</option>
+                               <option value="shipped">shipped</option>
+                               <option value="delivered">delivered</option>
+                               <!-- <option value="cancelled">cancelled</option> -->
+                               <% } %>
+                           </select>
+                          </td>
+
+                          <td class="col text-center">
+                            <% if (item.status !== "cancelled" && item.status !== "returned" && item.status !== "return_requested" && item.status !== "delivered" && item.status !== "shipped") { %>
+                              <form action="/admin/order_cancel/<%= item.product._id %>/<%= item._id %>" method="post">
+                                <input type="hidden" name="cancel" id="cancel">
+                                <button class="btn cat-btn btn-sm btn-danger" style="min-width: 100px;" >cancel</button>
+                              </form>
+                            <% } else if (item.status == "cancelled") { %>
+                              <button class="btn cat-btn btn-sm btn-dark"  style="min-width: 100px;"  >cancelled</button>
+                              <% } else if (item.status === "return_requested") { %>
+                                <a href="/admin/order_return_order">
+                                  <button class="btn cat-btn btn-sm btn-dark"  style="min-width: 100px;" >Details</button>
+                                </a>
+                             <% } %>
+
+                          </td>
+                        </tr>
+                        <% }) %>
+                        <% }) %>
+
+                      </tbody>
+                    </table>
+                  </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+            <% }else { %>
+            <h1 class="text-center">Products left</h1>
+            <% } %>
+          </div>
+
+          <% if (productCount > 0) { %>
+          <div class="col-lg-4">
+            <!-- Two factor authentication card-->
+
+            <div class="card mb-4">
+              <div class="card-header text-center fw-bold ">Order Details</div>
+              <div class="card-body">
+                <p class="text-start ">Order Id : <span class="text-secondary"> <%= orderData[0]._id.toString().slice( -6) %></span></p>
+                <p class="text-start ">Order Date : <span class="text-secondary"> <%= orderData[0].createdAt.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' }) %></span></p>
+                <p class="text-start "> purchase amount : <span class=""> &#8377;<%= orderData[0].total_price %></span></p>
+                <p class="text-start "> purchase quantity : <span class=""> <%= orderData[0].total_quantity %></span></p>
+                <p class="text-start">Payment method : <%= orderData[0].payment_details.payment_method %></p>
+                <hr>
+                <p class="text-center fw-bold">Shipping Address</p>
+                <hr>
+                <p class="mb-0"><span class="fw-bold"><%= orderData[0].shipping_address.full_name %></span></p>
+                <p class="mb-0"><span><%= orderData[0].shipping_address.street %></span></p>
+                <p class="mb-0"><span><%= orderData[0].shipping_address.city %></span></p>
+                <span><%= orderData[0].shipping_address.district %>, </span>
+                <span> <%= orderData[0].shipping_address.state %></span>
+                <p class="mb-0"><span><%= orderData[0].shipping_address.country %></span></p>
+                <p class="mb-0"><span>phone: <%= orderData[0].shipping_address.phone_number %></span></p>
+               
+              </div>
+            </div>
+          </div>
+
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function updateOrderStatus(itemId, orderId) {
+    var selectElement = document.querySelector(`select[onchange="updateOrderStatus('${itemId}','${orderId}')"]`);
+    var newStatus = selectElement.value;
+    fetch('/admin/update_order_status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ itemId: itemId, orderId: orderId, newStatus: newStatus }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Order status updated successfully');
+        
+    })
+    .catch(error => {
+        console.error('Error updating order status:', error);
+    });
+}
+    </script>
+
+    <%- include('footer.ejs') %>

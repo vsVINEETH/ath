@@ -1,0 +1,618 @@
+<style>
+  #cont {
+    height: 400px;
+    width: 400px;
+    overflow: hidden;
+  }
+
+  #img-fluid-main {
+    transform-origin: center;
+    object-fit: cover;
+    height: 400px;
+    width: 400px;
+  }
+
+  .card a {
+    text-decoration: none;
+    color: black;
+    outline: none;
+  }
+
+  .card {
+    transform: scale(1);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    /* Add transition for smooth animation */
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+    /* Apply scale and flip on hover */
+  }
+
+  #whish {
+    transition: transform 0.3s ease;
+
+    /* Add transition for transform */
+  }
+
+  /* Apply zoom-out effect */
+  .zoom-out {
+    transform: scale(1.1);
+  }
+
+  #productRow {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .card {
+    display: inline-block;
+    margin-right: 10px;
+    /* Adjust spacing between cards */
+  }
+
+
+  body {
+    margin-top: 20px;
+    background: #eee;
+  }
+
+  .review-list ul li .left span {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+  }
+
+  .review-list ul li .left {
+    flex: none;
+    max-width: none;
+    margin: 0 10px 0 0;
+  }
+
+  .review-list ul li .left span img {
+    border-radius: 50%;
+  }
+
+  .review-list ul li .right h4 {
+    font-size: 16px;
+    margin: 0;
+    display: flex;
+  }
+
+  .review-list ul li .right h4 .gig-rating {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    color: #ffbf00;
+  }
+
+  .review-list ul li .right h4 .gig-rating svg {
+    margin: 0 4px 0 0px;
+  }
+
+  .country .country-flag {
+    width: 16px;
+    height: 16px;
+    vertical-align: text-bottom;
+    margin: 0 7px 0 0px;
+    border: 1px solid #fff;
+    border-radius: 50px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .country .country-name {
+    color: #95979d;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .review-list ul li {
+    border-bottom: 1px solid #dadbdd;
+    padding: 0 0 30px;
+    margin: 0 0 30px;
+  }
+
+  .review-list ul li .right {
+    flex: auto;
+  }
+
+  .review-list ul li .review-description {
+    margin: 20px 0 0;
+  }
+
+  .review-list ul li .review-description p {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .review-list ul li .publish {
+    font-size: 13px;
+    color: #95979d;
+  }
+
+  .review-section h4 {
+    font-size: 20px;
+    color: #222325;
+    font-weight: 700;
+  }
+
+  .review-section .stars-counters tr .stars-filter.fit-button {
+    padding: 6px;
+    border: none;
+    color: #4a73e8;
+    text-align: left;
+  }
+
+  .review-section .fit-progressbar-bar .fit-progressbar-background {
+    position: relative;
+    height: 8px;
+    background: #efeff0;
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    ;
+    border-radius: 999px;
+  }
+
+  .review-section .stars-counters tr .star-progress-bar .progress-fill {
+    background-color: #ffb33e;
+  }
+
+  .review-section .fit-progressbar-bar .progress-fill {
+    background: #2cdd9b;
+    background-color: rgb(29, 191, 115);
+    height: 100%;
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    border-radius: 999px;
+  }
+
+  .review-section .fit-progressbar-bar {
+    display: flex;
+    align-items: center;
+  }
+
+  .review-section .stars-counters td {
+    white-space: nowrap;
+  }
+
+  .review-section .stars-counters tr .progress-bar-container {
+    width: 100%;
+    padding: 0 10px 0 6px;
+    margin: auto;
+  }
+
+  .ranking h6 {
+    font-weight: 600;
+    padding-bottom: 16px;
+  }
+
+  .ranking li {
+    display: flex;
+    justify-content: space-between;
+    color: #95979d;
+    padding-bottom: 8px;
+  }
+
+  .review-section .stars-counters td.star-num {
+    color: #4a73e8;
+  }
+
+  .ranking li>span {
+    color: #62646a;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+
+  .review-section {
+    border-bottom: 1px solid #dadbdd;
+    padding-bottom: 24px;
+    margin-bottom: 34px;
+    padding-top: 64px;
+  }
+
+  .review-section select,
+  .review-section .select2-container {
+    width: 188px !important;
+    border-radius: 3px;
+  }
+
+  ul,
+  ul li {
+    list-style: none;
+    margin: 0px;
+  }
+
+  .helpful-thumbs,
+  .helpful-thumb {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+  }
+</style>
+<%- include('nav-bar') %>
+<div class="container mb-0">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4  ">
+    <h1 class="page">Products</h1>
+  </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb border-bottom">
+      <li class="breadcrumb-item">
+        <a href="/home">Home</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Product view</li>
+    </ol>
+  </nav>
+</div>
+<div class="container mt-3 pt-0 d-inline-flex">
+  <div class="row">
+    <div class="col-md-2 ms-5 mt-3">
+      <% let totalRating = 0 %>
+      <% let countRating = ratingData.length %>
+      <% let averageRating = 0 %>
+
+      
+      <% ratingData.forEach(rating => { %>
+      <% totalRating += rating.rating %>
+      <% }); %>
+  
+      <% averageRating = (totalRating/countRating) %>
+
+      <% productData.image.forEach((element) => { %>
+      <img src="/uploads/<%=element%>" class="img-fluid shadow mt-2" alt="Product Image" style="width:100px; height: 80px;">
+      <% }) %>
+    </div>
+    <div id="cont" class="col-md-4 ms-0 shadow ">
+      <img src="/uploads/<%= productData.image[0] %>" class="img-fluid-main " id="img-fluid-main" alt="Product Image" style="width: 400px; height: 400px;">
+    </div>
+
+    <div class="col-md-4 ms-5">
+      <h2><%= productData.product_name %></h2>
+      <p class="fw-bold"><%= productData.model %></p>
+      <p class="fw-normal"><%= productData.description %></p>
+      <!-- <p class="fw-normal mb-0">Rating: &#9733;&#9733;&#9733;&#9733;&#9734;</p> -->
+
+      <% if (averageRating <= 0 && averageRating == 0) { %>
+        <p class="fw-normal mb-0">Rating: &#9734;&#9734;&#9734;&#9734;&#9734;</p>
+  
+      <% } else if ( averageRating <= 1 && averageRating > 0 ) { %>
+        <p class="fw-normal mb-0">Rating: &#9733;&#9734;&#9734;&#9734;&#9734;</p>
+  
+      <% } else if ( averageRating <= 2 &&  averageRating > 1) { %>
+        <p class="fw-normal mb-0">Rating: &#9733;&#9733;&#9734;&#9734;&#9734;</p>
+  
+      <% } else if ( averageRating <= 3 && averageRating > 2) { %>
+        <p class="fw-normal mb-0">Rating: &#9733;&#9733;&#9733;&#9734;&#9734;</p>
+    
+      <% } else if ( averageRating <= 4 && averageRating > 3) { %>
+        <p class="fw-normal mb-0">Rating: &#9733;&#9733;&#9733;&#9733;&#9734;</p>
+  
+      <% } else if ( averageRating <= 5 && averageRating > 4) { %>
+        <p class="fw-normal mb-0">Rating: &#9733;&#9733;&#9733;&#9733;&#9733;</p>
+  
+      <% } else {%>
+        <p class="fw-normal mb-0">Rating: &#9734;&#9734;&#9734;&#9734;&#9734;</p>
+        <% }%>
+      <% if (productData.offer_applied) { %>
+      <p class="fw-normal mb-0">Price: &#8377; <%= productData.price %></p>
+      <p class="fw-normal mb-0 small text-secondary">MRP: <span class="" style="text-decoration: line-through;">&#8377; <%= productData.mrp %></span> </p>
+      <% } else {%>
+      <p class="fw-normal mb-0">Price: &#8377; <%= productData.price %></p>
+      <% }%>
+      <p class="fw-normal mb-0">colour: <%= productData.colour %></p>
+      <p class="fw-normal mb-0">size: <%= "UK-8" %></p>
+      <p class="fw-normal ">Stock : <%= productData.quantity <= 0 ? "sold out": productData.quantity + " left" %></p>
+      <div class="d-flex">
+        <form id="addToCartForm" method="post" action="/product_cart/<%= productData._id %>">
+          <% if (productData.quantity > 0) { %>
+          <button class="btn btn-dark me-2" type="submit">Add to Cart</button>
+          <% } else { %>
+          <button class="btn btn-danger me-2" type="button">Out of stock</button>
+          <% }%>
+        </form>
+
+        <form id="addToWishlistForm" method="post" action="/wish_list_add/<%= productData._id %>">
+          <button class="btn btn-dark" type="submit">Add to Wishlist</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- recommanded products -->
+<div class="container d-flex mt-5">
+  <div class="col-md-10 ms-5  text-center border-top ">
+    <h2 class="mt-2 ">Recommended products</h2>
+    <div class="container-fluid mt-5 mb-5">
+      <div class="row justify-content-evenly">
+        <% let productStore=productData %>
+        <% let dataindex=0 %>
+        <% productDatas.forEach((element,index)=> { %>
+
+        <% let isWish=false; %>
+        <% wishListData.forEach(wishListItem=> { %>
+        <% wishListItem.items.forEach(item=> { %>
+        <% if(item.product._id.toString() === element._id.toString()) { %>
+        <% isWish=true; %>
+        <% } %>
+        <% }); %>
+        <% }); %>
+        <% if(element.is_listed == true ) { %>
+        <div class="card mx-2 my-2 mb-5 shadow" style="width: 18rem" data-productId="<%= element._id %>">
+
+          <a href="/product_detail/<%= element._id %>">
+            <img src="/uploads/<%= element.image[0] %>" class="card-img-top mt-2" alt="..." />
+          </a>
+          <div class="card-body text-start">
+            <div class="d-flex justify-content-between align-items-center ">
+              <h5 class="card-title"><%= element.product_name %></h5>
+              <h6 class=""><%= element.model %> </h6>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <p class="card-text mb-0">
+                <%= element.category.category_name %>
+              </p>
+              <% if (element.offer_applied) { %>
+              <p class="card-text text-end">&#8377; <%= element.price %> <br> <span class="small text-secondary" style="text-decoration: line-through;">&#8377; <%= element.mrp %> </span>
+              </p>
+              <% } else {%>
+              <p class="card-text text-end">&#8377; <%= element.price %>
+              </p>
+              <% }%>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <a href="/product_detail/<%= element._id %>">
+                <button class="btn btn-outline-dark btn-sm ">view
+                  <!-- &#128065; -->
+                </button>
+              </a>
+              <svg id="whish" onclick="addToWishList('<%= element._id %>')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="<%= isWish ? 'red' : 'currentColor' %>" style="color: rgb(212, 212, 212)" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <% } %>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- edit review -->
+<div class="justify-content-center text-center">
+  <h2>Review and Ratings</h2>
+  <hr>
+  <div class="container">
+
+    <h4>Total Reviews (<%= countRating %>)</h4>
+
+    <% if (averageRating <= 0 && averageRating == 0) { %>
+      <p class="" style="font-size: xx-large;">&#9734;&#9734;&#9734;&#9734;&#9734;</p>
+
+    <% } else if ( averageRating <= 1 && averageRating > 0 ) { %>
+      <p class="" style="font-size: xx-large;">&#9733;&#9734;&#9734;&#9734;&#9734;</p>
+
+    <% } else if ( averageRating <= 2 &&  averageRating > 1) { %>
+      <p class="" style="font-size: xx-large;">&#9733;&#9733;&#9734;&#9734;&#9734;</p>
+
+    <% } else if ( averageRating <= 3 && averageRating > 2) { %>
+      <p class="" style="font-size: xx-large;">&#9733;&#9733;&#9733;&#9734;&#9734;</p>
+    
+
+    <% } else if ( averageRating <= 4 && averageRating > 3) { %>
+      <p class="" style="font-size: xx-large;">  &#9733;&#9733;&#9733;&#9733;&#9734;</p>
+
+    <% } else if ( averageRating <= 5 && averageRating > 4) { %>
+      <p class="" style="font-size: xx-large;"> &#9733;&#9733;&#9733;&#9733;&#9733;</p>
+
+      <% } else {%>
+        <p class="" style="font-size: xx-large;"> &#9734;&#9734;&#9734;&#9734;&#9734;</p>
+        <% }%>
+
+    <% let ratingId = 0 %>
+    <% ratingData.forEach((element) => { %>
+      <div class="card mt-3">
+        <div class="card-body">
+          <% if (user._id.toString() === element.user._id.toString()) { %>
+            <%  ratingId = element._id %>
+           <div class="text-end">
+            <button class="btn btn-sm btn-dark rating-btn">edit</button>
+            <button class="btn btn-sm btn-dark delete-btn">delete</button>
+           </div>
+          <% } %>
+          <p class="fw-bold"><%= element.user.first_name+element.user.last_name %></p>
+          <p class=""><%= element.review %></p>
+
+          <% if (element.rating <= 0 && element.rating == 0) { %>
+            <p class="" style="font-size: large;">&#9734;&#9734;&#9734;&#9734;&#9734;</p>
+      
+          <% } else if ( element.rating <= 1 && element.rating > 0 ) { %>
+            <p class="" style="font-size: large;">&#9733;&#9734;&#9734;&#9734;&#9734;</p>
+      
+          <% } else if ( element.rating <= 2 &&  element.rating > 1) { %>
+            <p class="" style="font-size: large;">&#9733;&#9733;&#9734;&#9734;&#9734;</p>
+      
+          <% } else if ( element.rating <= 3 && element.rating > 2) { %>
+            <p class="" style="font-size: large;">&#9733;&#9733;&#9733;&#9734;&#9734;</p>
+          
+      
+          <% } else if ( element.rating <= 4 && element.rating > 3) { %>
+            <p class="" style="font-size: large;">  &#9733;&#9733;&#9733;&#9733;&#9734;</p>
+      
+          <% } else if ( element.rating <= 5 && element.rating > 4) { %>
+            <p class="" style="font-size: large;"> &#9733;&#9733;&#9733;&#9733;&#9733;</p>
+      
+          <% } %>
+        </div>
+      </div>
+      
+     
+    <% }) %>
+  </div>
+</div>
+
+
+<!-- modal for rating edit -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="rating" aria-hidden="true" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="ratingModalLabel">Edit rating and review &#129300;</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form name="ratingForm" action="/product_rating/<%= productData._id %>" method="post" >
+       
+          <p>Rate out of five : </p>
+          <div class="form-check col-auto">
+            
+            <input class="form-check-input" type="radio" name="rating" value="1" id="flexRadioDefault7" required>
+            <label class="form-check-label" for="flexRadioDefault7">
+              &#9733;&#9734;&#9734;&#9734;&#9734;(1)
+            </label>
+          </div>
+          <div class="form-check col-auto">
+            <input class="form-check-input" type="radio" name="rating" value="2" id="flexRadioDefault8" required>
+            <label class="form-check-label" for="flexRadioDefault8">
+              &#9733;&#9733;&#9734;&#9734;&#9734;(2)
+            </label>
+          </div>
+          <div class="form-check col-auto">
+            <input class="form-check-input" type="radio" name="rating" value="3" id="flexRadioDefault9" required>
+            <label class="form-check-label" for="flexRadioDefault9">
+              &#9733;&#9733;&#9733;&#9734;&#9734;(3)
+            </label>
+          </div>
+          <div class="form-check col-auto">
+            <input class="form-check-input" type="radio" name="rating" value="4" id="flexRadioDefault10" required>
+            <label class="form-check-label" for="flexRadioDefault10">
+              &#9733;&#9733;&#9733;&#9733;&#9734;(4)
+            </label>
+          </div>
+          <div class="form-check col-auto">
+            <input class="form-check-input" type="radio" name="rating" value="5" id="flexRadioDefault11" required>
+            <label class="form-check-label" for="flexRadioDefault11">
+              &#9733;&#9733;&#9733;&#9733;&#9733;(5)
+              
+            </label>
+          </div>
+          <hr>
+
+          <div class="mb-3 text-center">
+            <label for="review" class="form-label">Product Review</label>
+            <% let oldReview = "" %>
+            <% ratingData.forEach((element) => { %>
+                  <% if (user._id.toString() === element.user._id.toString()) { %>
+                    <% oldReview = element.review %>
+                  <% } %>
+                  <% }) %>
+            <input type="text" id="review" name="reviewComment" class="form-control form-control-sm" value="<%= oldReview %>" pattern="^[A-Za-z0-9\s]+$" required>
+          </div>
+          <div id="reasonError" class="invalid-feedback" style="display: none;">
+            This field is required.
+          </div>
+
+          <button type="submit" class="btn btn-sm btn-dark" id="confirmBtn">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal for delete rating -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+              <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to delete this address?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+              <a href="/rating_delete/<%= ratingId%>/<%= productData._id %>">
+                  <button type="button" class="btn btn-dark">Delete</button>
+              </a>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="mb-5"></div>
+
+<script src="/js/side-slide.js"></script>
+<script src="/js/zoom.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(function(deleteButton, index) {
+        deleteButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            var modalId = 'deleteModal' // Constructing modal id based on index
+            var deleteModal = new bootstrap.Modal(document.getElementById(modalId));
+            deleteModal.show();
+        });
+    });
+});
+
+    document.addEventListener("DOMContentLoaded", function() {
+    var ratingButtons = document.querySelectorAll('.rating-btn');
+    ratingButtons.forEach(function(ratingButton) {
+      ratingButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        var modalId = 'ratingModal';
+  //'returnModal';
+        var ratingModal = new bootstrap.Modal(document.getElementById(modalId));
+        ratingModal.show();
+      });
+    });
+
+  });
+  function addToWishList(itemId) {
+    var selectElement = document.querySelector(
+      `select[onclick="addToWishList('${itemId}')"]`
+    );
+    fetch("/wish_list_action", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemId: itemId,
+        }),
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const heartIcon = document.querySelector(
+          `svg[id="whish"][onclick="addToWishList('${itemId}')"]`
+        );
+        if (heartIcon.style.fill === "red") {
+          heartIcon.style.fill = "currentColor"; // Change back to default color
+        } else {
+          heartIcon.style.fill = "red"; // Change to red color
+        }
+
+        heartIcon.classList.add("zoom-out");
+        // Remove the class after a delay to reset the effect
+        setTimeout(() => {
+          heartIcon.classList.remove("zoom-out");
+        }, 300); // Adjust the duration to match the transition duration
+        console.log("Added to wish list successfully");
+      })
+      .catch((error) => {
+        console.error("Error adding wish list status:", error);
+      });
+  }
+</script>
+<%- include('footer') %>
