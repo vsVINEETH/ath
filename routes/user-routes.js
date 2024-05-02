@@ -19,7 +19,7 @@ router.get('/login', userController.login);
 router.post('/login', userController.loginPost);
 
 router.get('/auth/google',blockCheck, userController.loginAuth);
-router.get("https://athnow.life/auth/google/redirect", userController.loginAuthRedirect)
+router.get("/athnow.life/auth/google/redirect", userController.loginAuthRedirect)
 router.get('/auth/facebook',blockCheck, userController.loginAuthFacebook);
 router.get('/auth/facebook/redirect', userController.loginAuthFacebookRedirect)
 
