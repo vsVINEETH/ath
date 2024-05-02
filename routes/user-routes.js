@@ -32,12 +32,12 @@ router.get('/signup_otp', otpController.getOtp);
 router.post('/signup_otp', otpController.postOtp);
 router.get('/signup_otp/resend', otpController.signUpResendOtp);
 
-router.get('/forgot_password',userCheck, userController.forgotPassword);
-router.post('/forgot_password',userCheck, userController.forgotPasswordPost);
+router.get('/forgot_password', userController.forgotPassword);
+router.post('/forgot_password', userController.forgotPasswordPost);
 
-router.get('/forgot_password_otp',userCheck, otpController.forgotPasswordGetOtp);
-router.post('/forgot_password_otp',userCheck, otpController.forgotPasswordOtp);
-router.get('/forgot_password_otp/resend',userCheck, otpController.forgotResendOtp);
+router.get('/forgot_password_otp', otpController.forgotPasswordGetOtp);
+router.post('/forgot_password_otp', otpController.forgotPasswordOtp);
+router.get('/forgot_password_otp/resend', otpController.forgotResendOtp);
 
 router.get('/user_profile',userCheck, userController.userProfile);
 router.post('/user_profile/:user_id',userCheck, userController.userProfileUpdate);
