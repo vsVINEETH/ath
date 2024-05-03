@@ -1,4 +1,7 @@
 <%- include('header') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
 <div class="container-fluid">
   <div class="row">
     <!-- Sidebar -->
@@ -15,20 +18,20 @@
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                  <a href="/admin/admin_dashboard">Dashboard</a>
+                  <a href="/admin/admin_dashboard" style="text-decoration: none;">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item active">Customers</li>
               </ol>
             </nav>
           </div>
-          <div class="col-md-6 mb-3">
+          <!-- <div class="col-md-6 mb-3">
             <input type="text" class="form-control form-control-sm" placeholder="Search...">
-        </div>
+        </div> -->
         </div>
 
         <div class="table-responsive" >
-          <div style="max-height: 500px; overflow-y: auto;">
-          <table class="table table-striped table  justify-content-center border">
+          <!-- <div style="max-height: 500px; overflow-y: auto;"> -->
+          <table id="example" class="table table-striped table  justify-content-center border">
             <thead class="text-center">
               <tr>
                 <th scope="col" class="border">ID</th>
@@ -45,7 +48,7 @@
                 <td class="border"><%= (element.first_name && element.last_name) ? (element.first_name + ' ' + element.last_name) : element.user_name %></td>
                 <td class="border"><%= element.email ? element.email : element.user_email %></td>
                 <td class="border"><%= element.is_block? 'Blocked' : 'Active' %></td>
-                <td class="border"><a href="/admin/customers_action/<%= element._id %>"> 
+                <td class="border"><a href="/admin/customers_action/<%= element._id %>" style="text-decoration: none;"> 
                   <% if (element.is_block) { %>
                     <button class="btn cus-btn btn-md btn-primary">Unblock</button>
                   <% } else if (!element.is_block) { %>
@@ -56,12 +59,22 @@
               <% }) %>
             </tbody>
           </table>
-        </div>
+        <!-- </div> -->
         </div>
 
       </div>
     </div>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>  
+<script>
+   new DataTable('#example');
+</script>
 
 <%- include('footer.ejs') %>
