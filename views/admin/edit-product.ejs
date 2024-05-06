@@ -117,7 +117,7 @@
                     <label for="category">Category</label>
                     <select class="form-select mt-2" aria-label="Default select example" id="category" name="category" >
                       <option value=<%= productData.category._id %>><%= productData.category.category_name %></option>
-                        <% categoryData.forEach(element => { %>
+                        <% categoryData.forEach((element )=> { %>
                             <option value="<%= element._id %>"><%= element.category_name%></option>
                         <% }) %>
                       </select>
@@ -263,10 +263,27 @@ function editProductFormValidation(){
       return;
     }
 
+    if (isNaN(price)){
+      priceError.textContent = 'Enter a valid value';
+      return;
+    }else if(price < 0){
+      priceError.textContent = 'Enter a value 0 or above';
+      return
+    }
+
     if (quantity === '') {
       quantityError.textContent = 'This field is required';
       return;
     }
+    if (isNaN(quantity)){
+      quantityError.textContent = 'Enter a valid value';
+      return;
+    }else if(quantity < 0 ){
+      quantityError.textContent = 'Enter a value 0 or above';
+      return;
+    }
+
+   
     if (description === '') {
       descriptionError.textContent = 'This field is required';
       return;

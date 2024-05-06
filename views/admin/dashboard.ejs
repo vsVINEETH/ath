@@ -44,28 +44,29 @@
           <h1 class="page">Dashboard</h1>
         </div>
       <hr>
+      <% let saleCount = 0 %>
+      <% let orderAmonut = 0 %>
+      <% let discountAmonut = 0 %>
+      <% orderData.forEach((element) => { %>
+        <% element.items.forEach((item) => { %>
+        <%saleCount += item.quantity %>
+        <%orderAmonut += item.total %>
+        <%discountAmonut += item.each_discount %>
+      <% }) %>
+      <% }) %>
 
-      <div class="col-auto d-flex justify-content-evenly">
-        <div class=" rounded shadow col-md-2  text-light text-center bg-dark shining-effect">
-          <p class="">Top selling product</p>
-          <hr>
-          <% topProduct.forEach((element) => { %>
-            <span style="color: #e8e8e8;"><%= element.product_name+element.model %></span> <br>
-          <% }) %>
+      <div class="col-md-10 mt-5 justify-content-evenly" style="height: auto  ; width: auto; display: flex; align-items: center;">
+        <div class="shining-effect col-md-2 bg-dark text-light text-center rounded shadow">
+          <p>Total sale count </p><hr>
+          <p><%= saleCount %></p>
         </div>
-        <div class="ms-3 rounded shadow col-md-2 text-light text-center bg-dark shining-effect" >
-          <p>Top selling category</p>
-          <hr>
-          <% topCategory.forEach((element) => { %>
-          <span style="color: #e8e8e8;"><%= element.category_name %></span> <br>
-          <% }) %>
+        <div class="shining-effect col-md-2 bg-dark text-light text-center rounded shadow">
+          <p>Total sale amount </p><hr>
+          <p><%=orderAmonut %></p>
         </div>
-        <div class="ms-3 rounded shadow col-md-2 text-white text-center bg-dark shining-effect">
-          <p>Top selling model</p>
-          <hr>
-          <% topProduct.forEach((element) => { %>
-          <span style="color: #e8e8e8;" ><%=element.model %></span> <br>
-          <% }) %>
+        <div class="shining-effect col-md-2 bg-dark text-light text-center rounded shadow">
+          <p>Total discount </p><hr>
+          <p><%=discountAmonut %></p>
         </div>
       </div>
 
@@ -116,42 +117,57 @@
                 </div>
               </form>
 
-              <div class="outer-div" style="height: 325px; display: flex; justify-content: center; align-items: center;">
-                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+
+              <!-- <div class="col-md-10 mt-5" style="height: auto  ; width: auto; display: flex; justify-content: space-around; align-items: center;">
+                <div class="col-md-2 bg-dark text-light text-center rounded shadow">
+                  <p>Total sale count </p><hr>
+                </div>
+                <div class="col-md-2 bg-dark text-light text-center rounded shadow">
+                  <p>Total sale amount </p><hr>
+                </div>
+                <div class="col-md-2 bg-dark text-light text-center rounded shadow">
+                  <p>Total discount </p><hr>
+                </div>
+              </div> -->
+
+              <div class="outer-div" style="height: 500px  ; width: 1200px; display: flex; justify-content: space-around; align-items: center;">
+                <div class="d-flex bg-dark rounded shadow justify-content-center align-items-center" style="height: 100%; width: 65%;">
                   <canvas id="myChartSales"></canvas>
                 </div>
-
-                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
-                  <div>
-                    <h3>sales detail chart</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur enim officiis eaque temporibus repellat modi rem sapiente blanditiis ipsa doloribus perferendis deserunt impedit, exercitationem culpa porro voluptates earum fuga quaerat.</p>
-                  </div>
-                </div>
-              </div>
-
-
-              <div class="outer-div" style="height: 325px; display: flex; justify-content: center; align-items: center;">
-                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
-                  <div>
-                    <h3>Payment contribution</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur enim officiis eaque temporibus repellat modi rem sapiente blanditiis ipsa doloribus perferendis deserunt impedit, exercitationem culpa porro voluptates earum fuga quaerat.</p>
-                  </div>
-                </div>
-
-                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                <div class="d-flex bg-dark rounded shadow justify-content-center align-items-center" style="height: 100%; width: 32%; ">
                   <canvas id="myChartPayment"></canvas>
                 </div>
               </div>
 
-              <div class="outer-div" style="height: 325px; display: flex; justify-content: center; align-items: center;">
-                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
-                  <canvas id="myChartOrder"></canvas>
+              <div class="col-auto d-flex justify-content-evenly mt-5">
+                <div class=" rounded shadow col-md-2  text-light text-center bg-dark shining-effect">
+                  <p class="">Top selling product</p>
+                  <hr>
+                  <% topProduct.forEach((element) => { %>
+                    <span style="color: #e8e8e8;"><%= element.product_name+element.model %></span> <br>
+                  <% }) %>
                 </div>
-                <div class="d-flex justify-content-center align-items-center" style="height: 100%; width: 100%;">
-                  <div>
-                    <h3>order status</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur enim officiis eaque temporibus repellat modi rem sapiente blanditiis ipsa doloribus perferendis deserunt impedit, exercitationem culpa porro voluptates earum fuga quaerat.</p>
-                  </div>
+                <div class="ms-3 rounded shadow col-md-2 text-light text-center bg-dark shining-effect" >
+                  <p>Top selling category</p>
+                  <hr>
+                  <% topCategory.forEach((element) => { %>
+                  <span style="color: #e8e8e8;"><%= element.category_name %></span> <br>
+                  <% }) %>
+                </div>
+                <div class="ms-3 rounded shadow col-md-2 text-white text-center bg-dark shining-effect">
+                  <p>Top selling model</p>
+                  <hr>
+                  <% topProduct.forEach((element) => { %>
+                  <span style="color: #e8e8e8;" ><%=element.model %></span> <br>
+                  <% }) %>
+                </div>
+              </div>
+
+
+
+              <div class="outer-div mt-5" style="height: 500px  ; width: 1200px; display: flex; justify-content: center; align-items: center;">
+                <div class="d-flex bg-dark shadow rounded justify-content-center align-items-center" style="height: 100%; width: 100%;">
+                  <canvas id="myChartOrder"></canvas>
                 </div>
               </div>
 
@@ -200,7 +216,7 @@
           orderChartData.forEach((item) => {
             salesData.push(item.total_price);
             const createdAtDate = new Date(item.createdAt);
-            const formattedDate = `${createdAtDate.getFullYear()}-${(createdAtDate.getMonth() + 1).toString().padStart(2, '0')}-${createdAtDate.getDate().toString().padStart(2, '0')} ${createdAtDate.getHours().toString().padStart(2, '0')}:${createdAtDate.getMinutes().toString().padStart(2, '0')}:${createdAtDate.getSeconds().toString().padStart(2, '0')}`;
+            const formattedDate = `${createdAtDate.getFullYear()}-${(createdAtDate.getMonth() + 1).toString().padStart(2, '0')}-${createdAtDate.getDate().toString().padStart(2, '0')} ${createdAtDate.getHours().toString().padStart(2, '0')}:${createdAtDate.getMinutes().toString().padStart(2, '0')}`;
             salesLabels.push(formattedDate);
 
             const paymentMethod = item.payment_details.payment_method;
@@ -246,7 +262,13 @@
                 label: 'sales',
                 data: salesData,
                 backgroundColor: [
-                  // ' rgba(0, 0, 0, 0.2)',
+                  // ' rgba(0, 0, 0, 1)',
+                  // ' rgba(0, 0, 0, 1)',
+                  // ' rgba(0, 0, 0, 1)',
+                  // ' rgba(0, 0, 0, 1)',
+                  // ' rgba(0, 0, 0, 1)',
+                  // ' rgba(0, 0, 0, 1)',
+                  // ' rgba(0, 0, 0, 1)',
                   'rgba(255, 99, 132, 0.2)',
                   'rgba(255, 159, 64, 0.2)',
                   'rgba(255, 205, 86, 0.2)',
@@ -256,6 +278,13 @@
                   'rgba(201, 203, 207, 0.2)'
                 ],
                 borderColor: [
+                // ' rgba(0, 0, 0, 1)',
+                //   ' rgba(0, 0, 0, 1)',
+                //   ' rgba(0, 0, 0, 1)',
+                //   ' rgba(0, 0, 0, 1)',
+                //   ' rgba(0, 0, 0, 1)',
+                //   ' rgba(0, 0, 0, 1)',
+                //   ' rgba(0, 0, 0, 1)',
                   'rgb(255, 99, 132)',
                   'rgb(255, 159, 64)',
                   'rgb(255, 205, 86)',
@@ -285,9 +314,9 @@
                 label: 'payments',
                 data: paymentCounts,
                 backgroundColor: [
-                  'rgb(255, 99, 132)',
-                  'rgb(54, 162, 235)',
-                  'rgb(255, 205, 86)'
+                  'rgba(255, 99, 132,0.8)',
+                  'rgba(54, 162, 235,0.8)',
+                  'rgba(255, 205, 86,0.8)'
                 ],
                 hoverOffset: 4
               }]
@@ -310,22 +339,22 @@
                 data: orderCounts,
                 backgroundColor: [
                   // ' rgba(0, 0, 0, 0.2)',
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(255, 159, 64, 0.2)',
-                  'rgba(255, 205, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(201, 203, 207, 0.2)'
+                  'rgba(255, 99, 132, 0.8)',
+                  'rgba(255, 159, 64, 0.8)',
+                  'rgba(255, 205, 86, 0.8)',
+                  'rgba(75, 192, 192, 0.8)',
+                  'rgba(54, 162, 235, 0.8)',
+                  'rgba(153, 102, 255, 0.8)',
+                  'rgba(201, 203, 207, 0.8)'
                 ],
                 borderColor: [
-                  'rgb(255, 99, 132)',
-                  'rgb(255, 159, 64)',
-                  'rgb(255, 205, 86)',
-                  'rgb(75, 192, 192)',
-                  'rgb(54, 162, 235)',
-                  'rgb(153, 102, 255)',
-                  'rgb(201, 203, 207)'
+                  'rgba(255, 255, 255, 1)',
+                  'rgba(255, 255, 255, 1)',
+                  'rgba(255, 255, 255, 1)',
+                  'rgba(255, 255, 255, 1)',
+                  'rgba(255, 255, 255, 1)',
+                  'rgba(255, 255, 255, 1)',
+                  'rgba(255, 255, 255, 1)'
                 ],
                 borderWidth: 1
               }]

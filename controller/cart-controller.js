@@ -375,6 +375,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
       body("zip_code")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
     ]);
@@ -421,7 +422,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
       district: req.body.district,
       state: req.body.state,
       country: req.body.country,
-      zip_code: req.body.zip_code,
+      zip_code:req.body.zip_code, 
     };
 
     if (index !== "new") {

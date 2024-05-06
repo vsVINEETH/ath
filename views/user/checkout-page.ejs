@@ -108,11 +108,12 @@
             <div class="col-auto justify-content-between">
 
               <label for="" class="text-dark ">Select:</label>
-              <select name="address" id="address" class="rounded border-1">
+              <select name="address" id="address" class="rounded border-1" style="width: 100%;">
                 <% if (user.address.length == 0) { %>
                   <option value="new" name="address">-Add new address-</option>
                 <% } else {%>
-                <option value="new" name="address" style="width: 20px;">Select an address</option>
+                <option value="new" name="address">Select an address</option>
+                <option value="new" name="address">-Add new address-</option>
                 <% }%>
                 <!-- in get this index and find const selectedAddressIndex = req.body.addressIndex; const selectedAddressId = user.address[selectedAddressIndex]._id; try it -->
                 <% user.address.forEach((element,index) => { %>
@@ -335,7 +336,9 @@
         const zipCodeError = document.getElementById('zip_codeError');
         if (zipCodeInput.value.trim() === '') {
             zipCodeError.textContent = 'Zip code is required';
-        } else {
+        } else if(isNaN(zipCodeInput.value)) {
+           zipCodeError.textContent = 'Enter proper zip code';
+        }else{
             zipCodeError.textContent = '';
         }
 

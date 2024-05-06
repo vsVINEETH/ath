@@ -13,7 +13,7 @@ require("dotenv").config();
 const login = (req, res) => {
   try {
     if (req.session.admin) {
-      return res.status(200).render("admin/dashboard");
+      return res.status(200).redirect("/admin/admin_dashboard");
     } else {
       return res.status(200).render("admin/login", { mes: "" });
     }
@@ -49,7 +49,6 @@ const dashboard = async (req, res) => {
   try {
     if (req.session.admin) {
       const orderData = await orderModel.find();
-      console.log(orderData, "ooooo");
 
       const result = await orderModel.aggregate([
         { $unwind: "$items" },
@@ -509,6 +508,7 @@ const productAddPost = async (req, res) => {
       body("price")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
       body("colour")
@@ -519,6 +519,7 @@ const productAddPost = async (req, res) => {
       body("quantity")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
       body("description")
@@ -641,6 +642,7 @@ const productEditIn = async (req, res) => {
       body("price")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
       body("colour")
@@ -651,6 +653,7 @@ const productEditIn = async (req, res) => {
       body("quantity")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
       body("category")

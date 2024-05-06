@@ -47,6 +47,7 @@ const couponAddPost = async (req, res) => {
       body("discount_percentage")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
       body("coupon_name")
@@ -62,6 +63,7 @@ const couponAddPost = async (req, res) => {
       body("minimum_amount")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
     ]);

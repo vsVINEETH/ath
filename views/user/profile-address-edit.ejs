@@ -89,12 +89,14 @@ ul{
                             <!-- Form Group (first name)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="inputFirstName">Street</label>
-                                <input class="form-control" id="inputFirstName" type="text" name="street" placeholder="Enter your first name" value="<%= user.address[index].street %>" required>
+                                <input class="form-control" id="street" type="text" name="street" placeholder="Enter your first name" value="<%= user.address[index].street %>" required>
+                                <div id="streetError" class="text-start text-danger"></div>
                             </div>
                             <!-- Form Group (last name)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="inputLastName">City</label>
-                                <input class="form-control" id="inputLastName" type="text" name="city" placeholder="Enter your last name" value="<%= user.address[index].city %>" required>
+                                <input class="form-control" id="city" type="text" name="city" placeholder="Enter your last name" value="<%= user.address[index].city %>" required>
+                                <div id="cityError" class="text-start text-danger"></div>
                             </div>
                         </div>
                         <!-- Form Row        -->
@@ -102,12 +104,14 @@ ul{
                             <!-- Form Group (organization name)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="inputOrgName">District</label>
-                                <input class="form-control" id="inputOrgName" type="text" name="district" placeholder="Enter your organization name" value="<%= user.address[index].district %>" required>
+                                <input class="form-control" id="district" type="text" name="district" placeholder="Enter your organization name" value="<%= user.address[index].district %>" required>
+                                <div id="districtError" class="text-start text-danger"></div>
                             </div>
                             <!-- Form Group (location)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="inputLocation">State</label>
-                                <input class="form-control" id="inputLocation" type="text" name="state" placeholder="Enter your location" value="<%= user.address[index].state %>" required>
+                                <input class="form-control" id="state" type="text" name="state" placeholder="Enter your location" value="<%= user.address[index].state %>" required>
+                                <div id="stateError" class="text-start text-danger"></div>
                             </div>
                         </div>
 
@@ -115,16 +119,18 @@ ul{
                             <!-- Form Group (phone number)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="inputPhone">Country</label>
-                                <input class="form-control" id="inputPhone" type="text" name="country" placeholder="Enter your phone number" value="<%= user.address[index].country %>" required>
+                                <input class="form-control" id="country" type="text" name="country" placeholder="Enter your phone number" value="<%= user.address[index].country %>" required>
+                                <div id="countryError" class="text-start text-danger"></div>
                             </div>
                             <!-- Form Group (birthday)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="inputBirthday">Zip code</label>
-                                <input class="form-control" id="inputBirthday" type="text" name="zip_code" placeholder="Enter your zip code" value="<%= user.address[index].zip_code %>" required>
+                                <input class="form-control" id="zip_code" type="text" name="zip_code" placeholder="Enter your zip code" value="<%= user.address[index].zip_code %>" required>
+                                <div id="zip_codeError" class="text-start text-danger"></div>
                             </div>
                         </div>
                         <!-- Save changes button-->
-                        <button class="btn btn-dark" type="submit">Edit address</button>
+                        <button class="btn btn-dark" type="button" onclick="formValidate()">Edit address</button>
                         <a href="/user_profile_address">
                             <button class="btn btn-2 btn-dark" type="button">Go back</button>
                         </a>
@@ -134,5 +140,67 @@ ul{
         </div>
     </div>
 </div>
+
+<script>
+    function formValidate(){
+    var street = document.getElementById('street').value.trim()
+    var city = document.getElementById('city').value.trim();
+    var district = document.getElementById('district').value.trim();
+    var state = document.getElementById('state').value.trim();
+    var country = document.getElementById('country').value.trim();
+    var zip_code = document.getElementById('zip_code').value.trim();
+
+    var streetError = document.getElementById('streetError');
+    var cityError = document.getElementById('cityError');
+    var districtError = document.getElementById('districtError');
+    var stateError = document.getElementById('stateError');
+    var countryError = document.getElementById('countryError');
+    var zip_codeError = document.getElementById('zip_codeError');
+
+     streetError.textContent = '';
+     cityError.textContent = '';
+     districtError.textContent = '';
+     stateError.textContent = '';
+     countryError.textContent = '';
+     zip_codeError.textContent = '';
+
+
+     if(street === ""){
+        streetError.textContent = 'This form is required';
+        return
+     }
+
+     if(city === ""){
+        cityError.textContent = 'This form is required';
+     }
+
+     if(district === ""){
+        districtError.textContent = 'This form is required';
+        return
+     }
+
+     if(state === ""){
+        stateError.textContent = 'This form is required';
+        return
+     }
+
+     if(country === ""){
+        countryError.textContent = 'This form is required';
+        return
+     }
+
+     if(isNaN(zip_code)){
+        zip_codeError.textContent = 'Enter a valid code';
+        return
+
+     }else if(zip_code === ''){
+        zip_codeError.textContent = 'This form is required';
+        return
+     }
+
+     document.getElementById("addAddressForm").submit();
+}
+
+</script>
 
 <%- include('footer') %>

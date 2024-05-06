@@ -43,18 +43,20 @@
           </div>
       </div>
 
-        <form action="/admin/add_product" method="post" enctype="multipart/form-data">
+        <form id="addProductForm" action="/admin/add_product" method="post" enctype="multipart/form-data">
             <div class="row form-group mb-2">
                 <div class="col text-start fw-bold">
                     <label for="product_name">Product Name</label>
                     <input type="text" class="form-control form-control-md mt-2" id="product_name" name="product_name" value="" placeholder="Enter product name" required>
+                    <div id="product_nameError"></div>
                     <% if (errors && errors.product_name) { %>
-                        <span class="text-danger"><%= errors.product_name.msg %></span>
+                        <span class="text-danger" class=" text-danger"><%= errors.product_name.msg %></span>
                     <% } %>  
                 </div>
                 <div class="col text-start fw-bold">
                     <label for="model"  >Model</label>
                     <input type="text" class="form-control form-control-md mt-2" id="model" name="model" value="" placeholder="Enter product model" required>
+                    <div id="modelError" class=" text-danger"></div>
                     <% if (errors && errors.model) { %>
                         <span class="text-danger"><%= errors.model.msg %></span>
                     <% } %> 
@@ -65,6 +67,7 @@
                 <div class="col text-start fw-bold">
                     <label for="price"  >Price</label>
                     <input type="text" class="form-control form-control-md mt-2" id="price" name="price" value="" placeholder="Enter product price" required>
+                    <div id="priceError" class=" text-danger"></div>
                     <% if (errors && errors.price) { %>
                         <span class="text-danger"><%= errors.price.msg %></span>
                     <% } %> 
@@ -90,6 +93,7 @@
                   <% if (errors && errors.colour) { %>
                     <span class="text-danger"><%= errors.colour.msg %></span>
                 <% } %> 
+                <div id="colourError" class=" text-danger"></div>
               </div>              
             </div>
 
@@ -97,8 +101,9 @@
                 <div class="col text-start fw-bold">
                     <label for="quantity"  >Quantity</label>
                     <input type="text" class="form-control form-control-md mt-2" id="quantity" name="quantity" value="" placeholder="Enter product quantity" required>
+                    <div id="quantityError" class="text-danger"></div>
                     <% if (errors && errors.quantity) { %>
-                        <span class="text-danger"><%= errors.quantity.msg %></span>
+                        <span class="text-danger" ><%= errors.quantity.msg %></span>
                     <% } %> 
                 </div>
                 <div class="col text-start fw-bold">
@@ -112,6 +117,7 @@
                       <% if (errors && errors.category) { %>
                         <span class="text-danger"><%= errors.category.msg %></span>
                     <% } %> 
+                    <!-- <div id="categoryError"></div> -->
                 </div>
               
                 <div class="row form-group mb-2">
@@ -120,7 +126,8 @@
                         <input type="text" class="form-control form-control-md" id="description" name="description" value="" placeholder="Enter product description" required>
                         <% if (errors && errors.description) { %>
                             <span class="text-danger"><%= errors.description.msg %></span>
-                        <% } %>   
+                        <% } %> 
+                        <div id="descriptionError" class="text-danger"></div>  
                     </div>
                 </div>
 
@@ -129,7 +136,7 @@
                         <label for="fileUploader" class="mt-2" >Images &emsp;<span class="text-danger"><%= typeof mes != 'undefined' ? mes : "" %></span></label>
                         <input type="file" id="fileUploader" class="form-control form-control-md mt-2" data-image-preview="#imagePreview" name="image" value="" accept=".jpg,.png,.jpeg" multiple  required>
                         <div id="imagePreview" class="mt-2"></div>
-                        <button type="submit" class="btn btn-outline-dark mt-4">submit</button>
+                        <button type="button" class="btn btn-outline-dark mt-4" onclick="formValidate()">submit</button>
                     </div>
                 </div>
             </div>
@@ -140,4 +147,97 @@
 </div>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js'></script>
 <script src="/js/crop.js"></script>
+
+<script>
+function formValidate(){
+   var productName = document.getElementById('product_name').value.trim();
+   console.log(productName)
+  var model = document.getElementById('model').value.trim();
+  console.log(model)
+  var price = document.getElementById('price').value.trim();
+  console.log(price)
+  var quantity = document.getElementById('quantity').value.trim();
+  console.log(quantity)
+  var description = document.getElementById('description').value.trim();
+  console.log(description)
+  var colour = document.getElementById('colour').value.trim();
+  console.log(colour)
+
+  //some issue because category is an objectId
+  // var category = document.getElementById('category').value.trim();
+  // console.log(category)//it showing refference error
+
+  console.log(productName,model,price,quantity,description,colour)
+
+  var productNameError = document.getElementById('product_nameError');
+  var modelError = document.getElementById('modelError');
+  var priceError = document.getElementById('priceError');
+  var quantityError = document.getElementById('quantityError');
+  var descriptionError = document.getElementById('descriptionError');
+  var colourError = document.getElementById('colourError');
+  // var categoryError = document.getElementById('categoryError');
+
+  // Reset error messages
+  productNameError.textContent = '';
+  modelError.textContent = '';
+  priceError.textContent = '';
+  quantityError.textContent = '';
+  descriptionError.textContent = '';
+  colourError.textContent = '';
+
+  if (productName.trim() === '') {
+    productNameError.textContent = 'This field is required';
+    return;
+  }
+
+  if (model === '') {
+    modelError.textContent = 'This field is required';
+    return;
+  }
+  if (price === '') {
+    priceError.textContent = 'This field is required';
+    return;
+  }
+
+  if (isNaN(price)){
+    priceError.textContent = 'Enter a valid value';
+    return;
+  }else if(price <= 0){
+    priceError.textContent = 'Enter a value above 0 ';
+    return
+  }
+
+  if (quantity === '') {
+    quantityError.textContent = 'This field is required';
+    return;
+  }
+  if (isNaN(quantity)){
+    quantityError.textContent = 'Enter a valid value';
+    return;
+  }else if(quantity <= 0 ){
+    quantityError.textContent = 'Enter a value above 0 ';
+    return;
+  }
+
+ 
+  if (description === '') {
+    descriptionError.textContent = 'This field is required';
+    return;
+  }
+
+  if (colour === '' || colour === 'select') {
+      colourError.textContent = 'Please select a color';
+      return;
+  }
+
+  if (colour.trim()  === '') {
+    colourError.textContent = 'This field is required';
+    return;
+  }
+
+
+  document.getElementById('addProductForm').submit();
+}
+
+</script>
 <%- include('footer.ejs') %>

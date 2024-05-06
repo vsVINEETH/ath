@@ -578,6 +578,7 @@ const userProfileUpdate = async (req, res) => {
         .run(req),
       body("phone_number")
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
     ]);
@@ -673,6 +674,7 @@ const userProfileAddressAdd = async (req, res) => {
       body("zip_code")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
     ]);
@@ -777,6 +779,7 @@ const userProfileAddressEditIn = async (req, res) => {
       body("zip_code")
         .trim()
         .notEmpty()
+        .isNumeric()
         .withMessage("This field is required")
         .run(req),
     ]);
