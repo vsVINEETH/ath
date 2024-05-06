@@ -1,5 +1,5 @@
 // Timer functionality
-let timer = 10;
+let timer = 60;
 const resendTimer = document.getElementById('resendTimer');
 const timerElement = document.getElementById('timer');
 const resendLink = document.getElementById('resendLink');

@@ -34,6 +34,7 @@ const loginpost = (req, res) => {
       admin_password === req.body.password
     ) {
       req.session.admin = req.body.email;
+      console.log(req.session.admin)
       return res.status(200).redirect("/admin/admin_dashboard");
     } else {
       return res.render("admin/login", { mes: "Invalid username or password" });

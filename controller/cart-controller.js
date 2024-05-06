@@ -511,6 +511,7 @@ const placeOrderCheckout = async (req, res) => {
     };
 
     const items = cartData.items.map((item) => ({
+      order_price:item.product.price,
       product: item.product._id,
       quantity: item.quantity,
       total: item.total,

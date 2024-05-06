@@ -463,22 +463,23 @@ const landing = async (req, res) => {
 
 const home = async (req, res) => {
   try {
-    
+    const categoryData = await categoryModel.find({is_listed:true});
+    const categoryIds = categoryData.map(category => category._id);
+
     const page = parseInt(req.query.page) || 1;
     const limit =  2;
-    const totalProduct = await productModel.countDocuments();
+    let totalProduct = await productModel.find({is_listed:true,category: { $in: categoryIds }}).countDocuments();
     const totalPage = Math.ceil(totalProduct / limit);
     const nextPage = page < totalPage ? page + 1 : null;
 
     const user = await userModel.findOne({ email: req.session.user });
 
     const productData = await productModel
-    .find({})
+    .find({is_listed:true,category: { $in: categoryIds }})
     .skip((page - 1) * limit)
     .limit(limit)
     .populate("category")
 
-    const categoryData = await categoryModel.find({});
     const wishListData = await wishListModel.find({user: user._id}).populate("items")
     console.log(wishListData)
     req.session.old_query = false
