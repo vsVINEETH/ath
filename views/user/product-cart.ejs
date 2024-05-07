@@ -71,11 +71,15 @@
               <table class="table table-striped table  justify-content-center ">
                 <thead class="text-center">
                   <tr>
-                    <th scope="col" class="">Product Name</th>
-                    <th scope="col" class="">Price</th>
-                    <th scope="col" class="">Total price</th>
                     <th scope="col" class="">Image</th>
+                    <th scope="col" class="">Product Name</th>
                     <th scope="col" class="">Quantity</th>
+                    <th scope="col" class="">Price</th>
+                    
+                    <th scope="col" class="">Discount</th>
+                    <th scope="col" class="">Total price</th>
+                    
+                    
                     <% if (cartData[0].applied_coupon === false) { %>
                     <th scope="col" class="">Action</th>
                     <% } %>
@@ -85,12 +89,10 @@
                   <% cartData.forEach((cartItem) => { %>
                   <% cartItem.items.forEach((item, index) => { %>
                   <tr class="align-middle text-center">
-                    <td class=""><%= item.product.product_name + " " + item.product.model %></td>
-                    <td class=""><%= item.product.price %></td>
-                    <td class="" id="totalEachAmountProduct<%= index %>"><%= item.total %></td>
                     <td class="">
                       <img src="/uploads/<%= item.product.image[0] %>" alt="Product Image" style="width: 100px; height: 100px;">
                     </td>
+                    <td class=""><%= item.product.product_name + " " + item.product.model %></td>
                     <td class="scroll-box">
                       <div class="">
                         <% if (cartData[0].applied_coupon === false) { %>
@@ -109,6 +111,12 @@
                         <% } %>
                       </div>
                     </td>
+                    <td class=""><%= item.product.price %></td> 
+                    <td class=""><%= item.each_discount %></td>              
+                    <td class="" id="totalEachAmountProduct<%= index %>"><%= item.total %></td>
+                    
+                    
+                    
                     <td class="">
                       <% if (cartData[0].applied_coupon === false) { %>
                       <!-- <a href="/product_cart_delete/<%= item.product._id %>"> -->
@@ -205,9 +213,10 @@
           <% } %>
           <hr>
           <p class="fw-bold">Cart summary detail</p>
-          <p class="text-start">Total purchase amount: <span class="text-end" id="totalAmount"><%= cartData[0].total_price %></span></p>
-          <p class="text-start">Total purchase quantity: <span class="text-end"><%= cartData[0].total_quantity %></span></p>
-          <p class="text-start">Total Shipping amount: <span class="text-end">Free</span></p>
+          <p class="text-start">Discounted amount: <span class="text-end" id="totalAmount"><%= cartData[0].discount_amount %></span></p>
+          <p class="text-start">purchase amount: <span class="text-end" id="totalAmount"><%= cartData[0].total_price %></span></p>
+          <p class="text-start">purchase quantity: <span class="text-end"><%= cartData[0].total_quantity %></span></p>
+          <p class="text-start">Shipping amount: <span class="text-end">Free</span></p>
           <hr>
           <div class="col-sm-8  justify-content-center">
             <a href="/checkout/<%= cartData[0]._id %>"><button class="btn btn-dark btn-md">Checkout</button></a>
