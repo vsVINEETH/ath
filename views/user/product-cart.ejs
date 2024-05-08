@@ -62,7 +62,7 @@
       <% if (productCount > 0) { %>
       <% totalPrice = cartData[0].total_price; %>
       <div class="card mb-4">
-        <div class="card-header">Cart total &#8377;<span id="totalAmountHead"><%= cartData[0].total_price %></span> &emsp; Cart quantity <%= cartData[0].total_quantity %></div>
+        <div class="card-header">Cart total &#8377;<span id="totalAmountHead"><%= cartData[0].total_price %></span> &emsp; Cart quantity <span id="totalQuantityHead" ><%= cartData[0].total_quantity %></span> </div>
         <div class="card-body">
 
           <div class="row mb-3">
@@ -93,27 +93,18 @@
                     <td class="scroll-box">
                       <div class="">
                         <% if (cartData[0].applied_coupon === false || cartData[0].applied_coupon === true) { %>
-
-                        <a href="/product_cart_update/<%= item.product._id %>?quantityChange=-1">
-                          <button id="decrementer" class="btn btn-dark btn-sm ms-1 " style="height:30px ; width: 25px;">-</button>
-                        </a>
+                          <button id="decrementer_<%= index %>_<%= item.product._id %>" class="btn btn-dark btn-sm ms-1 " style="height:30px ; width: 25px;" onclick="cartQuantity('<%=item.product._id%>','<%= -1 %>','<%= index %>')">-</button>
                         <% } %>
 
-                        <%= item.quantity %>
+                        <span id="itemQuantity_<%=index %>_<%= item.product._id %>"><%= item.quantity %></span>
 
                         <% if (cartData[0].applied_coupon === false || cartData[0].applied_coupon === true) { %>
-                        <a href="/product_cart_update/<%= item.product._id %>?quantityChange=1">
-                          <button id="incrementer" class="btn btn-dark btn-sm me-1  align-items-center justify-content-center" style="height:30px ; width: 25px;">+</button>
-                        </a>
+                          <button id="incrementer_<%= index %>_<%= item.product._id %>" class="btn btn-dark btn-sm me-1  align-items-center justify-content-center" style="height:30px ; width: 25px;" onclick="cartQuantity('<%=item.product._id%>','<%= 1 %>','<%= index %>')">+</button>
                         <% } %>
                       </div>
                     </td>
-                    
-                    <td class=""><%= item.each_discount %></td>              
-                    <td class="" id="totalEachAmountProduct<%= index %>"><%= item.total %></td>
-                    
-                    
-                    
+                    <td class=""> <span id="eachDiscount_<%= index %>_<%= item.product._id %>"><%= item.each_discount %></span></td>              
+                    <td class="" id="eachTotal_<%= index %>_<%= item.product._id %>"><%= item.total %></td>           
                     <td class="">
                                          
                         <button class="btn cat-btn btn-sm btn-dark remove-btn">Remove</button>
@@ -182,7 +173,6 @@
               </select>
               <% } else if(cartData[0].applied_coupon === true) { %>
               <select name="orderStatus" class="order_status rounded col-sm-6 text-center" style="border-color: rgb(20, 220, 20); border-width: 2px;">
-                
                 <% couponData.forEach((element, index) => { %>
                   <% if ( cartData[0].coupon_id == element._id.toString()) { %>
                     <option selected disabled><%=element.coupon_code%></option>
@@ -207,9 +197,9 @@
           </form>
           <hr>
           <p class="fw-bold">Cart summary detail</p>
-          <p class="text-start">Discounted amount: <span class="text-end" id="totalAmount"><%= cartData[0].discount_amount %></span></p>
+          <p class="text-start">Discounted amount: <span class="text-end" id="totalDiscount"><%= cartData[0].discount_amount %></span></p>
           <p class="text-start">purchase amount: <span class="text-end" id="totalAmount"><%= cartData[0].total_price %></span></p>
-          <p class="text-start">purchase quantity: <span class="text-end"><%= cartData[0].total_quantity %></span></p>
+          <p class="text-start">purchase quantity: <span class="text-end" id="totalQuantity"><%= cartData[0].total_quantity %></span></p>
           <p class="text-start">Shipping amount: <span class="text-end">Free</span></p>
           <hr>
           <div class="col-sm-8  justify-content-center">
@@ -226,6 +216,94 @@
 
 
 <script> 
+
+async function cartQuantity(productId, quantityType, index){
+
+  console.log((quantityType*1))
+  const response = await fetch(`/product_cart_update/${productId}?quantityChange=${quantityType*1}`, {
+        method: 'GET',
+      });
+
+      if (response.ok) {
+
+        const updatedCartItem = await response.json(); 
+
+        updatedCartItem.cartData.forEach((item) =>  {
+
+          item.items.forEach((element) => {
+
+            if(element.product._id.toString() === productId.toString()){
+            console.log(element.product._id)// this product id should update
+
+            const totalAmountElement = document.getElementById('totalAmount');
+            totalAmountElement.textContent = item.total_price;
+
+            const totalDiscountElement = document.getElementById('totalDiscount');
+            totalDiscountElement.textContent = item.discount_amount;
+
+            const totalQuantityElement = document.getElementById('totalQuantity');
+            totalQuantityElement.textContent = item.total_quantity;
+
+            const totalAmountHeadElement = document.getElementById('totalAmountHead');
+            totalAmountHeadElement.textContent = item.total_price;
+
+            const totalQuantityHeadElement = document.getElementById('totalQuantityHead');
+            totalQuantityHeadElement.textContent = item.total_quantity;
+
+            const eachDiscountElement = document.getElementById(`eachDiscount_${index}_${productId}`);
+            eachDiscountElement.textContent = element.each_discount;
+
+            const eachTotalElement = document.getElementById(`eachTotal_${index}_${productId}`);
+            eachTotalElement.textContent = element.total;
+
+            const itemQuantityElement = document.getElementById(`itemQuantity_${index}_${productId}`);
+            console.log(index,productId);
+            itemQuantityElement.textContent = element.quantity; 
+            }
+            
+          })
+          
+        })
+
+      } else {
+
+        const productLimit = await response.json();
+
+        if (productLimit.productLimit === true) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertElement = document.createElement('div');
+        alertElement.className = 'alert alert-warning alert-dismissible'; // Add Bootstrap classes
+        alertElement.setAttribute('role', 'alert');
+        alertElement.style.opacity = '0'; // Set initial opacity to 0
+
+    // Create the content for the alert
+    alertElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        "You have reached the limit for this product, either minimum or maximum."
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    // Append the alert to the container
+    alertContainer.appendChild(alertElement);
+    alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Fade in the alert
+    let opacity = 0;
+    const fadeInInterval = setInterval(() => {
+        opacity += 0.1; // Increase opacity gradually
+        alertElement.style.opacity = `${opacity}`; // Set the new opacity
+        if (opacity >= 1) {
+            clearInterval(fadeInInterval); // Stop increasing opacity when it reaches 1
+        }
+      }, 50); // Adjust the interval for smoothness
+   }
+
+       console.error('Failed to update quantity');
+    }
+}
+
+
 
 document.addEventListener("DOMContentLoaded", function() {
     var removeButtons = document.querySelectorAll('.remove-btn');
@@ -244,12 +322,13 @@ const outStockCheck = urlParams.get('stockAvailable')
 const productLimit = urlParams.get('productLimit');
 
 // Check if productLimit is true, then show the alert
+
 if (productLimit === 'true') {
-    const alertContainer = document.getElementById('alertContainer');
-    const alertElement = document.createElement('div');
-    alertElement.className = 'alert alert-warning alert-dismissible'; // Add Bootstrap classes
-    alertElement.setAttribute('role', 'alert');
-    alertElement.style.opacity = '0'; // Set initial opacity to 0
+        const alertContainer = document.getElementById('alertContainer');
+        const alertElement = document.createElement('div');
+        alertElement.className = 'alert alert-warning alert-dismissible'; // Add Bootstrap classes
+        alertElement.setAttribute('role', 'alert');
+        alertElement.style.opacity = '0'; // Set initial opacity to 0
 
     // Create the content for the alert
     alertElement.innerHTML = `

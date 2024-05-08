@@ -351,28 +351,34 @@ const productQuantityUpdate = async (req, res) => {
               { new: true }
             );
             break; // Exit inner loop after updating the matching product
+
           } else {
             let productLimit = true;
-            return res.redirect("/product_cart?productLimit=" + productLimit);
+            return res.status(400).json({productLimit:productLimit});
           }
         }
       }
     }
 
     const cartData = await cartModel
-      .find({ user: user._id })
+      .find({ user: user._id ,"items.product":productId})
       .populate("items.product");
     console.log(cartData);
 
     if (cartData) {
       const couponData = await couponModel.find({});
-      return res.render("user/product-cart", {
-        errors: null,
-        home: true,
-        mes: "",
-        cartData: cartData || [],
-        couponData,
-      });
+      let updatedCartData = {
+        cartData : cartData || [],
+        couponData: couponData || []
+      }
+      res.json(updatedCartData);
+      // return res.render("user/product-cart", {
+      //   errors: null,
+      //   home: true,
+      //   mes: "",
+      //   cartData: cartData || [],
+      //   couponData,
+      // });
     } else {
       return res.redirect("/home");
     }
