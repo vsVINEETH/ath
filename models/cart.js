@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { strike } = require("pdfkit");
 mongoose
   .connect(process.env.DATA_BASE_KEY)
   .then((con) => {
@@ -34,6 +35,10 @@ const cartSchema = new mongoose.Schema({
       },
     },
   ],
+  coupon_id:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:"coupon"
+  },
   applied_coupon: {
     type: Boolean,
     default: false,

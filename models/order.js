@@ -24,6 +24,9 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 1,
       },
+      order_price:{
+        type: Number,
+      },
       total: {
         type: Number,
         

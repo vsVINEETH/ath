@@ -17,12 +17,14 @@ const productCart = async (req, res) => {
   try {
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
-    const couponData = await couponModel.find({});
+    const couponData = await couponModel.find({status:"active"});
 
     const cartData = await cartModel
       .find({ user: user._id })
       .populate("items.product");
+
     console.log(cartData);
+
     if (cartData) {
       return res.render("user/product-cart", {
         errors: null,
@@ -46,17 +48,13 @@ const productCartAdd = async (req, res) => {
     const productData = await productModel.findById(productId);
 
     const cartItems = await cartModel
-      .find({
-        user: user._id,
-        "items.product": productId,
-      })
+      .find({ user: user._id, "items.product": productId,})
       .populate("items.product");
 
     let total = productData.price * 1 || 0; //in this here we need to implement logic of incrementing  product
     let productCount = 0;
     let limit = false;
     let productQuantity = 1;
-
     cartItems.forEach((cartItem) => {
       cartItem.items.forEach((item) => {
         if (item.product._id.toString() === productId.toString()) {
@@ -70,8 +68,8 @@ const productCartAdd = async (req, res) => {
       });
     });
 
+    if (productCount === 0 && productData.quantity > 0) {
 
-    if (productCount === 0 && productData.quantity > 0 && ( cartItems[0]?.applied_coupon == false || cartItems[0]?.applied_coupon == undefined) ) {
       await cartModel.findOneAndUpdate(
         { user: user._id },
         {
@@ -90,14 +88,131 @@ const productCartAdd = async (req, res) => {
         { upsert: true, new: true }
       );
 
+    const cartData = await cartModel
+    .find({ user: user._id })
+    .populate("items.product");
+
+      if(cartData !== null && cartData !== undefined && cartData[0]?.applied_coupon == true ){
+
+      for (const cartItem of cartData) {
+        for (const item of cartItem.items) {
+
+          console.log(item.product._id,productId)
+          if (item.product._id == productId) {
+
+            let productPrice = item.product.price;
+            let eachDiscount = item.each_discount;
+            let itemTotal = item.total
+            let discountPercentage = cartItem.discount_percentage;
+            let newTotalPrice = 0;
+            let newCartTotal = 0;
+            let newDiscountAmount = 0;
+
+            if(discountPercentage !== 0){
+              let newTotal = Math.round(productPrice * 1)
+
+              eachDiscount = Math.round(newTotal * discountPercentage)
+
+              newDiscountAmount = Math.round(eachDiscount / 1)
+
+              newTotalPrice = newTotal - eachDiscount;
+              console.log(itemTotal,newTotal,newTotalPrice)
+
+              newCartTotal = Math.round(newTotalPrice - itemTotal)
+
+            }else{
+              newTotalPrice = productPrice;
+              newCartTotal = productPrice;
+            }
+            await cartModel.updateOne(
+              { _id: cartItem._id, "items._id": item._id },
+              {
+                $set:{
+                  "items.$.total": newTotalPrice,
+                  "items.$.each_discount": eachDiscount
+                },
+                $inc: {
+                   total_price: newCartTotal,
+                   discount_amount: newDiscountAmount,
+                },
+              },
+              { upsert: true, new: true }
+            );
+
+            break;
+
+          }
+        }
+      }
       return res.redirect("/product_cart");
-    } else if (
-      productCount !== 0 &&
-      !limit &&
-      productData.quantity > 0 &&
-      productQuantity <= productData.quantity && 
-      ( cartItems[0]?.applied_coupon == false || cartItems[0]?.applied_coupon == undefined) 
-    ) {
+    }
+
+      return res.redirect("/product_cart");
+
+    } else if (productCount !== 0 && !limit && productData.quantity > 0 && productQuantity <= productData.quantity) {
+
+      const cartData = await cartModel
+      .find({ user: user._id })
+      .populate("items.product");
+  
+      if(cartData[0]?.applied_coupon == true ){
+
+      for (const cartItem of cartData) {
+        for (const item of cartItem.items) {
+          if (item.product._id.toString() === productId) {
+
+            let productPrice = item.product.price;
+            let productCartCount = item.quantity;
+            let eachDiscount = item.each_discount;
+            let discountPercentage = cartItem.discount_percentage;
+            let newTotalPrice = 0;
+            let newCartTotal = 0;
+            let newDiscountAmount = 0;
+
+            if(discountPercentage !== 0){
+
+              let newTotal = Math.round(productPrice * (productCartCount+1))
+
+              eachDiscount = Math.round(newTotal * discountPercentage)
+              
+              newDiscountAmount = Math.round(eachDiscount /(productCartCount+1) )
+
+              newTotalPrice = newTotal - eachDiscount;
+
+              newCartTotal = Math.round(newTotalPrice / (productCartCount+1))
+
+            }else{
+              newTotalPrice = productPrice;
+              newCartTotal = productPrice;
+            }
+
+            await cartModel.updateOne(
+              { _id: cartItem._id, "items._id": item._id },
+              {
+                $inc: {
+                  "items.$.quantity": 1,
+                   total_price: newCartTotal,
+                   discount_amount: newDiscountAmount,
+                   total_quantity: 1,
+
+                },
+                $set:{
+                  "items.$.total": newTotalPrice,
+                  "items.$.each_discount": eachDiscount
+                }
+              },
+              { new: true }
+            );
+            console.log('working')
+            break;
+
+          }
+        }
+      }
+
+      return res.redirect("/product_cart");
+    }
+
       await cartModel.findOneAndUpdate(
         { user: user._id, "items.product": productId },
         {
@@ -139,42 +254,99 @@ const productQuantityUpdate = async (req, res) => {
     for (const cartItem of cartItems) {
       for (const item of cartItem.items) {
         if (item.product._id.toString() === productId) {
-          const productPrice = item.product.price;
-          const productCount = item.product.quantity;
-          const currentQuantity = item.quantity;
+          let productPrice = item.product.price;
+          let productCartCount = item.quantity;
+          let productCount = item.product.quantity;
+          let currentQuantity = item.quantity;
+          let eachDiscount = item.each_discount;
+          let discountPercentage = cartItem.discount_percentage;
 
           if (quantityChange < 0 && currentQuantity > 1 && productCount >= 1) {
-            console.log(cartItem._id, "hello");
-            console.log(item.product._id, "hello2");
-            console.log(item._id, "hello3");
+
+            let newTotalPrice = 0;
+            let newCartTotal = 0;
+            let newDiscountAmount = 0;
+            if(discountPercentage !== 0){
+
+              let newTotal = Math.round(productPrice * (productCartCount-1))
+              console.log(newTotal)
+
+              eachDiscount = Math.round(newTotal * discountPercentage)
+              console.log(eachDiscount)
+              
+              newDiscountAmount = Math.round(eachDiscount /(productCartCount-1) )
+              console.log(newDiscountAmount)
+
+              newTotalPrice = newTotal - eachDiscount;
+              console.log(newTotalPrice)
+              newCartTotal = Math.round(newTotalPrice / (productCartCount-1))
+
+            }else{
+              newTotalPrice = productPrice;
+              newCartTotal = productPrice;
+            }
+
             await cartModel.updateOne(
               { _id: cartItem._id, "items._id": item._id },
               {
                 $inc: {
                   "items.$.quantity": quantityChange,
-                  "items.$.total": -productPrice,
-                  total_price: -productPrice,
+                  total_price: -newCartTotal,
+                  discount_amount: -newDiscountAmount,
                   total_quantity: quantityChange,
+                  
                 },
+                $set:{
+                  "items.$.total": newTotalPrice,
+                  "items.$.each_discount": eachDiscount
+                }
               },
               { new: true }
             );
             break; // Exit inner loop after updating the matching product
+
           } else if (
             quantityChange > 0 &&
             currentQuantity <= 4 &&
             productCount >= 1 &&
             currentQuantity < productCount
           ) {
+
+            let newTotalPrice = 0;
+            let newCartTotal = 0;
+            let newDiscountAmount = 0;
+            if(discountPercentage !== 0){
+
+              let newTotal = Math.round(productPrice * (productCartCount+1))
+              console.log(newTotal)
+
+              eachDiscount = Math.round(newTotal * discountPercentage)
+              console.log(eachDiscount)
+
+              newDiscountAmount = Math.round(eachDiscount /(productCartCount+1) )
+              console.log(newDiscountAmount)
+
+              newTotalPrice = newTotal - eachDiscount;
+              newCartTotal = Math.round(newTotalPrice / (productCartCount+1))
+            }else{
+              newTotalPrice = productPrice;
+              newCartTotal = productPrice;
+            }
+          
             await cartModel.updateOne(
               { _id: cartItem._id, "items._id": item._id },
               {
                 $inc: {
                   "items.$.quantity": quantityChange,
-                  "items.$.total": productPrice,
-                  total_price: productPrice,
+                   total_price: newCartTotal,
+                   discount_amount: newDiscountAmount,
                   total_quantity: quantityChange,
+
                 },
+                $set:{
+                  "items.$.total": newTotalPrice,
+                  "items.$.each_discount": eachDiscount
+                }
               },
               { new: true }
             );
@@ -227,6 +399,7 @@ const productCartRemove = async (req, res) => {
 
     let productTotalPrice = 0;
     let productQuantity = 0;
+    let totalDiscount = 0;
     let cartId = null;
     let itemslength = null;
     cartItems.forEach((cartItem) => {
@@ -234,25 +407,27 @@ const productCartRemove = async (req, res) => {
       itemslength = cartItem.items.length;
       cartItem.items.forEach((item) => {
         if (item.product._id.toString() === productId.toString()) {
-          productTotalPrice = item.product.price * item.quantity;
+          productTotalPrice = item.total//item.product.price * item.quantity;
           productQuantity = item.quantity;
+          totalDiscount = item.each_discount;
         }
       });
     });
 
     console.log(cartId);
     if (cartItems.length == itemslength) {
-      console.log("lok");
 
       await cartModel.findByIdAndDelete(cartId);
 
       return res.redirect("/product_cart");
     }
+
     await cartModel.findOneAndUpdate(
       { user: user._id },
       {
         $pull: { items: { product: productId } },
         $inc: {
+          discount_amount : -totalDiscount,
           total_price: -productTotalPrice,
           total_quantity: -productQuantity,
         },
@@ -547,7 +722,18 @@ const placeOrderCheckout = async (req, res) => {
         return res.status(400).json({ address });
       }
 
-      const walletData = await walletModel.findOne({user:userId})
+      const walletData = await walletModel.findOne({user:userId});
+      console.log(walletData)
+
+      if(walletData === null || walletData === undefined){
+        const balance = true
+        return res.status(400).json({balance})
+      }
+
+      if(walletData.balance < cartData.total_price) {
+        const balance = true
+        return res.status(400).json({balance})
+      }
 
       if(cartData.total_price <= walletData.balance){
         await walletModel.updateMany(
@@ -560,11 +746,7 @@ const placeOrderCheckout = async (req, res) => {
         await confirm();
 
       }
-
-      if(walletData.balance < cartData.total_price) {
-        const balance = false
-        return res.status(400).json({balance})
-      }
+      
       
     }
 

@@ -529,7 +529,7 @@
 
             console.error('Failed to initiate address');
           }
-//
+
         } else if(selectedPaymentMethod.value === 'wallet' ){
           
           const cartDataId = '<%= cartData._id %>';
@@ -591,7 +591,7 @@
               
           }
 
-          if (responseData.balance == false) {
+          if (responseData.balance) {
               const alertContainer = document.getElementById('alertContainer');
               // Clear existing alerts
               alertContainer.innerHTML = '';

@@ -16,11 +16,20 @@ const wishList = async (req, res) => {
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
 
+    const categoryData = await categoryModel.find({is_listed:true});
+    const categoryIds = categoryData.map(category => category._id);
+
+    const productData = await productModel.find({is_listed:true,category: { $in: categoryIds }})
+    const productIds = productData.map(product => product._id);
+
     const wishListData = await wishListModel
       .find({
         user: user._id,
+        "items.product":{ $in: productIds }
       })
       .populate("items.product");
+
+      console.log(wishListData)
 
     return res.render("user/wish-list", {
       errors: null,

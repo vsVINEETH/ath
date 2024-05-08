@@ -149,7 +149,13 @@ const couponDelete = async (req, res) => {
 
 const couponApply = async (req, res) => {
   try {
-    const couponValue = req.body.coupon_value * 1 || 0;
+   // const couponValue = req.body.coupon_value * 1 || 0;
+   const couponId  = req.body.coupon_value;
+   console.log(couponId)
+    console.log(couponId)
+    const couponData = await couponModel.findOne({_id:couponId})
+    console.log(couponData)
+    const couponValue = couponData.discount_percentage
 
     if(couponValue === 0 || !couponValue){
       return res.redirect("/product_cart");
@@ -182,6 +188,7 @@ const couponApply = async (req, res) => {
     cartData.total_price = totalPrice;
     cartData.total_quantity = totalQuantity;
     cartData.applied_coupon = true;
+    cartData.coupon_id = couponId;
     cartData.discount_percentage = percentage;
     cartData.discount_amount = discountedAmount;
 
@@ -196,7 +203,6 @@ const couponApply = async (req, res) => {
 
 const couponRemove = async (req, res) => {
   try {
-    const couponValue = req.body.coupon_value * 1;
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
 
@@ -206,6 +212,7 @@ const couponRemove = async (req, res) => {
 
     for (let item of cartData.items) {
       item.total = item.each_discount + item.total;
+      item.each_discount = 0
     }
 
     let totalPrice = 0;

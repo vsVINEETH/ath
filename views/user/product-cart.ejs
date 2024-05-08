@@ -73,16 +73,12 @@
                   <tr>
                     <th scope="col" class="">Image</th>
                     <th scope="col" class="">Product Name</th>
-                    <th scope="col" class="">Quantity</th>
                     <th scope="col" class="">Price</th>
-                    
+                    <th scope="col" class="">Quantity</th>
                     <th scope="col" class="">Discount</th>
                     <th scope="col" class="">Total price</th>
-                    
-                    
-                    <% if (cartData[0].applied_coupon === false) { %>
                     <th scope="col" class="">Action</th>
-                    <% } %>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -93,9 +89,10 @@
                       <img src="/uploads/<%= item.product.image[0] %>" alt="Product Image" style="width: 100px; height: 100px;">
                     </td>
                     <td class=""><%= item.product.product_name + " " + item.product.model %></td>
+                    <td class=""><%= item.product.price %></td> 
                     <td class="scroll-box">
                       <div class="">
-                        <% if (cartData[0].applied_coupon === false) { %>
+                        <% if (cartData[0].applied_coupon === false || cartData[0].applied_coupon === true) { %>
 
                         <a href="/product_cart_update/<%= item.product._id %>?quantityChange=-1">
                           <button id="decrementer" class="btn btn-dark btn-sm ms-1 " style="height:30px ; width: 25px;">-</button>
@@ -104,25 +101,22 @@
 
                         <%= item.quantity %>
 
-                        <% if (cartData[0].applied_coupon === false) { %>
+                        <% if (cartData[0].applied_coupon === false || cartData[0].applied_coupon === true) { %>
                         <a href="/product_cart_update/<%= item.product._id %>?quantityChange=1">
                           <button id="incrementer" class="btn btn-dark btn-sm me-1  align-items-center justify-content-center" style="height:30px ; width: 25px;">+</button>
                         </a>
                         <% } %>
                       </div>
                     </td>
-                    <td class=""><%= item.product.price %></td> 
+                    
                     <td class=""><%= item.each_discount %></td>              
                     <td class="" id="totalEachAmountProduct<%= index %>"><%= item.total %></td>
                     
                     
                     
                     <td class="">
-                      <% if (cartData[0].applied_coupon === false) { %>
-                      <!-- <a href="/product_cart_delete/<%= item.product._id %>"> -->
+                                         
                         <button class="btn cat-btn btn-sm btn-dark remove-btn">Remove</button>
-                      <!-- </a> -->
-                      <% } %>
 
                       <!-- remove modal -->
                       <div class="modal fade" id="removeModal_<%= index %>" tabindex="-1" aria-labelledby="removeModalLabel_<%= index %>" aria-hidden="true">
@@ -174,11 +168,12 @@
               <label class="small mb-1 me-3 fw-bold" for="couponSelect">Apply coupon</label>
               <% if (totalPrice > 0 && cartData[0].applied_coupon === false && couponData.length !== 0 ) { %>
               <select name="coupon_value" id="couponSelect" class=" rounded col-sm-6 text-center" style="border-color: rgb(20, 220, 20); border-width: 2px;">
-                <% couponData.forEach((element, index) => { %>
-                  <% if (cartData[0].total_price >= element.min_amount) { %>
                     <option selected disabled>Available</option>
                     <option value="0">None</option>
-                    <option value="<%= element.discount_percentage %>"><%= element.coupon_code %></option>
+                <% couponData.forEach((element, index) => { %>
+                  <% if (cartData[0].total_price >= element.min_amount) { %>
+                    
+                    <option value="<%= element._id %>"><%= element.coupon_code %></option>
                   <% } else { %>
                     <option value="0">Ineligible</option>
                     <% } %>
@@ -187,7 +182,12 @@
               </select>
               <% } else if(cartData[0].applied_coupon === true) { %>
               <select name="orderStatus" class="order_status rounded col-sm-6 text-center" style="border-color: rgb(20, 220, 20); border-width: 2px;">
-                <option selected disabled>Applied</option>
+                
+                <% couponData.forEach((element, index) => { %>
+                  <% if ( cartData[0].coupon_id == element._id.toString()) { %>
+                    <option selected disabled><%=element.coupon_code%></option>
+                  <% } %>
+                <% }) %>
               </select>
               <% } else if (couponData.length == 0) { %>
                 <select name="orderStatus" class="order_status rounded col-sm-6 text-center" style="border-color: rgb(227, 36, 36); border-width: 2px;">
@@ -205,12 +205,6 @@
             </div>
             <% } %>
           </form>
-          <p class="small text-center text-">Apply coupon after selecting products</p>
-
-          <% if (cartData[0].applied_coupon !== false) { %>
-          <hr>
-          <p class="small text-center text-danger">Note: If you wish to add or remove a product, please remove the coupon.</p>
-          <% } %>
           <hr>
           <p class="fw-bold">Cart summary detail</p>
           <p class="text-start">Discounted amount: <span class="text-end" id="totalAmount"><%= cartData[0].discount_amount %></span></p>
