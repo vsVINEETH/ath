@@ -112,10 +112,13 @@ const orderSchema = new mongoose.Schema({
       type:Number,
       required: true,
     },
-  createdAt: {
-    type: Date,
-    default: new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
-  },
+  // createdAt: {
+  //   type: Date,
+  //   default: new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
+  // },
+},
+{
+  timestamps: true, // Automatically add createdAt and updatedAt fields
 });
 
 const orderModel = mongoose.model("order", orderSchema);

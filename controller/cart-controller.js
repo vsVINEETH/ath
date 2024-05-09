@@ -271,19 +271,34 @@ const productQuantityUpdate = async (req, res) => {
               let newTotal = Math.round(productPrice * (productCartCount-1))
               console.log(newTotal)
 
-              eachDiscount = Math.round(newTotal * discountPercentage)
+              eachDiscount = Math.floor(newTotal * discountPercentage)
               console.log(eachDiscount)
               
-              newDiscountAmount = Math.round(eachDiscount /(productCartCount-1) )
+              newDiscountAmount = Math.ceil(eachDiscount /(productCartCount-1) )
               console.log(newDiscountAmount)
 
               newTotalPrice = newTotal - eachDiscount;
               console.log(newTotalPrice)
-              newCartTotal = Math.round(newTotalPrice / (productCartCount-1))
+              newCartTotal = Math.floor(newTotalPrice / (productCartCount-1))
 
             }else{
+
               newTotalPrice = productPrice;
               newCartTotal = productPrice;
+
+              await cartModel.updateOne(
+                { _id: cartItem._id, "items._id": item._id },
+                {
+                  $inc: {
+                    "items.$.quantity": quantityChange,
+                    "items.$.total": -productPrice,
+                    total_price: -productPrice,
+                    total_quantity: quantityChange,
+                  },
+                },
+                { new: true }
+              );
+              break;
             }
 
             await cartModel.updateOne(
@@ -320,17 +335,32 @@ const productQuantityUpdate = async (req, res) => {
               let newTotal = Math.round(productPrice * (productCartCount+1))
               console.log(newTotal)
 
-              eachDiscount = Math.round(newTotal * discountPercentage)
+              eachDiscount = Math.floor(newTotal * discountPercentage)
               console.log(eachDiscount)
 
-              newDiscountAmount = Math.round(eachDiscount /(productCartCount+1) )
+              newDiscountAmount = Math.ceil(eachDiscount /(productCartCount+1) )
               console.log(newDiscountAmount)
 
               newTotalPrice = newTotal - eachDiscount;
-              newCartTotal = Math.round(newTotalPrice / (productCartCount+1))
+              newCartTotal = Math.floor(newTotalPrice / (productCartCount+1))
             }else{
+
               newTotalPrice = productPrice;
               newCartTotal = productPrice;
+
+              await cartModel.updateOne(
+                { _id: cartItem._id, "items._id": item._id },
+                {
+                  $inc: {
+                    "items.$.quantity": quantityChange,
+                    "items.$.total": productPrice,
+                    total_price: productPrice,
+                    total_quantity: quantityChange,
+                  },
+                },
+                { new: true }
+              );
+              break;
             }
           
             await cartModel.updateOne(

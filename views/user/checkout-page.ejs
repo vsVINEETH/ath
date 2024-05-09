@@ -191,6 +191,7 @@
               <span class="fw-normal">product name : <%= element.product.product_name %></span>
               <span class="fw-normal">Price : &#8377; <%= element.product.price %></span>
               <span class="fw-normal">Quantity : <%=element.quantity %></span>
+              <span class="fw-normal">Discount : <%=element.each_discount %></span>
               <span class="fw-normal">Total : &#8377; <%=element.total %></span>
             </div>
           </div>
@@ -200,9 +201,10 @@
 
           <div class="row d-flex justify-content-evenly mt-4">
 
-            <p class="fw-bold text-start"> purchase amount : <span class="text-end fw-bold">&#8377; <%= cartData.total_price %></span></p>
+            <p class="fw-bold text-start mb-2"> Discount amount : <span class="text-end fw-bold">&#8377; <%= cartData.discount_amount %></span></p>
+            <p class="fw-bold text-start mb-2"> Purchase amount : <span class="text-end fw-bold">&#8377; <%= cartData.total_price %></span></p>
 
-            <p class="fw-bold text-start">purchase quantity : <span class="text-end fw-bold"><%= cartData.total_quantity %></span></p>
+            <p class="fw-bold text-start">Purchase quantity : <span class="text-end fw-bold"><%= cartData.total_quantity %></span></p>
 
             <p class="fw-bold text-start"> Shipping amount : <span class="text-success text-end fw-bold"><%= "Free" %></span></p>
           </div>

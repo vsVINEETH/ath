@@ -15,7 +15,7 @@
     </ol>
   </nav>
   <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-9">
       <% let productCount = 0; %>
       <% let productId = 0; %>
       <% let itemId = 0; %>
@@ -42,6 +42,7 @@
                       <th scope="col" class="">Product Name</th>
                       <th scope="col" class="">Price</th>
                       <th scope="col" class="">Quantity</th>
+                      <th scope="col" class="">Discount</th>
                       <th scope="col" class="">Total price</th>
                       <th scope="col" class="">Order Status</th>
                       <th scope="col" class="">Rate now</th>
@@ -67,6 +68,7 @@
 
                       <td class=""><%= item.order_price %></td>
                       <td class=""><%= Math.abs(item.quantity) %></td>
+                      <td class=""><%= item.each_discount %></td>
                       <td class=""><%= Math.abs(item.total) %></td>
                       <!-- <td><%= orderItem.payment_details.payment_method %></td> -->
                       <td><%= item.status %></td>
@@ -276,15 +278,16 @@
     </div>
 
     <% if (productCount > 0) { %>
-    <div class="col-lg-4">
+    <div class="col-lg-3">
 
       <div class="card mb-4">
         <div class="card-header text-center fw-bold ">Order Details</div>
         <div class="card-body">
           <p class="text-start ">Order Id : <span class="text-secondary"> <%= orderData[0]._id.toString().slice( -6) %></span></p>
           <p class="text-start ">Order Date : <span class="text-secondary"> <%= orderData[0].createdAt.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' }) %></span></p>
-          <p class="text-start "> purchase amount : <span class=""> &#8377;<%= orderData[0].total_price %></span></p>
-          <p class="text-start "> purchase quantity : <span class=""> <%= orderData[0].total_quantity %></span></p>
+          <p class="text-start mb-1"> Discount amount : <span class=""> &#8377;<%= orderData[0].discount_amount %></span></p>
+          <p class="text-start mb-1 "> purchase amount : <span class=""> &#8377;<%= orderData[0].total_price %></span></p>
+          <p class="text-start mb-1"> purchase quantity : <span class=""> <%= orderData[0].total_quantity %></span></p>
           <p class="text-start">Payment method : <%= orderData[0].payment_details.payment_method %></p>
           <hr>
           <p class="text-center fw-bold">Shipping Address</p>

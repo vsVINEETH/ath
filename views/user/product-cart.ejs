@@ -255,7 +255,7 @@ async function cartQuantity(productId, quantityType, index){
 
             const eachTotalElement = document.getElementById(`eachTotal_${index}_${productId}`);
             eachTotalElement.textContent = element.total;
-
+           
             const itemQuantityElement = document.getElementById(`itemQuantity_${index}_${productId}`);
             console.log(index,productId);
             itemQuantityElement.textContent = element.quantity; 

@@ -171,7 +171,7 @@ const couponApply = async (req, res) => {
     let cartTotal = cartData.total_price;
 
     for (let item of cartData.items) {
-      const itemDiscount = Math.round(item.total * percentage);
+      const itemDiscount = Math.floor(item.total * percentage);
       item.each_discount = itemDiscount;
       item.total -= itemDiscount;
     }
