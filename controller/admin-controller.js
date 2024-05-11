@@ -28,13 +28,11 @@ const loginpost = (req, res) => {
   try {
     const admin_user_name = process.env.ADMIN_USER_NAME;
     const admin_password = process.env.ADMIN_PASSWORD;
-    console.log(admin_password);
     if (
       admin_user_name === req.body.email &&
       admin_password === req.body.password
     ) {
       req.session.admin = req.body.email;
-      console.log(req.session.admin)
       return res.status(200).redirect("/admin/admin_dashboard");
     } else {
       return res.render("admin/login", { mes: "Invalid username or password" });
