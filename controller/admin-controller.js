@@ -220,7 +220,6 @@ const dashBoardFilter = async (req, res) => {
 const customers = async (req, res) => {
   try {
     const customerData = await userModel.find({});
-    //console.log(customerData);
     if (customerData) {
       return res.render("admin/users", { customerData });
     }
@@ -839,7 +838,6 @@ const salesReportFilter = async (req, res) => {
     let dateRange = {};
     //filter date range
     if (data.from_date <= data.end_date) {
-      console.log("helllooo");
       dateRange = { $gte: data.from_date, $lte: data.end_date };
     } else {
       dateRange = {
