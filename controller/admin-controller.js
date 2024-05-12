@@ -46,6 +46,7 @@ const loginpost = (req, res) => {
 const dashboard = async (req, res) => {
   try {
     if (req.session.admin) {
+
       const orderData = await orderModel.find();
 
       const result = await orderModel.aggregate([
@@ -63,6 +64,7 @@ const dashboard = async (req, res) => {
       const topProduct = await productModel.find({
         _id: { $in: result.map((item) => item._id) },
       });
+
       req.session.topProduct = topProduct;
 
       const categoryResult = await orderModel.aggregate([
@@ -98,6 +100,7 @@ const dashboard = async (req, res) => {
       const topCategory = await categoryModel.find({
         _id: { $in: categoryResult.map((item) => item._id) },
       });
+      
       req.session.topCategory = topCategory;
 
       return res.status(200).render("admin/dashboard", {
