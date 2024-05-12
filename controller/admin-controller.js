@@ -100,7 +100,7 @@ const dashboard = async (req, res) => {
       const topCategory = await categoryModel.find({
         _id: { $in: categoryResult.map((item) => item._id) },
       });
-      
+
       req.session.topCategory = topCategory;
 
       return res.status(200).render("admin/dashboard", {
@@ -122,6 +122,7 @@ const dashBoardFilter = async (req, res) => {
     const topProduct = req.session.topProduct;
     const topCategory = req.session.topCategory;
     const currentDate = new Date();
+
     let currentYear = currentDate.getFullYear();
     let currentMonth = currentDate.getMonth() + 1;
     let currentDay = currentDate.getDate();
@@ -162,7 +163,7 @@ const dashBoardFilter = async (req, res) => {
         };
       } else if (data.period == 7) {
         const startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Adjust to Monday
+        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1);
 
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
