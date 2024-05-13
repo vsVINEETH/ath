@@ -234,19 +234,15 @@ const customers = async (req, res) => {
 const customerAction = async (req, res) => {
   try {
     const userId = req.params.user_id;
-    const foundCustomer = await userModel.findById(userId); // Corrected findById usage
+    const foundCustomer = await userModel.findById(userId);
 
     if (!foundCustomer) {
       return res.status(404).render("admin/error-page");
     }
 
-    // Toggle the value of is_block
     foundCustomer.is_block = !foundCustomer.is_block;
+    await foundCustomer.save();
 
-    // Save the updated customer
-    await foundCustomer.save(); // Await the save operation
-
-    console.log(foundCustomer);
     return res.redirect("/admin/customers");
   } catch (error) {
     console.error("customerAction entry issue", error);
@@ -257,7 +253,6 @@ const customerAction = async (req, res) => {
 const category = async (req, res) => {
   try {
     const categoryData = await categoryModel.find({});
-    // console.log(categoryData);
     return res.render("admin/category", { categoryData });
   } catch (error) {
     console.error("category entry issue", error);
