@@ -340,8 +340,8 @@ const categoryEdit = async (req, res) => {
     const catData = {
       _id: req.params.category_id,
     };
+
     const categoryData = await categoryModel.findById(catData._id);
-    console.log("catData", catData);
     req.session.catData = catData;
     return res.render("admin/edit-category", {
       errors: null,
@@ -363,10 +363,11 @@ const categoryEditIn = async (req, res) => {
         .withMessage("This field is requird")
         .run(req),
     ]);
+
     const categoryData = await categoryModel.findById(catData._id);
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
-      console.log("oh error");
       return res.render("admin/edit-category", {
         errors: errors.mapped(),
         categoryData,
@@ -398,9 +399,8 @@ const categoryEditIn = async (req, res) => {
         categoryData,
       });
     } else {
-      console.log(foundCategory);
       return res.redirect("/admin/category");
-    }
+    };
   } catch (error) {
     console.error("categoryEditIn entry issue", error);
     return res.status(404).render("admin/error-page");
@@ -427,8 +427,9 @@ const categoryOffer = async (req, res) => {
       });
       return res.redirect("/admin/category");
     } else {
+
       for (let i = 0; i < productData.length; i++) {
-        if (productData[i].offer_applied == false) {
+        if (productData[i].offer_applied === false) {
           const mrp = productData[i].price;
           productData[i].mrp = productData[i].price;
 
