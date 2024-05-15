@@ -620,7 +620,6 @@ const productEdit = async (req, res) => {
 const productEditIn = async (req, res) => {
   try {
     const productId = req.session.product_id;
-    console.log(productId);
     await Promise.all([
       body("product_name")
         .trim()
@@ -663,14 +662,10 @@ const productEditIn = async (req, res) => {
 
     const categoryData = await categoryModel.find({});
     const productData = await productModel.find({});
-    console.log(req.body.colour.toLowerCase(), req.body.category);
-
     const errors = validationResult(req);
 
-    console.log(errors);
-
     if (!errors.isEmpty()) {
-      console.log("oh you again");
+
       return res.render("admin/edit-product", {
         errors: errors.mapped(),
         mes: "",
@@ -693,8 +688,6 @@ const productEditIn = async (req, res) => {
       category: req.body.category,
       image: image,
     };
-    console.log(data);
-    console.log(data.image);
 
     if (existinProduct) {
       await productModel.findByIdAndUpdate(productId, data);
@@ -724,7 +717,7 @@ const productImageDelete = async (req, res) => {
   try {
     const productId = req.params.product_id;
     const imageName = req.params.image_name;
-    console.log(productId, imageName);
+    
     const categoryData = await categoryModel.find({});
     const productData = await productModel.findOneAndUpdate(
       { _id: productId },
