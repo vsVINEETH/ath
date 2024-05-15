@@ -411,7 +411,6 @@ const categoryOffer = async (req, res) => {
   try {
     const catData = req.session.catData;
     const offerPercentage = req.body.categoryOffer * 1;
-    const categoryData = await categoryModel.findById(catData._id);
     const productData = await productModel.find({ category: catData._id });
 
     if (offerPercentage === 0) {
@@ -467,7 +466,6 @@ const product = async (req, res) => {
   try {
     const productData = await productModel.find({}).populate("category");
 
-    console.log(productData);
     return res.render("admin/product", { productData });
   } catch (error) {
     console.error("product entry issue", error);
@@ -536,7 +534,7 @@ const productAddPost = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log("oops");
+
       return res.render("admin/add-product", {
         errors: errors.mapped(),
         mes: "",
@@ -560,8 +558,6 @@ const productAddPost = async (req, res) => {
     const existinCategory = await categoryModel.findOne({
       _id: data.category,
     });
-
-    console.log(existinCategory.category_name);
 
     if (existinCategory) {
       const newProduct = new productModel(data);
@@ -608,7 +604,6 @@ const productEdit = async (req, res) => {
       .findById(productId)
       .populate("category");
 
-    console.log("pro", productId);
     req.session.product_id = productId;
     return res.render("admin/edit-product", {
       errors: null,
