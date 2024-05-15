@@ -430,18 +430,20 @@ const categoryOffer = async (req, res) => {
 
       for (let i = 0; i < productData.length; i++) {
         if (productData[i].offer_applied === false) {
+
           const mrp = productData[i].price;
           productData[i].mrp = productData[i].price;
 
           const discountedPrice = mrp - (mrp * offerPercentage) / 100;
-
           productData[i].price = parseInt(discountedPrice);
           productData[i].offer_applied = true;
 
           await productData[i].save();
         } else {
+
           const price = productData[i].mrp;
           productData[i].price = productData[i].mrp;
+
           const discountedPrice = price - (price * offerPercentage) / 100;
           productData[i].price = parseInt(discountedPrice);
 
