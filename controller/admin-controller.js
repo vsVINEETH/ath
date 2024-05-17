@@ -678,6 +678,7 @@ const productEditIn = async (req, res) => {
     const image = existinProduct.image.concat(
       req.files.map((file) => file.filename)
     );
+    
     const data = {
       product_name: req.body.product_name,
       model: req.body.model,
@@ -717,7 +718,7 @@ const productImageDelete = async (req, res) => {
   try {
     const productId = req.params.product_id;
     const imageName = req.params.image_name;
-    
+
     const categoryData = await categoryModel.find({});
     const productData = await productModel.findOneAndUpdate(
       { _id: productId },
@@ -725,7 +726,6 @@ const productImageDelete = async (req, res) => {
       { new: true }
     );
 
-  
     return res.render("admin/edit-product", {
       errors: null,
       mes: "",
