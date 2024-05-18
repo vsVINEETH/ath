@@ -678,7 +678,7 @@ const productEditIn = async (req, res) => {
     const image = existinProduct.image.concat(
       req.files.map((file) => file.filename)
     );
-    
+
     const data = {
       product_name: req.body.product_name,
       model: req.body.model,
@@ -785,7 +785,7 @@ const productOffer = async (req, res) => {
         productData.price = parseInt(discountedPrice);
 
         await productData.save();
-      }
+      };
       return res.redirect("/admin/product");
     }
   } catch (error) {
@@ -796,7 +796,7 @@ const productOffer = async (req, res) => {
 
 const salesReport = async (req, res) => {
   try {
-    req.session.reportData = false
+    req.session.reportData = false;
     const orderData = await orderModel.find({}).populate("items.product");
     return res.render("admin/sales-report", { orderData: orderData });
   } catch (error) {
@@ -812,15 +812,12 @@ const salesReportFilter = async (req, res) => {
     let currentMonth = currentDate.getMonth() + 1;
     let currentDay = currentDate.getDate();
 
-    console.log(currentYear);
     const data = {
       period: parseInt(req.body.period),
       sort: parseInt(req.body.sort) || 1,
       from_date: `${req.body.fromDate || `${currentYear}-01-01`}T00:00:00`,
       end_date: `${req.body.endDate || `${currentYear}-12-31`}T23:59:59`,
     };
-
-    console.log(data);
 
     let dateRange = {};
     //filter date range
@@ -850,7 +847,7 @@ const salesReportFilter = async (req, res) => {
         };
       } else if (data.period == 7) {
         const startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Adjust to Monday
+        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1);
 
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
@@ -932,7 +929,6 @@ const salesReportFilter = async (req, res) => {
       sortCriteria = { "items.total": -1 };
     }
 
-    //    const orderData  = await orderModel.aggregate([{$match: {createdAt: dateRange}}])//its not working
     const orderData = await orderModel
       .find({ createdAt: dateRange })
       .sort(sortCriteria)
@@ -940,7 +936,6 @@ const salesReportFilter = async (req, res) => {
 
     req.session.reportData = orderData;
 
-    console.log(orderData);
     return res.render("admin/sales-report", { orderData: orderData });
   } catch (error) {
     console.error("salesReportFilter entry issue", error);
