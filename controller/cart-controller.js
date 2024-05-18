@@ -23,8 +23,6 @@ const productCart = async (req, res) => {
       .find({ user: user._id })
       .populate("items.product");
 
-    console.log(cartData);
-
     if (cartData) {
       return res.render("user/product-cart", {
         errors: null,
@@ -51,7 +49,7 @@ const productCartAdd = async (req, res) => {
       .find({ user: user._id, "items.product": productId,})
       .populate("items.product");
 
-    let total = productData.price * 1 || 0; //in this here we need to implement logic of incrementing  product
+    let total = productData.price * 1 || 0;
     let productCount = 0;
     let limit = false;
     let productQuantity = 1;
@@ -96,8 +94,6 @@ const productCartAdd = async (req, res) => {
 
       for (const cartItem of cartData) {
         for (const item of cartItem.items) {
-
-          console.log(item.product._id,productId)
           if (item.product._id == productId) {
 
             let productPrice = item.product.price;
@@ -114,10 +110,7 @@ const productCartAdd = async (req, res) => {
               eachDiscount = Math.round(newTotal * discountPercentage)
 
               newDiscountAmount = Math.round(eachDiscount / 1)
-
               newTotalPrice = newTotal - eachDiscount;
-              console.log(itemTotal,newTotal,newTotalPrice)
-
               newCartTotal = Math.round(newTotalPrice - itemTotal)
 
             }else{
@@ -155,7 +148,7 @@ const productCartAdd = async (req, res) => {
       .find({ user: user._id })
       .populate("items.product");
   
-      if(cartData[0]?.applied_coupon == true ){
+      if(cartData[0]?.applied_coupon === true ){
 
       for (const cartItem of cartData) {
         for (const item of cartItem.items) {
@@ -176,9 +169,7 @@ const productCartAdd = async (req, res) => {
               eachDiscount = Math.round(newTotal * discountPercentage)
               
               newDiscountAmount = Math.round(eachDiscount /(productCartCount+1) )
-
               newTotalPrice = newTotal - eachDiscount;
-
               newCartTotal = Math.round(newTotalPrice / (productCartCount+1))
 
             }else{
@@ -203,7 +194,6 @@ const productCartAdd = async (req, res) => {
               },
               { new: true }
             );
-            console.log('working')
             break;
 
           }
