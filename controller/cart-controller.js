@@ -392,8 +392,6 @@ const productQuantityUpdate = async (req, res) => {
 const productCartRemove = async (req, res) => {
   try {
     const productId = req.params.product_id;
-    console.log(productId);
-
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
 
@@ -409,6 +407,7 @@ const productCartRemove = async (req, res) => {
     let totalDiscount = 0;
     let cartId = null;
     let itemslength = null;
+
     cartItems.forEach((cartItem) => {
       cartId = cartItem._id;
       itemslength = cartItem.items.length;
@@ -421,11 +420,9 @@ const productCartRemove = async (req, res) => {
       });
     });
 
-    console.log(cartId);
     if (cartItems.length == itemslength) {
 
       await cartModel.findByIdAndDelete(cartId);
-
       return res.redirect("/product_cart");
     }
 
