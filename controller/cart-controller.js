@@ -259,16 +259,10 @@ const productQuantityUpdate = async (req, res) => {
             if(discountPercentage !== 0){
 
               let newTotal = Math.round(productPrice * (productCartCount-1))
-              console.log(newTotal)
 
               eachDiscount = Math.floor(newTotal * discountPercentage)
-              console.log(eachDiscount)
-              
               newDiscountAmount = Math.ceil(eachDiscount /(productCartCount-1) )
-              console.log(newDiscountAmount)
-
               newTotalPrice = newTotal - eachDiscount;
-              console.log(newTotalPrice)
               newCartTotal = Math.floor(newTotalPrice / (productCartCount-1))
 
             }else{
@@ -323,16 +317,11 @@ const productQuantityUpdate = async (req, res) => {
             if(discountPercentage !== 0){
 
               let newTotal = Math.round(productPrice * (productCartCount+1))
-              console.log(newTotal)
 
-              eachDiscount = Math.floor(newTotal * discountPercentage)
-              console.log(eachDiscount)
-
-              newDiscountAmount = Math.ceil(eachDiscount /(productCartCount+1) )
-              console.log(newDiscountAmount)
-
+              eachDiscount = Math.floor(newTotal * discountPercentage);
+              newDiscountAmount = Math.ceil(eachDiscount /(productCartCount+1) );
               newTotalPrice = newTotal - eachDiscount;
-              newCartTotal = Math.floor(newTotalPrice / (productCartCount+1))
+              newCartTotal = Math.floor(newTotalPrice / (productCartCount+1));
             }else{
 
               newTotalPrice = productPrice;
@@ -370,7 +359,7 @@ const productQuantityUpdate = async (req, res) => {
               },
               { new: true }
             );
-            break; // Exit inner loop after updating the matching product
+            break;
 
           } else {
             let productLimit = true;
@@ -383,7 +372,6 @@ const productQuantityUpdate = async (req, res) => {
     const cartData = await cartModel
       .find({ user: user._id ,"items.product":productId})
       .populate("items.product");
-    console.log(cartData);
 
     if (cartData) {
       const couponData = await couponModel.find({});
@@ -392,13 +380,6 @@ const productQuantityUpdate = async (req, res) => {
         couponData: couponData || []
       }
       res.json(updatedCartData);
-      // return res.render("user/product-cart", {
-      //   errors: null,
-      //   home: true,
-      //   mes: "",
-      //   cartData: cartData || [],
-      //   couponData,
-      // });
     } else {
       return res.redirect("/home");
     }
