@@ -456,32 +456,25 @@ const productCheckout = async (req, res) => {
     req.session.cartId = cartId;
 
     const cartData = await cartModel.findById(cartId).populate("items.product");
-
     const cartItems = await cartModel.findById(cartId,{"items.product":1,"items.quantity":1})
-    console.log(cartItems)
     const productData = await productModel.find({}, { _id: 1,quantity:1});
-    console.log(productData)
 
-  let stockAvailable = true;
-  cartItems.items.forEach(item => {
-    const foundProduct = productData.find(product => product._id.toString() === item.product.toString());
-    if (foundProduct) {
-      console.log('hello')
-        const productQuantity = foundProduct.quantity;
-        if (productQuantity >= item.quantity) {
-          stockAvailable = true
-            console.log(`Product ${item.product} found in productData with sufficient quantity.`);
-        } else {
-            console.log(`Product ${item.product} found in productData but quantity is insufficient.`);
-            stockAvailable = false;
-            return 
-        }
-    } else {
-        console.log(`Product ${item.product} not found in productData.`);
-    }
-});
+   let stockAvailable = true;
+    cartItems.items.forEach(item => {
+      const foundProduct = productData.find(product => product._id.toString() === item.product.toString());
+      if (foundProduct) {
 
-console.log(stockAvailable);
+          const productQuantity = foundProduct.quantity;
+          if (productQuantity >= item.quantity) {
+            stockAvailable = true
+          } else {
+              stockAvailable = false;
+              return; 
+          }
+      } else {
+          console.log(`Product ${item.product} not found in productData.`);
+      }
+  });
 
     if (stockAvailable === true) {
       return res.render("user/checkout-page", {
@@ -513,8 +506,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
     }
 
     const cartId = req.session.cartId;
-    console.log(cartId)
-    
+
     const user = await userModel
       .findOne({ email: req.session.user })
       .populate("address");
@@ -560,9 +552,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
     ]);
 
     const cartItems = await cartModel.findById(cartId,{"items.product":1,"items.quantity":1})
-    console.log(cartItems)
     const productData = await productModel.find({}, { _id: 1,quantity:1});
-    console.log(productData)
 
     let stockAvailable = true;
     cartItems.items.forEach(item => {
