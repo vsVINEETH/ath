@@ -100,7 +100,6 @@ const couponAddPost = async (req, res) => {
       const newCoupon = new couponModel(data);
       await newCoupon.save();
 
-      const couponData = await couponModel.find({});
       return res.redirect("/admin/coupon");
     } else {
       return res.render("admin/add-coupon", {
@@ -139,7 +138,7 @@ const couponAction = async (req, res) => {
 const couponDelete = async (req, res) => {
   try {
     const couponId = req.params.coupon_id;
-    const foundCoupon = await couponModel.findByIdAndDelete(couponId);
+    await couponModel.findByIdAndDelete(couponId);
     return res.redirect("/admin/coupon");
   } catch (error) {
     console.error("couponDelete entry issue", error);
