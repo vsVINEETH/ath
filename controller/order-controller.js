@@ -42,7 +42,7 @@ const orderDetail = async (req, res) => {
   try {
     req.session.orderId = req.params.order_id;
     const orderId = req.session.orderId;
-    console.log(orderId);
+
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
     const userId = user._id;
@@ -74,15 +74,12 @@ const orderCancel = async (req, res) => {
     const cancelReason = req.body.cancelReason.toUpperCase();
     const otherReason = req.body.otherCancelReason;
     let actualReason = cancelReason + "," + otherReason;
-    console.log(actualReason);
-    console.log(productId, itemId, orderId);
 
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
     const userId = user._id;
 
     const orderData = await orderModel.findOneAndUpdate(
-      //in cancell cheyumbo price
       { user: userId, _id: orderId, "items._id": itemId },
       {
         $set: {
@@ -133,7 +130,7 @@ const orderCancel = async (req, res) => {
     if (orderData) {
       return res.redirect("/order_history");
     }
-    console.log(orderData);
+
   } catch (error) {
     console.error("Something happed to orderCancel entry issue", error);
     return res.status(404).render("user/error-page");
@@ -148,15 +145,12 @@ const orderReturn = async (req, res) => {
     const returnReason = req.body.returnReason.toUpperCase();
     const otherReason = req.body.otherReturnReason;
     let actualReason = returnReason + "," + otherReason;
-    console.log(actualReason);
-
-    console.log(productId, itemId, orderId);
 
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
     const userId = user._id;
 
-    const orderData = await orderModel.findOneAndUpdate(
+     await orderModel.findOneAndUpdate(
       { user: userId, _id: orderId, "items._id": itemId },
       {
         $set: {
