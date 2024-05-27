@@ -19,8 +19,7 @@ const otpGenerator = () => {
         email: email,
         otp: generatedOtp,
       };
-      console.log(otpData.otp);
-  
+
       otpModel.insertMany(otpData);
   
       let transporter = nodemailer.createTransport({
@@ -95,10 +94,8 @@ const otpGenerator = () => {
           
         });
       } else if (otpCode === otpDbCode.otp) {
-        // await userModel.insertMany(userData);
         const newUser = new userModel(userData);
         await newUser.save();
-        console.log("done");
         return res.redirect("/home");
       } else {
         return res.render("user/otp",{
@@ -116,7 +113,6 @@ const otpGenerator = () => {
   const signUpResendOtp = (req, res) => {
     try {
       const email = req.session.signupData;
-      console.log(email.email);
       if (email) {
         sendOtpEmail(email.email);
         return res.redirect("/signup_otp");
