@@ -124,7 +124,6 @@ const otpGenerator = () => {
   };
   
   const forgotPasswordGetOtp = (req, res) => {
-    console.log("gooooo");
     try {
       return res.render("user/forgot-otp", {
         errors: null,
@@ -139,7 +138,6 @@ const otpGenerator = () => {
   };
   
   const forgotPasswordOtp = async (req, res) => {
-    console.log("mygodddd");
     try {
       const otpNumbers = {
         otp1: req.body.otp1,
@@ -156,11 +154,8 @@ const otpGenerator = () => {
         `${otpNumbers.otp4}` +
         `${otpNumbers.otp5}` +
         `${otpNumbers.otp6}`;
-      console.log("hiii");
       const otpDbCode = await otpModel.findOne({ otp: otpCode });
-      console.log("mygod1");
       const userData = req.session.newPassword;
-      console.log(userData);
   
       if (!otpDbCode) {
         return res.render("user/forgot-otp",{
@@ -177,7 +172,6 @@ const otpGenerator = () => {
           { email: userData.email },
           { password: userData.password }
         );
-        console.log("result", updateResult);
         return res.redirect("/login");
       }
     } catch (error) {
