@@ -14,8 +14,6 @@ const razorpay = async (req, res) => {
   try {
 
     const index = req.session.checkoutIndex;
-    const cartId = req.params.cart_id;
-
     const user = await userModel
       .findOne({ email: req.session.user })
       .populate("address");
@@ -43,7 +41,6 @@ const razorpay = async (req, res) => {
       receipt: "order_rcptid_11",
     };
 
-    // Creating the order
     instance.orders.create(options, function (err, order) {
       if (err) {
         console.error(err);
@@ -51,7 +48,6 @@ const razorpay = async (req, res) => {
         return;
       }
 
-      // Send the order ID to the frontend
       res.send({ orderId: order.id });
     });
   } catch (error) {
@@ -62,8 +58,7 @@ const razorpay = async (req, res) => {
 
 const razorpayWallet = (req, res) => {
   try {
-
-    console.log("njjjjj")
+    
     const { amount } = req.body;
     const instance = new Razorpay({
       key_id: process.env.PAYMENT_KEY_ID,
