@@ -58,7 +58,7 @@ const razorpay = async (req, res) => {
 
 const razorpayWallet = (req, res) => {
   try {
-    
+
     const { amount } = req.body;
     const instance = new Razorpay({
       key_id: process.env.PAYMENT_KEY_ID,
@@ -89,28 +89,24 @@ const razorpayWallet = (req, res) => {
 const razorpayPaymentRetry = async (req, res) => {
   try {
 
-    console.log('hello raz')
     const { amount } = req.body;
     const instance = new Razorpay({
       key_id: process.env.PAYMENT_KEY_ID,
       key_secret: process.env.PAYMENT_KEY_SECRET,
     });
 
-    console.log("rmesh")
     const options = {
       amount: amount * 100,
       currency: "INR",
       receipt: "order_rcptid_11",
     };
 
-    console.log('janu')
     instance.orders.create(options, function (err, order) {
       if (err) {
         console.error(err);
         res.status(500).send("Error creating order");
         return;
       }
-      console.log("set aanu")
      return  res.send({ orderId: order.id });
     });
   } catch (error) {
