@@ -303,7 +303,6 @@ const signup = async (req, res) => {
 const signupPost = async (req, res) => {
   try {
     await Promise.all([
-      //validation
       body("first_name")
         .trim()
         .notEmpty()
@@ -331,7 +330,6 @@ const signupPost = async (req, res) => {
         .run(req),
     ]);
 
-    //checking the validation-result
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.render("user/signup", {
@@ -347,7 +345,6 @@ const signupPost = async (req, res) => {
       last_name: req.body.last_name,
       email: req.body.email,
       password: req.body.password,
-   
     };
 
     req.session.signupData = data;
@@ -384,7 +381,6 @@ const signupPost = async (req, res) => {
     }
 
     const result = validatePassword(data.password);
-    console.log(result);
 
     if (result !== true) {
       return res.render("user/signup", {
@@ -407,7 +403,6 @@ const signupPost = async (req, res) => {
     }
 
     if (req.body.confirm_password === data.password && !existinUser) {
-      // Hash the password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(data.password, salt);
       data.password = hashedPassword;
@@ -471,8 +466,8 @@ const home = async (req, res) => {
     .limit(limit)
     .populate("category")
 
-    const wishListData = await wishListModel.find({user: user._id}).populate("items")
-    console.log(wishListData)
+    const wishListData = await wishListModel.find({user: user._id}).populate("items");
+
     req.session.old_query = false
     req.session.old_sortCriteria = false
     if (user) {
@@ -512,8 +507,7 @@ const productDetail = async (req, res) => {
       .populate("category");
 
     const ratingData = await ratingModel.find({product:productId}).populate('user')
-    console.log(ratingData)
-  
+
     const wishListData = await wishListModel.find({user: user._id}).populate("items")
     return res.render("user/product-detail", {
       home: true,
