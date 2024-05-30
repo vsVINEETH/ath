@@ -29,7 +29,6 @@ const loginPost = async (req, res) => {
   try {
     const email = req.body.email;
     let user = ""
-    console.log(email)
 
     if(email){
        user = await userModel.findOne({ email: email });
@@ -89,7 +88,6 @@ function sendOtpEmail(email) {
       email: email,
       otp: generatedOtp,
     };
-    console.log(otpData.otp);
 
     otpModel.insertMany(otpData);
 
@@ -139,7 +137,6 @@ const forgotPassword = (req, res) => {
 };
 
 const forgotPasswordPost = async (req, res) => {
-  console.log("hello");
   try {
     await Promise.all([
       body("email")
@@ -206,8 +203,6 @@ const forgotPasswordPost = async (req, res) => {
     }
 
     const result = validatePassword(data.password);
-    console.log(result);
-
     if (result !== true) {
       return res.render("user/forgot-password", {
         errors: null,
@@ -217,7 +212,7 @@ const forgotPasswordPost = async (req, res) => {
       });
     }
     req.session.newPassword = data;
-    console.log(data);
+
     const existinUser = await userModel.findOne({ email: data.email });
 
     if (!existinUser) {
@@ -255,15 +250,12 @@ const loginAuthRedirect = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      console.log(user, "hello auth1");
       return res.redirect("/login");
     } // Redirect to login if authentication fails
     req.logIn(user, (err) => {
       if (err) {
-        console.log(user, "hello auth2");
         return next(err);
       }
-      console.log(user, "hello auth");
       req.session.user = user.email;
       return res.redirect("/home"); // Redirect to profile page if authentication is successful
     });
@@ -284,7 +276,6 @@ const loginAuthFacebookRedirect = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      console.log(user, "hello auth");
       req.session.user = user.email;
       return res.redirect("/home"); // Redirect to profile page if authentication is successful
     });
