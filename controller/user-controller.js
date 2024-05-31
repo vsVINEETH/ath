@@ -572,6 +572,7 @@ const userProfileUpdate = async (req, res) => {
     const user = await userModel
       .findOne({ email: req.session.user })
       .populate("address");
+
     if (!errors.isEmpty()) {
       return res.render("user/profile-main", {
         errors: errors.mapped(),
@@ -588,11 +589,9 @@ const userProfileUpdate = async (req, res) => {
       phone_number: req.body.phone_number,
     };
 
-    const userFound = await userModel.findByIdAndUpdate(userId, data);
-    console.log(userFound);
+    await userModel.findByIdAndUpdate(userId, data);
 
     if (user) {
-      console.log("here");
       return res.redirect("/user_profile");
     } else {
       return res.render("user/profile-main", {
@@ -732,9 +731,7 @@ const userProfileAddressEdit = async (req, res) => {
 
 const userProfileAddressEditIn = async (req, res) => {
   try {
-    console.log("helllo there");
     const addressId = req.params.address_id;
-    console.log(addressId);
     await Promise.all([
       body("street")
         .trim()
