@@ -1,15 +1,9 @@
 const userModel = require("../models/user");
-const productModel = require("../models/products");
-const categoryModel = require("../models/category");
-const otpModel = require("../models/otp");
-const wishListModel = require("../models/wish-list");
 const walletModel = require("../models/wallet");
-const nodemailer = require("nodemailer");
 const { body, validationResult } = require("express-validator");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const { trusted } = require("mongoose");
-
 
 const wallet = async (req, res) => {
     try {
@@ -39,7 +33,7 @@ const walletAddMoney = async (req, res) => {
         const user = await userModel.findOne({email:email});
 
         if(status){
-        const walletDatas = await walletModel.findOneAndUpdate(
+           await walletModel.findOneAndUpdate(
             { user: user._id },
             { $inc: { balance: amount },
               $push:{ transactions:{type:"credited", amount:amount,description:"Razorpay"}} 
@@ -48,8 +42,7 @@ const walletAddMoney = async (req, res) => {
         );
         return res.json(walletData)
         } else {
-            console.log('jake')
-            const walletDatas = await walletModel.findOneAndUpdate(
+              await walletModel.findOneAndUpdate(
                 { user: user._id },
                 { $push:{ transactions:{type:"failed", amount:amount,description:"Razorpay"}} 
                 },
