@@ -82,17 +82,14 @@ const wishListAdd = async (req, res) => {
 
 const wishListAction = async (req, res) => {
   try {
-    console.log(req.body.itemId);
     const productId = req.body.itemId;
     const email = req.session.user;
-    console.log(email);
-
     const user = await userModel.findOne({ email: email });
 
     const wishListData = await wishListModel.findOneAndUpdate(
       { user: user._id, "items.product": productId },
-      { $set: { "items.$.is_added": false } }, // Toggle is_added to false
-      { new: true } // Return the updated document
+      { $set: { "items.$.is_added": false } },
+      { new: true }
     );
 
     if (!wishListData) {
@@ -109,7 +106,6 @@ const wishListAction = async (req, res) => {
         },
         { upsert: true, new: true }
       );
-      console.log("tk");
       return res.redirect("/wish_list_view");
 
     } else {
@@ -123,9 +119,7 @@ const wishListAction = async (req, res) => {
             },
           },
         }
-        // { upsert: true, new: true }
       );
-      console.log("tk00");
       return res.redirect("/wish_list_view"), console.log("redirceting");
     }
   } catch (error) {
