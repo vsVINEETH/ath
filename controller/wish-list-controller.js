@@ -1,14 +1,9 @@
 const userModel = require("../models/user");
 const productModel = require("../models/products");
 const categoryModel = require("../models/category");
-const otpModel = require("../models/otp");
 const cartModel = require("../models/cart");
-const orderModel = require("../models/order");
 const wishListModel = require("../models/wish-list");
-const nodemailer = require("nodemailer");
 const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const bcrypt = require("bcrypt");
 const { trusted } = require("mongoose");
 
 const wishList = async (req, res) => {
@@ -29,8 +24,6 @@ const wishList = async (req, res) => {
       })
       .populate("items.product");
 
-      console.log(wishListData)
-
     return res.render("user/wish-list", {
       errors: null,
       home: true,
@@ -46,10 +39,7 @@ const wishList = async (req, res) => {
 const wishListAdd = async (req, res) => {
   try {
     const productId = req.params.product_id;
-    console.log(productId);
     const email = req.session.user;
-    console.log(email);
-
     const user = await userModel.findOne({ email: email });
 
     const wishListData = await wishListModel
@@ -81,7 +71,6 @@ const wishListAdd = async (req, res) => {
         },
         { upsert: true, new: true }
       );
-      console.log("tk");
       return res.redirect("/wish_list_view");
     }
     return res.redirect("/wish_list_view");
