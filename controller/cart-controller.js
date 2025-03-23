@@ -1,5 +1,4 @@
 const userModel = require("../models/user");
-const Razorpay = require("razorpay");
 const productModel = require("../models/products");
 const categoryModel = require("../models/category");
 const cartModel = require("../models/cart");
@@ -837,7 +836,6 @@ const placeOrderCheckout = async (req, res) => {
     return res.status(404).render("user/error-page");
   }
 };
-
 
 
 module.exports = {
