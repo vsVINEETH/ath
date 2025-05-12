@@ -558,13 +558,10 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
     cartItems.items.forEach(item => {
       const foundProduct = productData.find(product => product._id.toString() === item.product.toString());
       if (foundProduct) {
-        console.log('hello')
           const productQuantity = foundProduct.quantity;
           if (productQuantity >= item.quantity) {
-            stockAvailable = true
-              console.log(`Product ${item.product} found in productData with sufficient quantity.`);
+              stockAvailable = true
           } else {
-              console.log(`Product ${item.product} found in productData but quantity is insufficient.`);
               stockAvailable = false;
               return 
           }
@@ -596,7 +593,6 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
 
     if (index !== "new") {
       const selectedAddressId = user.address[index]._id;
-      console.log(selectedAddressId, "address");
       const userData = await userModel
         .findOneAndUpdate(
           {
@@ -617,7 +613,6 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
         )
         .populate("address");
 
-      console.log("hello");
       if (userData) {
         return res.render("user/checkout-page", {
           errors: null,
@@ -629,7 +624,6 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
         });
       }
     } else {
-      console.log(cartId)
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
         { $push: { address: data } }, 
@@ -657,10 +651,8 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
 const placeOrderCheckout = async (req, res) => {
   try {
     const index = req.session.checkoutIndex;
-   // const cartId = req.params.cart_id;
-   req.session.cartId = req.params.cart_id
-   const cartId = req.session.cartId;
-   console.log(cartId,"first")
+    req.session.cartId = req.params.cart_id
+    const cartId = req.session.cartId;
 
     const payment_status = req.body.paymentStatus || false;
 
@@ -669,12 +661,9 @@ const placeOrderCheckout = async (req, res) => {
       .populate("address");
 
     const userId = user._id;
-
     const cartData = await cartModel
       .findOne({ user: userId })
       .populate("items.product");
-
-      console.log(cartData,"ithu aanu ivdde")
 
     const payment_details = {
       payment_method: req.body.paymentMethod || "COD",
@@ -698,7 +687,6 @@ const placeOrderCheckout = async (req, res) => {
     } else if (payment_details.payment_method.toString() === "COD") {
 
       if(cartData.total_price > 1000){
-        console.log("it is not working ")
         const minAmount = true;
         return res.status(400).json({ minAmount });
       }
@@ -717,7 +705,6 @@ const placeOrderCheckout = async (req, res) => {
       }
 
       const walletData = await walletModel.findOne({user:userId});
-      console.log(walletData)
 
       if(walletData === null || walletData === undefined){
         const balance = true
@@ -739,10 +726,8 @@ const placeOrderCheckout = async (req, res) => {
         );
         await confirm();
 
-      }
-      
-      
-    }
+      };
+    };
 
     async function confirm() {
       if (payment_status) {
