@@ -411,7 +411,6 @@ const categoryOffer = async (req, res) => {
   try {
     const catData = req.session.catData;
     const offerPercentage = req.body.categoryOffer * 1;
-    const categoryData = await categoryModel.findById(catData._id);
     const productData = await productModel.find({ category: catData._id });
 
     if (offerPercentage === 0) {
@@ -467,7 +466,6 @@ const product = async (req, res) => {
   try {
     const productData = await productModel.find({}).populate("category");
 
-    console.log(productData);
     return res.render("admin/product", { productData });
   } catch (error) {
     console.error("product entry issue", error);
@@ -536,7 +534,7 @@ const productAddPost = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log("oops");
+
       return res.render("admin/add-product", {
         errors: errors.mapped(),
         mes: "",
@@ -560,8 +558,6 @@ const productAddPost = async (req, res) => {
     const existinCategory = await categoryModel.findOne({
       _id: data.category,
     });
-
-    console.log(existinCategory.category_name);
 
     if (existinCategory) {
       const newProduct = new productModel(data);
@@ -608,7 +604,6 @@ const productEdit = async (req, res) => {
       .findById(productId)
       .populate("category");
 
-    console.log("pro", productId);
     req.session.product_id = productId;
     return res.render("admin/edit-product", {
       errors: null,
@@ -625,7 +620,6 @@ const productEdit = async (req, res) => {
 const productEditIn = async (req, res) => {
   try {
     const productId = req.session.product_id;
-    console.log(productId);
     await Promise.all([
       body("product_name")
         .trim()
@@ -668,14 +662,10 @@ const productEditIn = async (req, res) => {
 
     const categoryData = await categoryModel.find({});
     const productData = await productModel.find({});
-    console.log(req.body.colour.toLowerCase(), req.body.category);
-
     const errors = validationResult(req);
 
-    console.log(errors);
-
     if (!errors.isEmpty()) {
-      console.log("oh you again");
+
       return res.render("admin/edit-product", {
         errors: errors.mapped(),
         mes: "",
@@ -688,6 +678,7 @@ const productEditIn = async (req, res) => {
     const image = existinProduct.image.concat(
       req.files.map((file) => file.filename)
     );
+
     const data = {
       product_name: req.body.product_name,
       model: req.body.model,
@@ -698,8 +689,6 @@ const productEditIn = async (req, res) => {
       category: req.body.category,
       image: image,
     };
-    console.log(data);
-    console.log(data.image);
 
     if (existinProduct) {
       await productModel.findByIdAndUpdate(productId, data);
@@ -729,7 +718,7 @@ const productImageDelete = async (req, res) => {
   try {
     const productId = req.params.product_id;
     const imageName = req.params.image_name;
-    console.log(productId, imageName);
+
     const categoryData = await categoryModel.find({});
     const productData = await productModel.findOneAndUpdate(
       { _id: productId },
@@ -737,7 +726,6 @@ const productImageDelete = async (req, res) => {
       { new: true }
     );
 
-  
     return res.render("admin/edit-product", {
       errors: null,
       mes: "",
@@ -797,7 +785,7 @@ const productOffer = async (req, res) => {
         productData.price = parseInt(discountedPrice);
 
         await productData.save();
-      }
+      };
       return res.redirect("/admin/product");
     }
   } catch (error) {
@@ -808,7 +796,7 @@ const productOffer = async (req, res) => {
 
 const salesReport = async (req, res) => {
   try {
-    req.session.reportData = false
+    req.session.reportData = false;
     const orderData = await orderModel.find({}).populate("items.product");
     return res.render("admin/sales-report", { orderData: orderData });
   } catch (error) {
@@ -824,15 +812,12 @@ const salesReportFilter = async (req, res) => {
     let currentMonth = currentDate.getMonth() + 1;
     let currentDay = currentDate.getDate();
 
-    console.log(currentYear);
     const data = {
       period: parseInt(req.body.period),
       sort: parseInt(req.body.sort) || 1,
       from_date: `${req.body.fromDate || `${currentYear}-01-01`}T00:00:00`,
       end_date: `${req.body.endDate || `${currentYear}-12-31`}T23:59:59`,
     };
-
-    console.log(data);
 
     let dateRange = {};
     //filter date range
@@ -862,7 +847,7 @@ const salesReportFilter = async (req, res) => {
         };
       } else if (data.period == 7) {
         const startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Adjust to Monday
+        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1);
 
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
@@ -944,7 +929,6 @@ const salesReportFilter = async (req, res) => {
       sortCriteria = { "items.total": -1 };
     }
 
-    //    const orderData  = await orderModel.aggregate([{$match: {createdAt: dateRange}}])//its not working
     const orderData = await orderModel
       .find({ createdAt: dateRange })
       .sort(sortCriteria)
@@ -952,7 +936,6 @@ const salesReportFilter = async (req, res) => {
 
     req.session.reportData = orderData;
 
-    console.log(orderData);
     return res.render("admin/sales-report", { orderData: orderData });
   } catch (error) {
     console.error("salesReportFilter entry issue", error);
@@ -1093,7 +1076,6 @@ const downloadReportExcel = async (req, res) => {
     });
 
     const workbook = new Excel.Workbook();
-
     const sheet = workbook.addWorksheet("Report");
 
     sheet.columns = [
