@@ -19,8 +19,7 @@ const otpGenerator = () => {
         email: email,
         otp: generatedOtp,
       };
-      console.log(otpData.otp);
-  
+
       otpModel.insertMany(otpData);
   
       let transporter = nodemailer.createTransport({
@@ -95,10 +94,8 @@ const otpGenerator = () => {
           
         });
       } else if (otpCode === otpDbCode.otp) {
-        // await userModel.insertMany(userData);
         const newUser = new userModel(userData);
         await newUser.save();
-        console.log("done");
         return res.redirect("/home");
       } else {
         return res.render("user/otp",{
@@ -116,7 +113,6 @@ const otpGenerator = () => {
   const signUpResendOtp = (req, res) => {
     try {
       const email = req.session.signupData;
-      console.log(email.email);
       if (email) {
         sendOtpEmail(email.email);
         return res.redirect("/signup_otp");
@@ -128,7 +124,6 @@ const otpGenerator = () => {
   };
   
   const forgotPasswordGetOtp = (req, res) => {
-    console.log("gooooo");
     try {
       return res.render("user/forgot-otp", {
         errors: null,
@@ -143,7 +138,6 @@ const otpGenerator = () => {
   };
   
   const forgotPasswordOtp = async (req, res) => {
-    console.log("mygodddd");
     try {
       const otpNumbers = {
         otp1: req.body.otp1,
@@ -160,11 +154,8 @@ const otpGenerator = () => {
         `${otpNumbers.otp4}` +
         `${otpNumbers.otp5}` +
         `${otpNumbers.otp6}`;
-      console.log("hiii");
       const otpDbCode = await otpModel.findOne({ otp: otpCode });
-      console.log("mygod1");
       const userData = req.session.newPassword;
-      console.log(userData);
   
       if (!otpDbCode) {
         return res.render("user/forgot-otp",{
@@ -181,7 +172,6 @@ const otpGenerator = () => {
           { email: userData.email },
           { password: userData.password }
         );
-        console.log("result", updateResult);
         return res.redirect("/login");
       }
     } catch (error) {
@@ -193,7 +183,6 @@ const otpGenerator = () => {
   const forgotResendOtp = (req, res) => {
     try {
       const email = req.session.newPassword;
-      console.log(email.email);
       if (email) {
         sendOtpEmail(email.email);
         return res.redirect("/forgot_password_otp");

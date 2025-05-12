@@ -1,15 +1,7 @@
 const userModel = require("../models/user");
-const productModel = require("../models/products");
-const categoryModel = require("../models/category");
-const otpModel = require("../models/otp");
-const wishListModel = require("../models/wish-list");
 const walletModel = require("../models/wallet");
-const nodemailer = require("nodemailer");
 const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const bcrypt = require("bcrypt");
 const { trusted } = require("mongoose");
-
 
 const wallet = async (req, res) => {
     try {
@@ -31,7 +23,6 @@ const wallet = async (req, res) => {
 
 const walletAddMoney = async (req, res) => {
     try {
-        console.log("success");
         let walletData = true;
         const email = req.session.user;
         const amount = req.body.amount;
@@ -39,24 +30,23 @@ const walletAddMoney = async (req, res) => {
         const user = await userModel.findOne({email:email});
 
         if(status){
-        const walletDatas = await walletModel.findOneAndUpdate(
+           await walletModel.findOneAndUpdate(
             { user: user._id },
             { $inc: { balance: amount },
               $push:{ transactions:{type:"credited", amount:amount,description:"Razorpay"}} 
             },
-            { upsert: true, new: true } // upsert option and new option to return the updated document
+            { upsert: true, new: true }
         );
         return res.json(walletData)
         } else {
-            console.log('jake')
-            const walletDatas = await walletModel.findOneAndUpdate(
+              await walletModel.findOneAndUpdate(
                 { user: user._id },
                 { $push:{ transactions:{type:"failed", amount:amount,description:"Razorpay"}} 
                 },
-                { upsert: true, new: true } // upsert option and new option to return the updated document
+                { upsert: true, new: true }
             );
             return res.json(walletData)
-        }
+        };
 
     } catch (error) {
       console.error(
@@ -70,12 +60,12 @@ const walletAddMoney = async (req, res) => {
 const refferalToWallet = async (req, res) => {
     try {
       const refferalCode = req.body.refferal_code;
-      const email = req.session.user;//current user
-      const reffererUser = await userModel.findOne({refferalId: refferalCode});//refferer
+      const email = req.session.user;
+      const reffererUser = await userModel.findOne({refferalId: refferalCode});
   
       if(reffererUser){
   
-        const currentUser = await userModel.findOneAndUpdate({email:email},{refferal_applied:true})//current user
+        const currentUser = await userModel.findOneAndUpdate({email:email},{refferal_applied:true})
   
         await walletModel.findOneAndUpdate(
           { user: currentUser._id },
@@ -95,10 +85,8 @@ const refferalToWallet = async (req, res) => {
         
        return res.redirect("/wallet");
       } else {
-        console.log('invalid refferal id')
          return res.redirect("/user_profile");
- 
-      }
+      };
       
     } catch (error) {
       console.error(

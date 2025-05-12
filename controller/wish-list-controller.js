@@ -1,14 +1,9 @@
 const userModel = require("../models/user");
 const productModel = require("../models/products");
 const categoryModel = require("../models/category");
-const otpModel = require("../models/otp");
 const cartModel = require("../models/cart");
-const orderModel = require("../models/order");
 const wishListModel = require("../models/wish-list");
-const nodemailer = require("nodemailer");
 const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const bcrypt = require("bcrypt");
 const { trusted } = require("mongoose");
 
 const wishList = async (req, res) => {
@@ -29,8 +24,6 @@ const wishList = async (req, res) => {
       })
       .populate("items.product");
 
-      console.log(wishListData)
-
     return res.render("user/wish-list", {
       errors: null,
       home: true,
@@ -46,10 +39,7 @@ const wishList = async (req, res) => {
 const wishListAdd = async (req, res) => {
   try {
     const productId = req.params.product_id;
-    console.log(productId);
     const email = req.session.user;
-    console.log(email);
-
     const user = await userModel.findOne({ email: email });
 
     const wishListData = await wishListModel
@@ -81,7 +71,6 @@ const wishListAdd = async (req, res) => {
         },
         { upsert: true, new: true }
       );
-      console.log("tk");
       return res.redirect("/wish_list_view");
     }
     return res.redirect("/wish_list_view");
@@ -93,17 +82,14 @@ const wishListAdd = async (req, res) => {
 
 const wishListAction = async (req, res) => {
   try {
-    console.log(req.body.itemId);
     const productId = req.body.itemId;
     const email = req.session.user;
-    console.log(email);
-
     const user = await userModel.findOne({ email: email });
 
     const wishListData = await wishListModel.findOneAndUpdate(
       { user: user._id, "items.product": productId },
-      { $set: { "items.$.is_added": false } }, // Toggle is_added to false
-      { new: true } // Return the updated document
+      { $set: { "items.$.is_added": false } },
+      { new: true }
     );
 
     if (!wishListData) {
@@ -120,7 +106,6 @@ const wishListAction = async (req, res) => {
         },
         { upsert: true, new: true }
       );
-      console.log("tk");
       return res.redirect("/wish_list_view");
 
     } else {
@@ -134,9 +119,7 @@ const wishListAction = async (req, res) => {
             },
           },
         }
-        // { upsert: true, new: true }
       );
-      console.log("tk00");
       return res.redirect("/wish_list_view"), console.log("redirceting");
     }
   } catch (error) {
@@ -149,7 +132,6 @@ const wishListRemove = async (req, res) => {
   try {
     const productId = req.params.item_id;
     const email = req.session.user;
-    console.log(productId);
 
     const user = await userModel.findOne({ email: email });
 
@@ -165,7 +147,6 @@ const wishListRemove = async (req, res) => {
       })
       .populate("items.product");
 
-    console.log("tk2");
     return res.render("user/wish-list", {
       home: true,
       mes: "",
@@ -224,10 +205,8 @@ const wishListToCart = async (req, res) => {
         { upsert: true, new: true }
       );
 
-      console.log("Product added to cart successfully");
       return res.redirect("/product_cart");
     } else {
-      console.log("Product already in cart or out of stock");
       return res.redirect("/home");
     }
   } catch (error) {

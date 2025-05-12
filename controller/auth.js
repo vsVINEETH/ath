@@ -33,7 +33,6 @@ passport.use(
                     email:profile._json.email,
                    
                 }).save().then((newUser) => {
-                    console.log('new user created'+newUser)
                     done(null, newUser)
                 })
             }

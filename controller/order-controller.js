@@ -42,7 +42,7 @@ const orderDetail = async (req, res) => {
   try {
     req.session.orderId = req.params.order_id;
     const orderId = req.session.orderId;
-    console.log(orderId);
+
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
     const userId = user._id;
@@ -74,15 +74,12 @@ const orderCancel = async (req, res) => {
     const cancelReason = req.body.cancelReason.toUpperCase();
     const otherReason = req.body.otherCancelReason;
     let actualReason = cancelReason + "," + otherReason;
-    console.log(actualReason);
-    console.log(productId, itemId, orderId);
 
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
     const userId = user._id;
 
     const orderData = await orderModel.findOneAndUpdate(
-      //in cancell cheyumbo price
       { user: userId, _id: orderId, "items._id": itemId },
       {
         $set: {
@@ -133,7 +130,7 @@ const orderCancel = async (req, res) => {
     if (orderData) {
       return res.redirect("/order_history");
     }
-    console.log(orderData);
+
   } catch (error) {
     console.error("Something happed to orderCancel entry issue", error);
     return res.status(404).render("user/error-page");
@@ -148,15 +145,12 @@ const orderReturn = async (req, res) => {
     const returnReason = req.body.returnReason.toUpperCase();
     const otherReason = req.body.otherReturnReason;
     let actualReason = returnReason + "," + otherReason;
-    console.log(actualReason);
-
-    console.log(productId, itemId, orderId);
 
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
     const userId = user._id;
 
-    const orderData = await orderModel.findOneAndUpdate(
+     await orderModel.findOneAndUpdate(
       { user: userId, _id: orderId, "items._id": itemId },
       {
         $set: {
@@ -177,9 +171,7 @@ const orderReturn = async (req, res) => {
 
 const ratingAndReview = async (req, res) => {
   try {
-    console.log("hello");
     const productId = req.params.product_id;
-    console.log(productId)
     const rating = req.body.rating * 1 || 5;
     const review = req.body.reviewComment.toString() || "good";
     const email = req.session.user; 
@@ -222,11 +214,11 @@ const ratingAndReview = async (req, res) => {
 
 const ratingDelete = async (req, res) => {
   try {
-    console.log('hello vineeth delete', req.params.rating_id)
-    const ratingId = req.params.rating_id
-    const productId = req.params.product_id
-    const ratingData = await ratingModel.findByIdAndDelete(ratingId)
-     return res.redirect(`/product_detail/${productId}`)
+    const ratingId = req.params.rating_id;
+    const productId = req.params.product_id;
+    await ratingModel.findByIdAndDelete(ratingId);
+
+    return res.redirect(`/product_detail/${productId}`)
   } catch (error) {
     console.error("Something happed to ratingDelete entry issue", error);
     return res.status(404).render("user/error-page");
@@ -242,7 +234,6 @@ const retryOrderPayment = async (req, res) => {
     const status = req.body.status;
 
     if (status) {
-      console.log("vanakkam");
       await orderModel.findOneAndUpdate(
         { _id: orderId },
         { "payment_details.payment_status": "completed" }
@@ -250,7 +241,7 @@ const retryOrderPayment = async (req, res) => {
 
       return res.json(paymentState);
     } else {
-      console.log("namasthe");
+
       await orderModel.findOneAndUpdate(
         { _id: orderId },
         { "payment_details.payment_status": "failed" }
@@ -275,7 +266,7 @@ const downloadOrderInvoice = async (req, res) => {
     const products = orderData.items.map((product) => ({
       quantity: Math.abs(product.quantity),
       description: product.product.product_name + " " + product.product.model,
-      price: Math.abs(product.total) /Math.abs(product.quantity) , // dividing by quantity to get unit price
+      price: Math.abs(product.total) /Math.abs(product.quantity) ,
       total: Math.abs(product.total),
     }));
 
@@ -347,7 +338,6 @@ const orderListAdmin = async (req, res) => {
 const orderDetailAdmin = async (req, res) => {
   try {
     req.session.adOrderId = req.params.order_id;
-
     const orderId = req.session.adOrderId;
 
     const orderData = await orderModel
@@ -367,7 +357,6 @@ const orderCancelAdmin = async (req, res) => {
     const productId = req.params.product_id;
     const itemId = req.params.item_id;
     const orderId = req.session.adOrderId;
-    console.log(productId, itemId, orderId);
 
     const orderData = await orderModel.findOneAndUpdate(
       { _id: orderId, "items._id": itemId },
@@ -421,7 +410,7 @@ const orderCancelAdmin = async (req, res) => {
     if (orderData) {
       return res.redirect("/admin/order_list");
     }
-    console.log(orderData);
+
   } catch (error) {
     console.error("Something happed to orderCancelAdmin entry issue", error);
     return res.status(404).render("admin/error-page");
@@ -434,8 +423,6 @@ const orderStatusAdmin = async (req, res) => {
     const newStatus = req.body.newStatus.toString();
     const orderId = req.body.orderId;
     const productId = req.body.productId || 1;//it is only for return 
-    
-    console.log(orderId, newStatus, itemId, productId);
 
     if (newStatus == "returned") {
       const orderData = await orderModel
@@ -473,10 +460,10 @@ const orderStatusAdmin = async (req, res) => {
         {$set:{"items.$.quantity":-quantity, "items.$.total":-amount}}
       )
 
-      const productData = await productModel.findByIdAndUpdate(productId, {
+      await productModel.findByIdAndUpdate(productId, {
         $inc: { quantity: quantity },
       });
-      // toWallet = items.total
+
       await walletModel.findOneAndUpdate(
         { user: userId },
         {
@@ -528,6 +515,7 @@ module.exports = {
   orderDetail,
   orderCancel,
   orderReturn,
+
   ratingAndReview,
   ratingDelete,
   retryOrderPayment,

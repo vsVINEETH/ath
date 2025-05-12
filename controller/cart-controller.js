@@ -22,8 +22,6 @@ const productCart = async (req, res) => {
       .find({ user: user._id })
       .populate("items.product");
 
-    console.log(cartData);
-
     if (cartData) {
       return res.render("user/product-cart", {
         errors: null,
@@ -50,7 +48,7 @@ const productCartAdd = async (req, res) => {
       .find({ user: user._id, "items.product": productId,})
       .populate("items.product");
 
-    let total = productData.price * 1 || 0; //in this here we need to implement logic of incrementing  product
+    let total = productData.price * 1 || 0;
     let productCount = 0;
     let limit = false;
     let productQuantity = 1;
@@ -95,8 +93,6 @@ const productCartAdd = async (req, res) => {
 
       for (const cartItem of cartData) {
         for (const item of cartItem.items) {
-
-          console.log(item.product._id,productId)
           if (item.product._id == productId) {
 
             let productPrice = item.product.price;
@@ -113,10 +109,7 @@ const productCartAdd = async (req, res) => {
               eachDiscount = Math.round(newTotal * discountPercentage)
 
               newDiscountAmount = Math.round(eachDiscount / 1)
-
               newTotalPrice = newTotal - eachDiscount;
-              console.log(itemTotal,newTotal,newTotalPrice)
-
               newCartTotal = Math.round(newTotalPrice - itemTotal)
 
             }else{
@@ -154,7 +147,7 @@ const productCartAdd = async (req, res) => {
       .find({ user: user._id })
       .populate("items.product");
   
-      if(cartData[0]?.applied_coupon == true ){
+      if(cartData[0]?.applied_coupon === true ){
 
       for (const cartItem of cartData) {
         for (const item of cartItem.items) {
@@ -175,9 +168,7 @@ const productCartAdd = async (req, res) => {
               eachDiscount = Math.round(newTotal * discountPercentage)
               
               newDiscountAmount = Math.round(eachDiscount /(productCartCount+1) )
-
               newTotalPrice = newTotal - eachDiscount;
-
               newCartTotal = Math.round(newTotalPrice / (productCartCount+1))
 
             }else{
@@ -202,7 +193,6 @@ const productCartAdd = async (req, res) => {
               },
               { new: true }
             );
-            console.log('working')
             break;
 
           }
@@ -268,16 +258,10 @@ const productQuantityUpdate = async (req, res) => {
             if(discountPercentage !== 0){
 
               let newTotal = Math.round(productPrice * (productCartCount-1))
-              console.log(newTotal)
 
               eachDiscount = Math.floor(newTotal * discountPercentage)
-              console.log(eachDiscount)
-              
               newDiscountAmount = Math.ceil(eachDiscount /(productCartCount-1) )
-              console.log(newDiscountAmount)
-
               newTotalPrice = newTotal - eachDiscount;
-              console.log(newTotalPrice)
               newCartTotal = Math.floor(newTotalPrice / (productCartCount-1))
 
             }else{
@@ -332,16 +316,11 @@ const productQuantityUpdate = async (req, res) => {
             if(discountPercentage !== 0){
 
               let newTotal = Math.round(productPrice * (productCartCount+1))
-              console.log(newTotal)
 
-              eachDiscount = Math.floor(newTotal * discountPercentage)
-              console.log(eachDiscount)
-
-              newDiscountAmount = Math.ceil(eachDiscount /(productCartCount+1) )
-              console.log(newDiscountAmount)
-
+              eachDiscount = Math.floor(newTotal * discountPercentage);
+              newDiscountAmount = Math.ceil(eachDiscount /(productCartCount+1) );
               newTotalPrice = newTotal - eachDiscount;
-              newCartTotal = Math.floor(newTotalPrice / (productCartCount+1))
+              newCartTotal = Math.floor(newTotalPrice / (productCartCount+1));
             }else{
 
               newTotalPrice = productPrice;
@@ -379,7 +358,7 @@ const productQuantityUpdate = async (req, res) => {
               },
               { new: true }
             );
-            break; // Exit inner loop after updating the matching product
+            break;
 
           } else {
             let productLimit = true;
@@ -392,7 +371,6 @@ const productQuantityUpdate = async (req, res) => {
     const cartData = await cartModel
       .find({ user: user._id ,"items.product":productId})
       .populate("items.product");
-    console.log(cartData);
 
     if (cartData) {
       const couponData = await couponModel.find({});
@@ -401,13 +379,6 @@ const productQuantityUpdate = async (req, res) => {
         couponData: couponData || []
       }
       res.json(updatedCartData);
-      // return res.render("user/product-cart", {
-      //   errors: null,
-      //   home: true,
-      //   mes: "",
-      //   cartData: cartData || [],
-      //   couponData,
-      // });
     } else {
       return res.redirect("/home");
     }
@@ -420,8 +391,6 @@ const productQuantityUpdate = async (req, res) => {
 const productCartRemove = async (req, res) => {
   try {
     const productId = req.params.product_id;
-    console.log(productId);
-
     const email = req.session.user;
     const user = await userModel.findOne({ email: email });
 
@@ -437,6 +406,7 @@ const productCartRemove = async (req, res) => {
     let totalDiscount = 0;
     let cartId = null;
     let itemslength = null;
+
     cartItems.forEach((cartItem) => {
       cartId = cartItem._id;
       itemslength = cartItem.items.length;
@@ -449,11 +419,9 @@ const productCartRemove = async (req, res) => {
       });
     });
 
-    console.log(cartId);
     if (cartItems.length == itemslength) {
 
       await cartModel.findByIdAndDelete(cartId);
-
       return res.redirect("/product_cart");
     }
 
@@ -487,32 +455,25 @@ const productCheckout = async (req, res) => {
     req.session.cartId = cartId;
 
     const cartData = await cartModel.findById(cartId).populate("items.product");
-
     const cartItems = await cartModel.findById(cartId,{"items.product":1,"items.quantity":1})
-    console.log(cartItems)
     const productData = await productModel.find({}, { _id: 1,quantity:1});
-    console.log(productData)
 
-  let stockAvailable = true;
-  cartItems.items.forEach(item => {
-    const foundProduct = productData.find(product => product._id.toString() === item.product.toString());
-    if (foundProduct) {
-      console.log('hello')
-        const productQuantity = foundProduct.quantity;
-        if (productQuantity >= item.quantity) {
-          stockAvailable = true
-            console.log(`Product ${item.product} found in productData with sufficient quantity.`);
-        } else {
-            console.log(`Product ${item.product} found in productData but quantity is insufficient.`);
-            stockAvailable = false;
-            return 
-        }
-    } else {
-        console.log(`Product ${item.product} not found in productData.`);
-    }
-});
+   let stockAvailable = true;
+    cartItems.items.forEach(item => {
+      const foundProduct = productData.find(product => product._id.toString() === item.product.toString());
+      if (foundProduct) {
 
-console.log(stockAvailable);
+          const productQuantity = foundProduct.quantity;
+          if (productQuantity >= item.quantity) {
+            stockAvailable = true
+          } else {
+              stockAvailable = false;
+              return; 
+          }
+      } else {
+          console.log(`Product ${item.product} not found in productData.`);
+      }
+  });
 
     if (stockAvailable === true) {
       return res.render("user/checkout-page", {
@@ -544,8 +505,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
     }
 
     const cartId = req.session.cartId;
-    console.log(cartId)
-    
+
     const user = await userModel
       .findOne({ email: req.session.user })
       .populate("address");
@@ -591,21 +551,16 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
     ]);
 
     const cartItems = await cartModel.findById(cartId,{"items.product":1,"items.quantity":1})
-    console.log(cartItems)
     const productData = await productModel.find({}, { _id: 1,quantity:1});
-    console.log(productData)
 
     let stockAvailable = true;
     cartItems.items.forEach(item => {
       const foundProduct = productData.find(product => product._id.toString() === item.product.toString());
       if (foundProduct) {
-        console.log('hello')
           const productQuantity = foundProduct.quantity;
           if (productQuantity >= item.quantity) {
-            stockAvailable = true
-              console.log(`Product ${item.product} found in productData with sufficient quantity.`);
+              stockAvailable = true
           } else {
-              console.log(`Product ${item.product} found in productData but quantity is insufficient.`);
               stockAvailable = false;
               return 
           }
@@ -637,7 +592,6 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
 
     if (index !== "new") {
       const selectedAddressId = user.address[index]._id;
-      console.log(selectedAddressId, "address");
       const userData = await userModel
         .findOneAndUpdate(
           {
@@ -658,7 +612,6 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
         )
         .populate("address");
 
-      console.log("hello");
       if (userData) {
         return res.render("user/checkout-page", {
           errors: null,
@@ -670,7 +623,6 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
         });
       }
     } else {
-      console.log(cartId)
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
         { $push: { address: data } }, 
@@ -698,10 +650,8 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
 const placeOrderCheckout = async (req, res) => {
   try {
     const index = req.session.checkoutIndex;
-   // const cartId = req.params.cart_id;
-   req.session.cartId = req.params.cart_id
-   const cartId = req.session.cartId;
-   console.log(cartId,"first")
+    req.session.cartId = req.params.cart_id
+    const cartId = req.session.cartId;
 
     const payment_status = req.body.paymentStatus || false;
 
@@ -710,12 +660,9 @@ const placeOrderCheckout = async (req, res) => {
       .populate("address");
 
     const userId = user._id;
-
     const cartData = await cartModel
       .findOne({ user: userId })
       .populate("items.product");
-
-      console.log(cartData,"ithu aanu ivdde")
 
     const payment_details = {
       payment_method: req.body.paymentMethod || "COD",
@@ -739,7 +686,6 @@ const placeOrderCheckout = async (req, res) => {
     } else if (payment_details.payment_method.toString() === "COD") {
 
       if(cartData.total_price > 1000){
-        console.log("it is not working ")
         const minAmount = true;
         return res.status(400).json({ minAmount });
       }
@@ -758,7 +704,6 @@ const placeOrderCheckout = async (req, res) => {
       }
 
       const walletData = await walletModel.findOne({user:userId});
-      console.log(walletData)
 
       if(walletData === null || walletData === undefined){
         const balance = true
@@ -780,10 +725,8 @@ const placeOrderCheckout = async (req, res) => {
         );
         await confirm();
 
-      }
-      
-      
-    }
+      };
+    };
 
     async function confirm() {
       if (payment_status) {

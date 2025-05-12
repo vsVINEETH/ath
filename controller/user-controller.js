@@ -29,7 +29,6 @@ const loginPost = async (req, res) => {
   try {
     const email = req.body.email;
     let user = ""
-    console.log(email)
 
     if(email){
        user = await userModel.findOne({ email: email });
@@ -89,7 +88,6 @@ function sendOtpEmail(email) {
       email: email,
       otp: generatedOtp,
     };
-    console.log(otpData.otp);
 
     otpModel.insertMany(otpData);
 
@@ -139,7 +137,6 @@ const forgotPassword = (req, res) => {
 };
 
 const forgotPasswordPost = async (req, res) => {
-  console.log("hello");
   try {
     await Promise.all([
       body("email")
@@ -206,8 +203,6 @@ const forgotPasswordPost = async (req, res) => {
     }
 
     const result = validatePassword(data.password);
-    console.log(result);
-
     if (result !== true) {
       return res.render("user/forgot-password", {
         errors: null,
@@ -217,7 +212,7 @@ const forgotPasswordPost = async (req, res) => {
       });
     }
     req.session.newPassword = data;
-    console.log(data);
+
     const existinUser = await userModel.findOne({ email: data.email });
 
     if (!existinUser) {
@@ -255,15 +250,12 @@ const loginAuthRedirect = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      console.log(user, "hello auth1");
       return res.redirect("/login");
     } // Redirect to login if authentication fails
     req.logIn(user, (err) => {
       if (err) {
-        console.log(user, "hello auth2");
         return next(err);
       }
-      console.log(user, "hello auth");
       req.session.user = user.email;
       return res.redirect("/home"); // Redirect to profile page if authentication is successful
     });
@@ -284,7 +276,6 @@ const loginAuthFacebookRedirect = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      console.log(user, "hello auth");
       req.session.user = user.email;
       return res.redirect("/home"); // Redirect to profile page if authentication is successful
     });
@@ -312,7 +303,6 @@ const signup = async (req, res) => {
 const signupPost = async (req, res) => {
   try {
     await Promise.all([
-      //validation
       body("first_name")
         .trim()
         .notEmpty()
@@ -340,7 +330,6 @@ const signupPost = async (req, res) => {
         .run(req),
     ]);
 
-    //checking the validation-result
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.render("user/signup", {
@@ -356,7 +345,6 @@ const signupPost = async (req, res) => {
       last_name: req.body.last_name,
       email: req.body.email,
       password: req.body.password,
-   
     };
 
     req.session.signupData = data;
@@ -393,7 +381,6 @@ const signupPost = async (req, res) => {
     }
 
     const result = validatePassword(data.password);
-    console.log(result);
 
     if (result !== true) {
       return res.render("user/signup", {
@@ -416,7 +403,6 @@ const signupPost = async (req, res) => {
     }
 
     if (req.body.confirm_password === data.password && !existinUser) {
-      // Hash the password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(data.password, salt);
       data.password = hashedPassword;
@@ -480,8 +466,8 @@ const home = async (req, res) => {
     .limit(limit)
     .populate("category")
 
-    const wishListData = await wishListModel.find({user: user._id}).populate("items")
-    console.log(wishListData)
+    const wishListData = await wishListModel.find({user: user._id}).populate("items");
+
     req.session.old_query = false
     req.session.old_sortCriteria = false
     if (user) {
@@ -521,8 +507,7 @@ const productDetail = async (req, res) => {
       .populate("category");
 
     const ratingData = await ratingModel.find({product:productId}).populate('user')
-    console.log(ratingData)
-  
+
     const wishListData = await wishListModel.find({user: user._id}).populate("items")
     return res.render("user/product-detail", {
       home: true,
@@ -587,6 +572,7 @@ const userProfileUpdate = async (req, res) => {
     const user = await userModel
       .findOne({ email: req.session.user })
       .populate("address");
+
     if (!errors.isEmpty()) {
       return res.render("user/profile-main", {
         errors: errors.mapped(),
@@ -603,11 +589,9 @@ const userProfileUpdate = async (req, res) => {
       phone_number: req.body.phone_number,
     };
 
-    const userFound = await userModel.findByIdAndUpdate(userId, data);
-    console.log(userFound);
+    await userModel.findByIdAndUpdate(userId, data);
 
     if (user) {
-      console.log("here");
       return res.redirect("/user_profile");
     } else {
       return res.render("user/profile-main", {
@@ -747,9 +731,7 @@ const userProfileAddressEdit = async (req, res) => {
 
 const userProfileAddressEditIn = async (req, res) => {
   try {
-    console.log("helllo there");
     const addressId = req.params.address_id;
-    console.log(addressId);
     await Promise.all([
       body("street")
         .trim()
@@ -884,7 +866,6 @@ const userProfileSecurity = (req, res) => {
 
 const userProfileSecurityPost = async (req, res) => {
   try {
-    console.log("lock");
     await Promise.all([
       body("current_password")
         .trim()
@@ -950,7 +931,6 @@ const userProfileSecurityPost = async (req, res) => {
     }
 
     const result = validatePassword(data.new_password);
-    console.log(result);
     if (result !== true) {
       return res.render("user/profile-change-password", {
         errors: null,
@@ -963,7 +943,6 @@ const userProfileSecurityPost = async (req, res) => {
 
     //password setting for user logged using auth.
     if (!user.password) {
-      console.log("heeeer");
       if (data.new_password !== data.confirm_password) {
         return res.render("user/profile-change-password", {
           errors: null,
@@ -1052,7 +1031,6 @@ const refferalToWallet = async (req, res) => {
       
      return res.redirect("/wallet");
     } else {
-      console.log('invalid refferal id')
        return res.redirect("/user_profile");
     }
     
@@ -1194,8 +1172,6 @@ const filterSortSearch = async (req, res) => {
     req.session.old_sortCriteria = sortCriteria
     
     }
-
-    console.log(totalProduct)
       
     const categoryData = await categoryModel.find({});
     if (user) {
