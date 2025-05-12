@@ -1076,7 +1076,6 @@ const downloadReportExcel = async (req, res) => {
     });
 
     const workbook = new Excel.Workbook();
-
     const sheet = workbook.addWorksheet("Report");
 
     sheet.columns = [
