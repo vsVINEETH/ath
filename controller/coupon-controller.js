@@ -148,12 +148,8 @@ const couponDelete = async (req, res) => {
 
 const couponApply = async (req, res) => {
   try {
-   // const couponValue = req.body.coupon_value * 1 || 0;
-   const couponId  = req.body.coupon_value;
-   console.log(couponId)
-    console.log(couponId)
+    const couponId  = req.body.coupon_value;
     const couponData = await couponModel.findOne({_id:couponId})
-    console.log(couponData)
     const couponValue = couponData.discount_percentage
 
     if(couponValue === 0 || !couponValue){
@@ -191,8 +187,7 @@ const couponApply = async (req, res) => {
     cartData.discount_percentage = percentage;
     cartData.discount_amount = discountedAmount;
 
-    const updatedCart = await cartData.save();
-    //return res.status(200).json({ updatedCart });
+    await cartData.save();
     return res.redirect("/product_cart");
   } catch (error) {
     console.error("couponDelete entry issue", error);
@@ -227,7 +222,7 @@ const couponRemove = async (req, res) => {
     cartData.discount_percentage = 0;
     cartData.discount_amount = 0;
 
-    const updatedCart = await cartData.save();
+    await cartData.save();
     return res.redirect("/product_cart");
 
   } catch (error) {
@@ -235,6 +230,7 @@ const couponRemove = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
+
 module.exports = {
   couponList,
   couponAdd,
