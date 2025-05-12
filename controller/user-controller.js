@@ -866,7 +866,6 @@ const userProfileSecurity = (req, res) => {
 
 const userProfileSecurityPost = async (req, res) => {
   try {
-    console.log("lock");
     await Promise.all([
       body("current_password")
         .trim()
@@ -932,7 +931,6 @@ const userProfileSecurityPost = async (req, res) => {
     }
 
     const result = validatePassword(data.new_password);
-    console.log(result);
     if (result !== true) {
       return res.render("user/profile-change-password", {
         errors: null,
@@ -945,7 +943,6 @@ const userProfileSecurityPost = async (req, res) => {
 
     //password setting for user logged using auth.
     if (!user.password) {
-      console.log("heeeer");
       if (data.new_password !== data.confirm_password) {
         return res.render("user/profile-change-password", {
           errors: null,
@@ -1034,7 +1031,6 @@ const refferalToWallet = async (req, res) => {
       
      return res.redirect("/wallet");
     } else {
-      console.log('invalid refferal id')
        return res.redirect("/user_profile");
     }
     
@@ -1176,8 +1172,6 @@ const filterSortSearch = async (req, res) => {
     req.session.old_sortCriteria = sortCriteria
     
     }
-
-    console.log(totalProduct)
       
     const categoryData = await categoryModel.find({});
     if (user) {
