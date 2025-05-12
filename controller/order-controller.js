@@ -266,7 +266,7 @@ const downloadOrderInvoice = async (req, res) => {
     const products = orderData.items.map((product) => ({
       quantity: Math.abs(product.quantity),
       description: product.product.product_name + " " + product.product.model,
-      price: Math.abs(product.total) /Math.abs(product.quantity) , // dividing by quantity to get unit price
+      price: Math.abs(product.total) /Math.abs(product.quantity) ,
       total: Math.abs(product.total),
     }));
 
@@ -515,6 +515,7 @@ module.exports = {
   orderDetail,
   orderCancel,
   orderReturn,
+
   ratingAndReview,
   ratingDelete,
   retryOrderPayment,
