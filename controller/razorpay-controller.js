@@ -1,14 +1,7 @@
 const userModel = require("../models/user");
 const Razorpay = require("razorpay");
-const productModel = require("../models/products");
-const categoryModel = require("../models/category");
 const cartModel = require("../models/cart");
-const orderModel = require("../models/order");
 require("dotenv").config();
-const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const bcrypt = require("bcrypt");
-
 
 const razorpay = async (req, res) => {
   try {
