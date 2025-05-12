@@ -28,13 +28,11 @@ const loginpost = (req, res) => {
   try {
     const admin_user_name = process.env.ADMIN_USER_NAME;
     const admin_password = process.env.ADMIN_PASSWORD;
-    console.log(admin_password);
     if (
       admin_user_name === req.body.email &&
       admin_password === req.body.password
     ) {
       req.session.admin = req.body.email;
-      console.log(req.session.admin)
       return res.status(200).redirect("/admin/admin_dashboard");
     } else {
       return res.render("admin/login", { mes: "Invalid username or password" });
@@ -48,6 +46,7 @@ const loginpost = (req, res) => {
 const dashboard = async (req, res) => {
   try {
     if (req.session.admin) {
+
       const orderData = await orderModel.find();
 
       const result = await orderModel.aggregate([
@@ -65,6 +64,7 @@ const dashboard = async (req, res) => {
       const topProduct = await productModel.find({
         _id: { $in: result.map((item) => item._id) },
       });
+
       req.session.topProduct = topProduct;
 
       const categoryResult = await orderModel.aggregate([
@@ -100,6 +100,7 @@ const dashboard = async (req, res) => {
       const topCategory = await categoryModel.find({
         _id: { $in: categoryResult.map((item) => item._id) },
       });
+
       req.session.topCategory = topCategory;
 
       return res.status(200).render("admin/dashboard", {
@@ -121,6 +122,7 @@ const dashBoardFilter = async (req, res) => {
     const topProduct = req.session.topProduct;
     const topCategory = req.session.topCategory;
     const currentDate = new Date();
+
     let currentYear = currentDate.getFullYear();
     let currentMonth = currentDate.getMonth() + 1;
     let currentDay = currentDate.getDate();
@@ -161,7 +163,7 @@ const dashBoardFilter = async (req, res) => {
         };
       } else if (data.period == 7) {
         const startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Adjust to Monday
+        startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1);
 
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
@@ -220,7 +222,6 @@ const dashBoardFilter = async (req, res) => {
 const customers = async (req, res) => {
   try {
     const customerData = await userModel.find({});
-    //console.log(customerData);
     if (customerData) {
       return res.render("admin/users", { customerData });
     }
@@ -233,19 +234,15 @@ const customers = async (req, res) => {
 const customerAction = async (req, res) => {
   try {
     const userId = req.params.user_id;
-    const foundCustomer = await userModel.findById(userId); // Corrected findById usage
+    const foundCustomer = await userModel.findById(userId);
 
     if (!foundCustomer) {
       return res.status(404).render("admin/error-page");
     }
 
-    // Toggle the value of is_block
     foundCustomer.is_block = !foundCustomer.is_block;
+    await foundCustomer.save();
 
-    // Save the updated customer
-    await foundCustomer.save(); // Await the save operation
-
-    console.log(foundCustomer);
     return res.redirect("/admin/customers");
   } catch (error) {
     console.error("customerAction entry issue", error);
@@ -256,7 +253,6 @@ const customerAction = async (req, res) => {
 const category = async (req, res) => {
   try {
     const categoryData = await categoryModel.find({});
-    // console.log(categoryData);
     return res.render("admin/category", { categoryData });
   } catch (error) {
     console.error("category entry issue", error);
@@ -332,7 +328,6 @@ const categoryAction = async (req, res) => {
     foundCategory.is_listed = !foundCategory.is_listed;
     await foundCategory.save();
 
-    console.log(foundCategory);
     return res.redirect("/admin/category");
   } catch (error) {
     console.error("categoryAction entry issue", error);
@@ -345,8 +340,8 @@ const categoryEdit = async (req, res) => {
     const catData = {
       _id: req.params.category_id,
     };
+
     const categoryData = await categoryModel.findById(catData._id);
-    console.log("catData", catData);
     req.session.catData = catData;
     return res.render("admin/edit-category", {
       errors: null,
@@ -368,10 +363,11 @@ const categoryEditIn = async (req, res) => {
         .withMessage("This field is requird")
         .run(req),
     ]);
+
     const categoryData = await categoryModel.findById(catData._id);
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
-      console.log("oh error");
       return res.render("admin/edit-category", {
         errors: errors.mapped(),
         categoryData,
@@ -403,9 +399,8 @@ const categoryEditIn = async (req, res) => {
         categoryData,
       });
     } else {
-      console.log(foundCategory);
       return res.redirect("/admin/category");
-    }
+    };
   } catch (error) {
     console.error("categoryEditIn entry issue", error);
     return res.status(404).render("admin/error-page");
@@ -432,20 +427,23 @@ const categoryOffer = async (req, res) => {
       });
       return res.redirect("/admin/category");
     } else {
+
       for (let i = 0; i < productData.length; i++) {
-        if (productData[i].offer_applied == false) {
+        if (productData[i].offer_applied === false) {
+
           const mrp = productData[i].price;
           productData[i].mrp = productData[i].price;
 
           const discountedPrice = mrp - (mrp * offerPercentage) / 100;
-
           productData[i].price = parseInt(discountedPrice);
           productData[i].offer_applied = true;
 
           await productData[i].save();
         } else {
+
           const price = productData[i].mrp;
           productData[i].price = productData[i].mrp;
+
           const discountedPrice = price - (price * offerPercentage) / 100;
           productData[i].price = parseInt(discountedPrice);
 
@@ -839,7 +837,6 @@ const salesReportFilter = async (req, res) => {
     let dateRange = {};
     //filter date range
     if (data.from_date <= data.end_date) {
-      console.log("helllooo");
       dateRange = { $gte: data.from_date, $lte: data.end_date };
     } else {
       dateRange = {
