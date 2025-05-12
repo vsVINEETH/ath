@@ -183,7 +183,6 @@ const otpGenerator = () => {
   const forgotResendOtp = (req, res) => {
     try {
       const email = req.session.newPassword;
-      console.log(email.email);
       if (email) {
         sendOtpEmail(email.email);
         return res.redirect("/forgot_password_otp");
