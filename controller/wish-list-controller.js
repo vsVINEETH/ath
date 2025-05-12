@@ -132,7 +132,6 @@ const wishListRemove = async (req, res) => {
   try {
     const productId = req.params.item_id;
     const email = req.session.user;
-    console.log(productId);
 
     const user = await userModel.findOne({ email: email });
 
@@ -148,7 +147,6 @@ const wishListRemove = async (req, res) => {
       })
       .populate("items.product");
 
-    console.log("tk2");
     return res.render("user/wish-list", {
       home: true,
       mes: "",
@@ -207,10 +205,8 @@ const wishListToCart = async (req, res) => {
         { upsert: true, new: true }
       );
 
-      console.log("Product added to cart successfully");
       return res.redirect("/product_cart");
     } else {
-      console.log("Product already in cart or out of stock");
       return res.redirect("/home");
     }
   } catch (error) {
