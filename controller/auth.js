@@ -14,7 +14,7 @@ passport.deserializeUser((id, done) => {
 
 passport.use(
     new GoogleStrategy({
-        callbackURL:"https://athnow.life/auth/google/redirect",
+        callbackURL: process.env.GOOGLE_REDIRECT || "https://ath-87ig.onrender.com/auth/google/redirect",
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         
