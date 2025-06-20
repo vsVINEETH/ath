@@ -222,7 +222,6 @@ const couponRemove = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
-
 module.exports = {
   couponList,
   couponAdd,
