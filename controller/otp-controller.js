@@ -1,56 +1,10 @@
 const otpModel = require("../models/otp");
 const userModel = require("../models/user");
-const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
-const { trusted } = require("mongoose");
+const sendOTPEmail = require('../service/nodeMailer');
+const formatOTP = require('../utils/otpFormater');
 
-const otpGenerator = () => {
-    const randomNumber = Math.floor(Math.random() * (999999 - 100000) + 100000);
-    return randomNumber;
-  };
-  
-  function sendOtpEmail(email) {
-    try {
-      const generatedOtp = otpGenerator().toString();
-  
-      const otpData = {
-        email: email,
-        otp: generatedOtp,
-      };
-
-      otpModel.insertMany(otpData);
-  
-      let transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.APP_MAIL,
-          pass: process.env.APP_MAIL_PASS,
-        },
-      });
-  
-      let mailOptions = {
-        from: process.env.APP_MAIL,
-        to: otpData.email,
-        subject: "your OTP is here..!",
-        text: otpData.otp,
-      };
-  
-      transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
-    } catch (error) {
-      console.error("Something happed while mailing otp entry issue", error);
-      return res.status(404).render("user/error-page");
-    }
-  }
-  
-  const getOtp = (req, res) => {
+const getOtp = (req, res) => {
     try {
       return res.render("user/otp", {
         errors: null,
@@ -64,23 +18,9 @@ const otpGenerator = () => {
     }
   };
   
-  const postOtp = async (req, res) => {
+ const postOtp = async (req, res) => {
     try {
-      const otpNumbers = {
-        otp1: req.body.otp1,
-        otp2: req.body.otp2,
-        otp3: req.body.otp3,
-        otp4: req.body.otp4,
-        otp5: req.body.otp5,
-        otp6: req.body.otp6,
-      };
-      const otpCode =
-        `${otpNumbers.otp1}` +
-        `${otpNumbers.otp2}` +
-        `${otpNumbers.otp3}` +
-        `${otpNumbers.otp4}` +
-        `${otpNumbers.otp5}` +
-        `${otpNumbers.otp6}`;
+      const otpCode = formatOTP.otpFormatter(req.body);
   
       const otpDbCode = await otpModel.findOne({ otp: otpCode });
       const userData = req.session.signupData;
@@ -114,7 +54,7 @@ const otpGenerator = () => {
     try {
       const email = req.session.signupData;
       if (email) {
-        sendOtpEmail(email.email);
+        sendOTPEmail.sendOtpEmail(email.email);
         return res.redirect("/signup_otp");
       }
     } catch (error) {
@@ -139,21 +79,7 @@ const otpGenerator = () => {
   
   const forgotPasswordOtp = async (req, res) => {
     try {
-      const otpNumbers = {
-        otp1: req.body.otp1,
-        otp2: req.body.otp2,
-        otp3: req.body.otp3,
-        otp4: req.body.otp4,
-        otp5: req.body.otp5,
-        otp6: req.body.otp6,
-      };
-      const otpCode =
-        `${otpNumbers.otp1}` +
-        `${otpNumbers.otp2}` +
-        `${otpNumbers.otp3}` +
-        `${otpNumbers.otp4}` +
-        `${otpNumbers.otp5}` +
-        `${otpNumbers.otp6}`;
+      const otpCode = formatOTP.otpFormatter(req.body);
       const otpDbCode = await otpModel.findOne({ otp: otpCode });
       const userData = req.session.newPassword;
   
@@ -168,7 +94,7 @@ const otpGenerator = () => {
         const hashedPassword = await bcrypt.hash(userData.password, salt);
         userData.password = hashedPassword;
   
-        const updateResult = await userModel.updateOne(
+        await userModel.updateOne(
           { email: userData.email },
           { password: userData.password }
         );
@@ -184,7 +110,7 @@ const otpGenerator = () => {
     try {
       const email = req.session.newPassword;
       if (email) {
-        sendOtpEmail(email.email);
+        sendOTPEmail.sendOtpEmail(email.email);
         return res.redirect("/forgot_password_otp");
       }
     } catch (error) {
@@ -197,7 +123,7 @@ const otpGenerator = () => {
     getOtp,
     postOtp,
     signUpResendOtp,
-  
+
     forgotPasswordOtp,
     forgotPasswordGetOtp,
     forgotResendOtp,

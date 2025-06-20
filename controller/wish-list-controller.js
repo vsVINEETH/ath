@@ -3,8 +3,6 @@ const productModel = require("../models/products");
 const categoryModel = require("../models/category");
 const cartModel = require("../models/cart");
 const wishListModel = require("../models/wish-list");
-const { body, validationResult } = require("express-validator");
-const { trusted } = require("mongoose");
 
 const wishList = async (req, res) => {
   try {

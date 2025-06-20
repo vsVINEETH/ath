@@ -1,7 +1,5 @@
 const userModel = require("../models/user");
 const walletModel = require("../models/wallet");
-const { body, validationResult } = require("express-validator");
-const { trusted } = require("mongoose");
 
 const wallet = async (req, res) => {
     try {

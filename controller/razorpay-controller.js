@@ -13,7 +13,7 @@ const razorpay = async (req, res) => {
 
     const userId = user._id;
 
-    const cartData = await cartModel
+    await cartModel
       .findOne({ user: userId })
       .populate("items.product");
 
