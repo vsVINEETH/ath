@@ -9,8 +9,7 @@ const nodemailer = require("nodemailer");
 const { body, validationResult, sanitizeBody } = require("express-validator");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
-const { trusted } = require("mongoose");
-const { adminCheck } = require("../middle-ware/middle-wares");
+const sendOTPEmail = require('../service/nodeMailer');
 
 const login = (req, res) => {
   try {
@@ -75,6 +74,7 @@ const loginPost = async (req, res) => {
   }
 };
 
+//---------------
 const otpGenerator = () => {
   const randomNumber = Math.floor(Math.random() * (999999 - 100000) + 100000);
   return randomNumber;
@@ -118,6 +118,7 @@ function sendOtpEmail(email) {
     return res.status(404).render("user/error-page");
   }
 }
+//---------------
 
 const forgotPassword = (req, res) => {
   try {
@@ -239,6 +240,7 @@ const forgotPasswordPost = async (req, res) => {
   }
 };
 
+//---------------------
 const loginAuth = passport.authenticate("google", {
   scope: ["profile", "email"],
 });
@@ -262,26 +264,27 @@ const loginAuthRedirect = (req, res, next) => {
   })(req, res, next);
 };
 
-const loginAuthFacebook = passport.authenticate("facebook");
+// const loginAuthFacebook = passport.authenticate("facebook");
 
-const loginAuthFacebookRedirect = (req, res, next) => {
-  passport.authenticate("facebook", (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.redirect("/login");
-    } // Redirect to login if authentication fails
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
-      }
-      req.session.user = user.email;
-      return res.redirect("/home"); // Redirect to profile page if authentication is successful
-    });
-  })(req, res, next);
-};
+// const loginAuthFacebookRedirect = (req, res, next) => {
+//   passport.authenticate("facebook", (err, user, info) => {
+//     if (err) {
+//       return next(err);
+//     }
+//     if (!user) {
+//       return res.redirect("/login");
+//     } // Redirect to login if authentication fails
+//     req.logIn(user, (err) => {
+//       if (err) {
+//         return next(err);
+//       }
+//       req.session.user = user.email;
+//       return res.redirect("/home"); // Redirect to profile page if authentication is successful
+//     });
+//   })(req, res, next);
+// };
 
+//-------------
 const signup = async (req, res) => {
   try {
     if (req.session.user) {
@@ -406,7 +409,8 @@ const signupPost = async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(data.password, salt);
       data.password = hashedPassword;
-      sendOtpEmail(data.email);
+      sendOTPEmail.sendOtpEmail(data.email)
+      //sendOtpEmail(data.email);
       res.redirect("/signup_otp");
     } else {
       return res.render("user/signup", {
@@ -445,7 +449,7 @@ const landing = async (req, res) => {
     console.error("Something happed to landing page entry issue", error);
     return res.status(404).render("user/error-page");
   }
-};
+};//---
 
 const home = async (req, res) => {
   try {
@@ -490,7 +494,7 @@ const home = async (req, res) => {
     console.error("Something happed to home page entry issue", error);
     return res.status(404).render("user/error-page");
   }
-};
+};//---
 
 const productDetail = async (req, res) => {
   try {
@@ -521,7 +525,7 @@ const productDetail = async (req, res) => {
     console.error("Something happed to productDetail page entry issue", error);
     return res.status(404).render("user/error-page");
   }
-};
+};//----
 
 const userProfile = async (req, res) => {
   try {
@@ -539,7 +543,7 @@ const userProfile = async (req, res) => {
     console.error("Something happed to userProfile page entry issue", error);
     return res.status(404).render("user/error-page");
   }
-};
+};//----------
 
 const userProfileUpdate = async (req, res) => {
   try {
@@ -849,7 +853,7 @@ const userProfileAddressDelete = async (req, res) => {
     );
     return res.status(404).render("user/error-page");
   }
-};
+};//------
 
 const userProfileSecurity = (req, res) => {
   try {
@@ -862,7 +866,7 @@ const userProfileSecurity = (req, res) => {
     console.error("Something happed to userProfileSecurity entry issue", error);
     return res.status(404).render("user/error-page");
   }
-};
+};//---------
 
 const userProfileSecurityPost = async (req, res) => {
   try {
@@ -1001,7 +1005,7 @@ const userProfileSecurityPost = async (req, res) => {
     );
     return res.status(404).render("user/error-page");
   }
-};
+};//-------------
 
 const refferalToWallet = async (req, res) => {
   try {
@@ -1077,7 +1081,6 @@ const filterSortSearch = async (req, res) => {
       search: req.query.search || "",
       sort: req.query.sort || 1,
     };
-    console.log(data);
 
     let query = {};
     // Quantity
@@ -1100,7 +1103,6 @@ const filterSortSearch = async (req, res) => {
       });
       if (category) {
         query.category = category._id;
-        console.log(category.category_name); // Match the category ID
       }
     }
 
@@ -1109,7 +1111,6 @@ const filterSortSearch = async (req, res) => {
       query.colour = data.colour.toLowerCase();
     }
 
-    
     //search  
     let search = {};
     if (data.search && data.search !== "") {
@@ -1118,10 +1119,8 @@ const filterSortSearch = async (req, res) => {
         { colour: { $regex: data.search, $options: "i" } },
         { model: { $regex: data.search, $options: "i" } },
         { description: { $regex: data.search, $options: "i" } },
-     
       ];
     }
-
 
     //sorting area
     let sortCriteria = {};
@@ -1142,8 +1141,6 @@ const filterSortSearch = async (req, res) => {
       sortCriteria = { model: -1 };
     }
 
-    console.log(query);
-    
     let productData = {};
     if(req.session.old_query || req.session.old_sortCriteria ){
       const currentQuery = {...search, ...req.session.old_query};
@@ -1202,15 +1199,14 @@ const logout = (req, res) => {
     console.error("Something happed while logout issue", err);
     return res.status(404).render("user/error-page");
   }
-};
-
+};//--------
 module.exports = {
+
   landing,
   home,
 
   login,
   loginPost,
-  forgotPassword,
   logout,
 
   signup,
@@ -1221,8 +1217,8 @@ module.exports = {
 
   loginAuth,
   loginAuthRedirect,
-  loginAuthFacebook,
-  loginAuthFacebookRedirect,
+  // loginAuthFacebook,
+  // loginAuthFacebookRedirect,
 
   productDetail,
 

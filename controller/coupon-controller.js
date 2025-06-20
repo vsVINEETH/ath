@@ -1,15 +1,7 @@
 const userModel = require("../models/user");
-const productModel = require("../models/products");
-const categoryModel = require("../models/category");
-const orderModel = require("../models/order");
 const cartModel = require("../models/cart");
 const couponModel = require("../models/coupon");
-const path = require("path");
-const nodemailer = require("nodemailer");
 const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const bcrypt = require("bcrypt");
-const { trusted } = require("mongoose");
 require("dotenv").config();
 
 const couponList = async (req, res) => {
@@ -230,7 +222,6 @@ const couponRemove = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
-
 module.exports = {
   couponList,
   couponAdd,

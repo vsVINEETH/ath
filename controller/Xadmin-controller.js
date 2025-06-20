@@ -218,6 +218,7 @@ const dashBoardFilter = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
+//-----------------------------------------
 
 const customers = async (req, res) => {
   try {
@@ -249,6 +250,8 @@ const customerAction = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
+
+//
 
 const category = async (req, res) => {
   try {
@@ -461,6 +464,8 @@ const categoryOffer = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
+
+//----
 
 const product = async (req, res) => {
   try {
@@ -794,6 +799,8 @@ const productOffer = async (req, res) => {
   }
 };
 
+
+//----------
 const salesReport = async (req, res) => {
   try {
     req.session.reportData = false;
@@ -1136,7 +1143,7 @@ const downloadReportCSV = async (req, res) => {
     return res.status(404).render("admin/error-page");
   }
 };
-
+//-------------
 const logout = (req, res) => {
   try {
     req.session.admin = false;

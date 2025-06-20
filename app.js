@@ -7,10 +7,14 @@ const cors = require('cors');
 const nocache = require("nocache");
 const morgan = require("morgan");
 const path = require("path");
+const sessionConfig = require('./config/sessionConfig');
+const rateLimitConfig = require('./config/rateLimitConfig')
 require("dotenv").config();
 const passport = require("passport");
-const passportSetup = require("./controller/auth");
-const passportSetup2 = require("./controller/face-book-auth");
+//const passportSetup = require("./controller/auth");
+const googleAuth = require('./config/googleAuth');
+const facebookAuth = require('./config/facebookAuth');
+// const passportSetup2 = require("./controller/face-book-auth");
 const { ignoreFavicon } = require("./middle-ware/middle-wares");
 
 const userRouter = require("./routes/user-routes");
@@ -35,20 +39,10 @@ app.use(express.static("public"));
 app.use(ignoreFavicon);
 
 // Session middleware
-const oneday = 1000 * 60 * 60 * 24;
-app.use(session({
-  secret: process.env.SECRET,
-  resave: false,
-  cookie: { maxAge: oneday },
-  saveUninitialized: true,
-}));
+app.use(session(sessionConfig));
 
 // Request rate limit middleware
-const limiter = rateLimit({
-  max: 1000,
-  windowMs: 60 * 60 * 100,
-  message: 'Too many requests from this IP, please try again later.'
-});
+const limiter = rateLimit(rateLimitConfig);
 app.use(limiter);
 
 // XSS and MongoDB sanitization middleware
@@ -72,7 +66,6 @@ app.set("view engine", "ejs");
 // Routes
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
-
 
 
 // Start server
