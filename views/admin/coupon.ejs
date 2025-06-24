@@ -53,17 +53,23 @@
                 <% couponData.forEach((element, index) => { %>
                     <tr class="align-middle text-center">
                       <td class="border"><%= index +1 %></td>
-                      <td class="border"><%= element.coupon_code %></td>
+                      <td class="border text-truncate" style="max-width: 150px"><%= element.coupon_code %></td>
                       <td class="border"><%= element.discount_percentage %></td>
                       <td class="border"><%= element.expire_date.toLocaleDateString() %></td>
                       <td class="border"><%= element.status %></td>
-                      <td class="border"><a href="/admin/coupon_action/<%= element._id %>" style="text-decoration: none;"> 
+                      <td class="border">
+                        <!-- <a href="/admin/coupon_action/<%= element._id %>" style="text-decoration: none;"> 
                         <% if (element.status == 'active' && element.status !== "expired" ) { %>
                           <button class="btn  btn-sm btn-danger">Deactivate</button>
                         <% } else if (element.status == "deactive" && element.status !== "expired" ) { %>
                           <button class="btn  btn-sm btn-primary">Activate</button>
                           </a>
-                        <% } %>
+                        <% } %> -->
+                        <button 
+                          class="btn btn-sm toggle-coupon-btn <%= element.status === 'active' ? 'btn-danger' : 'btn-primary' %>" 
+                          data-id="<%= element._id %>">
+                          <%= element.status === 'active' ? 'Deactivate' : 'Activate' %>
+                        </button>
                          <a href="/admin/delete_coupon/<%= element._id %>" style="text-decoration: none;">
                         <button class="btn  btn-sm btn-secondary">Delete</button>
                           </a>
@@ -89,6 +95,51 @@
 <script>
    new DataTable('#example');
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = $('#example').DataTable();
+
+    $('#example tbody').on('click', '.toggle-coupon-btn', async function () {
+      const btn = this;
+      const couponId = btn.dataset.id;
+
+      try {
+        const response = await fetch(`/admin/coupon_action/${couponId}`);
+        const result = await response.json();
+
+        if (result.success) {
+          const row = table.row($(btn).closest('tr'));
+          const rowData = row.data();
+
+          // Update status column (index 4)
+          rowData[4] = result.status;
+
+          // Update action column (index 5)
+          const newBtnClass = result.status === 'active' ? 'btn-danger' : 'btn-primary';
+          const newBtnText = result.status === 'active' ? 'Deactivate' : 'Activate';
+
+          rowData[5] = `
+            <button class="btn btn-sm toggle-coupon-btn ${newBtnClass}" data-id="${couponId}">
+              ${newBtnText}
+            </button>
+            <a href="/admin/delete_coupon/${couponId}" style="text-decoration: none;">
+              <button class="btn btn-sm btn-secondary">Delete</button>
+            </a>
+          `;
+
+          row.data(rowData).invalidate().draw(false);
+        } else {
+          alert(result.message || "Failed to update coupon");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Server or network error");
+      }
+    });
+  });
+</script>
+
 
 
 <%- include('footer.ejs') %>

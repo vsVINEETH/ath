@@ -144,21 +144,21 @@
                   <p class="">Top selling product</p>
                   <hr>
                   <% topProduct.forEach((element) => { %>
-                    <span style="color: #e8e8e8;"><%= element.product_name+element.model %></span> <br>
+                    <span  class="text-truncate" style="max-width: 100px; color: #e8e8e8;"><%= element.product_name+element.model %></span> <br>
                   <% }) %>
                 </div>
                 <div class="ms-3 rounded shadow col-md-2 text-light text-center bg-dark shining-effect" >
                   <p>Top selling category</p>
                   <hr>
                   <% topCategory.forEach((element) => { %>
-                  <span style="color: #e8e8e8;"><%= element.category_name %></span> <br>
+                  <span   class="text-truncate" style="max-width: 100px; color: #e8e8e8;"><%= element.category_name %></span> <br>
                   <% }) %>
                 </div>
                 <div class="ms-3 rounded shadow col-md-2 text-white text-center bg-dark shining-effect">
                   <p>Top selling model</p>
                   <hr>
                   <% topProduct.forEach((element) => { %>
-                  <span style="color: #e8e8e8;" ><%=element.model %></span> <br>
+                  <span  class="text-truncate" style="max-width: 100px; color: #e8e8e8;"><%=element.model %></span> <br>
                   <% }) %>
                 </div>
               </div>

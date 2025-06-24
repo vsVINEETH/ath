@@ -25,7 +25,13 @@ const customerAction = async (req, res) => {
     foundCustomer.is_block = !foundCustomer.is_block;
     await foundCustomer.save();
 
-    return res.redirect("/admin/customers");
+    return res.status(200).json({
+      success: true,
+      is_block: foundCustomer.is_block,
+      user_id: foundCustomer._id,
+    });
+
+   // return res.redirect("/admin/customers");
   } catch (error) {
     console.error("customerAction entry issue", error);
     return res.status(404).render("admin/error-page");

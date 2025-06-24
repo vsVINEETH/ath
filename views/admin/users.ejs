@@ -48,12 +48,18 @@
                 <td class="border"><%= (element.first_name && element.last_name) ? (element.first_name + ' ' + element.last_name) : element.user_name %></td>
                 <td class="border"><%= element.email ? element.email : element.user_email %></td>
                 <td class="border"><%= element.is_block? 'Blocked' : 'Active' %></td>
-                <td class="border"><a href="/admin/customers_action/<%= element._id %>" style="text-decoration: none;"> 
+                <td class="border">
+                  <!-- <a href="/admin/customers_action/<%= element._id %>" style="text-decoration: none;"> 
                   <% if (element.is_block) { %>
                     <button class="btn cus-btn btn-md btn-primary">Unblock</button>
                   <% } else if (!element.is_block) { %>
                     <button class="btn cus-btn btn-md btn-danger">Block</button></a></td>
-                  <% } %>
+                  <% } %> -->
+                  <button 
+                    class="btn cus-btn btn-md toggle-block-btn <%= element.is_block ? 'btn-primary' : 'btn-danger' %>" 
+                    data-id="<%= element._id %>">
+                    <%= element.is_block ? 'Unblock' : 'Block' %>
+                  </button>
                 <!-- <td></td> -->
               </tr>
               <% }) %>
@@ -76,5 +82,47 @@
 <script>
    new DataTable('#example');
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = $('#example').DataTable();
+
+    $('#example tbody').on('click', '.toggle-block-btn', async function () {
+      const btn = this;
+      const userId = btn.dataset.id;
+
+      try {
+        const response = await fetch(`/admin/customers_action/${userId}`);
+        const result = await response.json();
+
+        if (result.success) {
+          const row = table.row($(btn).closest('tr'));
+          const rowData = row.data();
+
+          // Update Status column (index 3)
+          rowData[3] = result.is_block ? 'Blocked' : 'Active';
+
+          // Update Action column (index 4)
+          const newBtnClass = result.is_block ? 'btn-primary' : 'btn-danger';
+          const newBtnText = result.is_block ? 'Unblock' : 'Block';
+
+          rowData[4] = `
+            <button class="btn cus-btn btn-md toggle-block-btn ${newBtnClass}" data-id="${userId}">
+              ${newBtnText}
+            </button>
+          `;
+
+          row.data(rowData).invalidate().draw(false);
+        } else {
+          alert(result.message || "Failed to toggle block status");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Network/server error");
+      }
+    });
+  });
+</script>
+
 
 <%- include('footer.ejs') %>
