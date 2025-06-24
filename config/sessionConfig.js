@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const oneday = 1000 * 60 * 60 * 24;
 const sessionConfig = {
   secret: process.env.SECRET,

@@ -1,15 +1,15 @@
-const userModel = require("../models/user");
-const walletModel = require("../models/wallet")
-const productModel = require("../models/products");
-const categoryModel = require("../models/category");
-const otpModel = require("../models/otp");
-const ratingModel = require("../models/rating")
-const wishListModel = require("../models/wish-list");
+const userModel = require("../../models/user");
+const walletModel = require("../../models/wallet")
+const productModel = require("../../models/products");
+const categoryModel = require("../../models/category");
+const otpModel = require("../../models/otp");
+const ratingModel = require("../../models/rating")
+const wishListModel = require("../../models/wish-list");
 const nodemailer = require("nodemailer");
 const { body, validationResult, sanitizeBody } = require("express-validator");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
-const sendOTPEmail = require('../service/nodeMailer');
+const sendOTPEmail = require('../../service/nodeMailer');
 
 const login = (req, res) => {
   try {

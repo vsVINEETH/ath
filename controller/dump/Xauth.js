@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20');
-const userModel = require("../models/user");
+const userModel = require("../../models/user");
 
 passport.serializeUser((user, done) => {
     done(null, user.id);//monogo id
