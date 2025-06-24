@@ -1,21 +1,21 @@
-
 ```markdown
 # 🛍️ ATH - E-Commerce Web Application
 
-**ATH** is a full-featured, secure, and scalable e-commerce web application built using **Node.js**, **Express.js**, **MongoDB**, and **EJS**. It follows the **MVC+ architecture**, integrates modern tools like Razorpay for payments and Passport.js for authentication, and includes powerful features like invoice generation, image cropping, and Excel/CSV reporting.
+ATH is a full-featured, secure, and scalable e-commerce web application built using Node.js, Express.js, MongoDB, and EJS.
+It follows the MVC+ architecture, integrates modern tools like Razorpay for payments and Passport.js for authentication, and includes powerful features like invoice generation, image cropping, and Excel/CSV reporting.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-
 project\_ath/
 ├── config/           # Config files (DB, sessions, passport, etc.)
 ├── constants/        # Static values like messages, HTTP codes
 ├── controller/       # All route handler logic (controllers)
 ├── middle-ware/      # Custom Express middlewares
 ├── models/           # Mongoose schemas for DB collections
+
 ├── public/           # Static files (images, CSS, JS)
 ├── routes/           # Route files (admin-routes.js, user-routes.js)
 ├── service/          # External services (e.g. Razorpay, Mail)
@@ -23,36 +23,34 @@ project\_ath/
 ├── views/            # EJS templates
 ├── .env              # Environment variables
 ├── app.js            # Main Express application entry point
-
 ````
 
----
 
 ## 🚀 Features
 
-- 🔐 **User Authentication**
+- 🔐 User Authentication
   - Local login/signup with password encryption (bcrypt)
   - Google & Facebook OAuth via Passport.js
 
-- 🛒 **E-Commerce Essentials**
+- 🛒 E-Commerce Essentials
   - Product listing, filtering, sorting, and searching
   - Cart, Wishlist, Orders, and Referral to Wallet
   - Razorpay payment integration
 
-- 📄 **Reports & Exports**
+- 📄 Reports & Exports
   - PDF invoices using PDFKit
   - CSV/Excel export using `json2csv` and `exceljs`
 
-- 🧾 **Admin Panel**
+- 🧾 Admin Panel
   - Dashboard analytics
   - Product/category management
   - Coupon & banner controls
 
-- 📸 **Image Handling**
+- 📸 Image Handling
   - Cropping (CropperJS)
   - Multer for uploads
 
-- 📊 **Security & Performance**
+- 📊 Security & Performance
   - Rate limiting
   - XSS protection
   - MongoDB sanitization

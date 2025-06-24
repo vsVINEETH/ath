@@ -7,8 +7,8 @@
             <div class="card-body px-5 py-3 text-center">
   
               <h3 class="mb-5">Admin Login</h3>
-              <span class="text-danger fw-bold"><%= mes %></span>
-              <form action="/admin/admin_login" method="post">
+              <span class="text-danger fw-bold"><%= mes ? mes : "" %></span>
+              <form id="adminLoginForm" action="/admin/admin_login"   method="post">
               <div class="form-outline mb-4 text-start">
                 <label class="form-label" for="typeEmailX-2">Username</label>
                 <input type="email" id="typeEmailX-2" name="email" class="form-control" placeholder="Enter your username" required />                
@@ -20,7 +20,6 @@
               </div>
 
               <button class="btn btn-outline-dark btn-md btn-block" type="submit">Login</button>
-              
             </form>
             </div>
           </div>
@@ -28,5 +27,39 @@
       </div>
     </div>
   </section>
+
+  <script>
+  //  document.getElementById("adminLoginForm").addEventListener("submit", async function(event) {
+  //   event.preventDefault(); // Prevent the default form submit (which causes page reload)
+
+  //   const email = document.querySelector('input[name="email"]').value;
+  //   const password = document.querySelector('input[name="password"]').value;
+
+  //   try {
+  //     const response = await fetch("/admin/admin_login", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({ email, password })
+  //     });
+
+  //     const result = await response.json();
+  //     console.log(response.ok)
+  //     if (response.ok) {
+  //       // Redirect or show success message
+  //       window.location.href = "/admin/admin_dashboard"; // or wherever you want to redirect
+  //     } else {
+  //       // Show error message
+  //       document.querySelector('.text-danger').innerText = result.message || 'Login failed';
+  //     }
+
+  //   } catch (err) {
+  //     console.error("Error:", err);
+  //     document.querySelector('.text-danger').innerText = 'Something happend.';
+  //   }
+  // });
+  </script>
+
 
   <%- include('footer') %>
