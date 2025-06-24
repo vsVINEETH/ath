@@ -101,11 +101,12 @@ const productAddPost = async (req, res) => {
     });
 
     if (existinCategory) {
+      console.log('hello dear')
       const newProduct = new productModel(data);
       await newProduct.save();
 
-      const productData = await productModel.find({});
-      return res.render("admin/product", { productData });
+      return res.redirect('/admin/product');
+      
     } else {
       return res.render("admin/add-product", {
         errors: null,
@@ -130,7 +131,12 @@ const productAction = async (req, res) => {
     foundProduct.is_listed = !foundProduct.is_listed;
     await foundProduct.save();
 
-    return res.redirect("/admin/product");
+    return res.status(200).json({
+      success: true,
+      is_listed: foundProduct.is_listed,
+      product_id: foundProduct._id,
+    });
+   // return res.redirect("/admin/product");
   } catch (error) {
     console.error("productAction entry issue", error);
     return res.status(404).render("admin/error-page");

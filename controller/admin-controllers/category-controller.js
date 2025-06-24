@@ -82,7 +82,13 @@ const categoryAction = async (req, res) => {
     foundCategory.is_listed = !foundCategory.is_listed;
     await foundCategory.save();
 
-    return res.redirect("/admin/category");
+    return res.status(200).json({
+      success: true,
+      is_listed: foundCategory.is_listed,
+      category_id: foundCategory._id,
+    });
+
+    //return res.redirect("/admin/category");
   } catch (error) {
     console.error("categoryAction entry issue", error);
     return res.status(404).render("admin/error-page");

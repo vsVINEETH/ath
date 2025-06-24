@@ -120,7 +120,14 @@ const couponAction = async (req, res) => {
     }
 
     await foundCoupon.save();
-    return res.redirect("/admin/coupon");
+    
+    return res.status(200).json({
+      success: true,
+      status: foundCoupon.status,
+      coupon_id: foundCoupon._id,
+    });
+
+    //return res.redirect("/admin/coupon");
   } catch (error) {
     console.error("couponAction entry issue", error);
     return res.status(404).render("admin/error-page");
