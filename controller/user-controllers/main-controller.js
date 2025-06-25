@@ -4,6 +4,7 @@ const productModel = require("../../models/products");
 const categoryModel = require("../../models/category");
 const ratingModel = require("../../models/rating")
 const wishListModel = require("../../models/wish-list");
+const httpStatus = require('../../constants/status')
 const { body, validationResult, sanitizeBody } = require("express-validator");
 
 const landing = async (req, res) => {
@@ -13,13 +14,13 @@ const landing = async (req, res) => {
     const categoryData = await categoryModel.find({});
     
     if (user) {
-      return res.render("user/home", {
+      return res.status(httpStatus.OK).render("user/home", {
         home: true,
         productData,
         categoryData,
       });
     } else {
-      return res.render("user/landing", {
+      return res.status(httpStatus.OK).render("user/landing", {
         home: false,
         productData,
         categoryData,
@@ -27,7 +28,7 @@ const landing = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to landing page entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -56,7 +57,7 @@ const home = async (req, res) => {
     req.session.old_sortCriteria = false
     if (user) {
       
-      return res.render("user/home", {
+      return res.status(httpStatus.OK).render("user/home", {
         home: true,
         page,
         limit,
@@ -72,7 +73,7 @@ const home = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to home page entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -93,7 +94,7 @@ const productDetail = async (req, res) => {
     const ratingData = await ratingModel.find({product:productId}).populate('user')
 
     const wishListData = await wishListModel.find({user: user._id}).populate("items")
-    return res.render("user/product-detail", {
+    return res.status(httpStatus.OK).render("user/product-detail", {
       home: true,
       user,
       productData,
@@ -103,7 +104,7 @@ const productDetail = async (req, res) => {
     });
   } catch (error) {
     console.error("Something happed to productDetail page entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -144,7 +145,7 @@ const refferalToWallet = async (req, res) => {
       "Something happed to refferalToWallet entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 }
 
@@ -165,7 +166,7 @@ const filterSortSearch = async (req, res) => {
       const productData = await productModel.find({})
       .populate("category");
       const categoryData = await categoryModel.find({});
-      return res.render("user/home", {
+      return res.status(httpStatus.PARTIAL_CONTENT).render("user/home", {
         home: true,
         productData,
         categoryData,
@@ -288,7 +289,7 @@ const filterSortSearch = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to filter entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

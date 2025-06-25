@@ -22,6 +22,5 @@ const messages = {
     INTERNAL_ERROR : "Something went wrong",
 };
 
-module.exports = {
-    messages
-}
+module.exports = messages
+

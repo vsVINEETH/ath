@@ -3,10 +3,11 @@ const userModel = require("../models/user");
 const bcrypt = require("bcrypt");
 const sendOTPEmail = require('../service/nodeMailer');
 const formatOTP = require('../utils/otpFormater');
+const httpStatus = require('../constants/status');
 
 const getOtp = (req, res) => {
     try {
-      return res.render("user/otp", {
+      return res.status(httpStatus.OK).render("user/otp", {
         errors: null,
         checkPass: true,
         home: false,
@@ -14,7 +15,7 @@ const getOtp = (req, res) => {
       });
     } catch (error) {
       console.error("Something happed  get-otp entry issue", error);
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   };
   
@@ -27,7 +28,7 @@ const getOtp = (req, res) => {
       req.session.user = userData.email;
   
       if (!otpDbCode) {
-        return res.render("user/otp",{
+        return res.status(httpStatus.BAD_REQUEST).render("user/otp",{
           errors:null,
           home:false,
           mes:"Incorrect OTP ..!",
@@ -38,7 +39,7 @@ const getOtp = (req, res) => {
         await newUser.save();
         return res.redirect("/home");
       } else {
-        return res.render("user/otp",{
+        return res.status(httpStatus.BAD_REQUEST).render("user/otp",{
           errors:null,
           home:false,
           mes:"OTP not found",
@@ -46,7 +47,7 @@ const getOtp = (req, res) => {
       }
     } catch (error) {
       console.error("Something happed  post-otp entry issue", error);
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   };
   
@@ -59,13 +60,13 @@ const getOtp = (req, res) => {
       }
     } catch (error) {
       console.error("Something happed  signUpResendOtp entry issue", error);
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   };
   
   const forgotPasswordGetOtp = (req, res) => {
     try {
-      return res.render("user/forgot-otp", {
+      return res.status(httpStatus.OK).render("user/forgot-otp", {
         errors: null,
         checkPass: true,
         home: false,
@@ -73,7 +74,7 @@ const getOtp = (req, res) => {
       });
     } catch (error) {
       console.error("Something happed  forgotPasswordGetOtp entry issue", error);
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   };
   
@@ -84,7 +85,7 @@ const getOtp = (req, res) => {
       const userData = req.session.newPassword;
   
       if (!otpDbCode) {
-        return res.render("user/forgot-otp",{
+        return res.status(httpStatus.BAD_REQUEST).render("user/forgot-otp",{
           errors:null,
           home:false,
           mes:"Incorrect OTP ..!",
@@ -102,7 +103,7 @@ const getOtp = (req, res) => {
       }
     } catch (error) {
       console.error("User forgot password otp entry issue", error);
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   };
   
@@ -115,7 +116,7 @@ const getOtp = (req, res) => {
       }
     } catch (error) {
       console.error("Something happed  forgotResendOtp entry issue", error);
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   };
 

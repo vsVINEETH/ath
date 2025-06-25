@@ -2,6 +2,7 @@ const userModel = require("../../models/user");
 const bcrypt = require("bcrypt");
 const sendOTPEmail = require('../../service/nodeMailer');
 const passwordValidator = require('../../utils/passwordValidator');
+const httpStatus = require('../../constants/status')
 const { body, validationResult, sanitizeBody } = require("express-validator");
 
 const forgotPassword = (req, res) => {
@@ -9,7 +10,7 @@ const forgotPassword = (req, res) => {
     if (req.session.user) {
       return res.redirect("/home");
     } else {
-      return res.render("user/forgot-password", {
+      return res.status(httpStatus.OK).render("user/forgot-password", {
         errors: null,
         mes: "",
         home: false,
@@ -17,7 +18,7 @@ const forgotPassword = (req, res) => {
     }
   } catch (error) {
     console.error("User forgot password entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -59,7 +60,7 @@ const forgotPasswordPost = async (req, res) => {
     const result = passwordValidator.validatePassword(data.password);
 
     if (result !== true) {
-      return res.render("user/forgot-password", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/forgot-password", {
         errors: null,
         checkPass: true,
         home: false,
@@ -71,7 +72,7 @@ const forgotPasswordPost = async (req, res) => {
     const existinUser = await userModel.findOne({ email: data.email });
 
     if (!existinUser) {
-      return res.render("user/forgot-password", {
+      return res.status(httpStatus.CONFLICT).render("user/forgot-password", {
         errors: null,
         mes: "User not found",
         home: false,
@@ -82,7 +83,7 @@ const forgotPasswordPost = async (req, res) => {
       sendOTPEmail.sendOtpEmail(data.email);
       return res.redirect("/forgot_password_otp");
     } else {
-      return res.render("user/forgot-password", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/forgot-password", {
         errors: null,
         mes: "Password mismatch",
         home: false,
@@ -90,20 +91,20 @@ const forgotPasswordPost = async (req, res) => {
     }
   } catch (error) {
     console.error("User forgot password post entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
 const userProfileSecurity = (req, res) => {
   try {
-    return res.render("user/profile-change-password", {
+    return res.status(httpStatus.OK).render("user/profile-change-password", {
       errors: null,
       home: true,
       mes: "",
     });
   } catch (error) {
     console.error("Something happed to userProfileSecurity entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -129,7 +130,7 @@ const userProfileSecurityPost = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.render("user/profile-change-password", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-change-password", {
         errors: errors.mapped(),
         home: true,
         mes: "",
@@ -144,7 +145,7 @@ const userProfileSecurityPost = async (req, res) => {
 
     const result = passwordValidator.validatePassword(data.new_password);
     if (result !== true) {
-      return res.render("user/profile-change-password", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-change-password", {
         errors: null,
         home: true,
         mes: "poor password",
@@ -156,7 +157,7 @@ const userProfileSecurityPost = async (req, res) => {
     //password setting for user logged using auth.
     if (!user.password) {
       if (data.new_password !== data.confirm_password) {
-        return res.render("user/profile-change-password", {
+        return res.status(httpStatus.BAD_REQUEST).render("user/profile-change-password", {
           errors: null,
           home: true,
           mes: "wrong confirm password",
@@ -181,7 +182,7 @@ const userProfileSecurityPost = async (req, res) => {
     );
 
     if (passwordMatch !== true) {
-      return res.render("user/profile-change-password", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-change-password", {
         errors: null,
         home: true,
         mes: "Incorrect current password mismatch",
@@ -189,7 +190,7 @@ const userProfileSecurityPost = async (req, res) => {
     }
 
     if (data.new_password !== data.confirm_password) {
-      return res.render("user/profile-change-password", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-change-password", {
         errors: null,
         home: true,
         mes: "wrong confirm password",
@@ -211,7 +212,7 @@ const userProfileSecurityPost = async (req, res) => {
       "Something happed to userProfileSecurityPost entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

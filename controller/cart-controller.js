@@ -2,6 +2,7 @@ const userModel = require("../models/user");
 const productModel = require("../models/products");
 const cartModel = require("../models/cart");
 const couponModel = require("../models/coupon");
+const httpStatus = require('../constants/status')
 require("dotenv").config();
 
 const productCart = async (req, res) => {
@@ -15,7 +16,7 @@ const productCart = async (req, res) => {
       .populate("items.product");
 
     if (cartData) {
-      return res.render("user/product-cart", {
+      return res.status(httpStatus.OK).render("user/product-cart", {
         errors: null,
         home: true,
         mes: "",
@@ -25,7 +26,7 @@ const productCart = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to productCart entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -215,7 +216,7 @@ const productCartAdd = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to productCartAdd entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -354,7 +355,7 @@ const productQuantityUpdate = async (req, res) => {
 
           } else {
             let productLimit = true;
-            return res.status(400).json({productLimit:productLimit});
+            return res.status(httpStatus.BAD_REQUEST).json({productLimit:productLimit});
           }
         }
       }
@@ -376,7 +377,7 @@ const productQuantityUpdate = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in productQuantityUpdate:", error);
-    return res.status(500).render("user/error-page");
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).render("user/error-page");
   }
 };
 
@@ -433,7 +434,7 @@ const productCartRemove = async (req, res) => {
     return res.redirect("/product_cart");
   } catch (error) {
     console.error("Something happed to productCartRemove entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
