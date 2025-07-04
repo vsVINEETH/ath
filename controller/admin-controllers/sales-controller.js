@@ -2,16 +2,17 @@ const orderModel = require("../../models/order");
 const PDFDocument = require("pdfkit");
 const Excel = require("exceljs");
 const json2csv = require("json2csv");
+const httpStatus = require('../../constants/status')
 require("dotenv").config();
 
 const salesReport = async (req, res) => {
   try {
     req.session.reportData = false;
     const orderData = await orderModel.find({}).populate("items.product");
-    return res.render("admin/sales-report", { orderData: orderData });
+    return res.status(httpStatus.OK).render("admin/sales-report", { orderData: orderData });
   } catch (error) {
     console.error("salesReport entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -146,10 +147,10 @@ const salesReportFilter = async (req, res) => {
 
     req.session.reportData = orderData;
 
-    return res.render("admin/sales-report", { orderData: orderData });
+    return res.status(httpStatus.OK).render("admin/sales-report", { orderData: orderData });
   } catch (error) {
     console.error("salesReportFilter entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -259,7 +260,7 @@ const downloadReportPDF = async (req, res) => {
     doc.end();
   } catch (error) {
     console.error("downloadReportPDF entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -310,7 +311,7 @@ const downloadReportExcel = async (req, res) => {
     await workbook.xlsx.write(res);
   } catch (error) {
     console.error("downloadReportExcel entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -343,7 +344,7 @@ const downloadReportCSV = async (req, res) => {
     res.send(csv);
   } catch (error) {
     console.error("downloadReportCSV entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 

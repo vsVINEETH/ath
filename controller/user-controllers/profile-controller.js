@@ -1,4 +1,5 @@
 const userModel = require("../../models/user");
+const httpStatus = require('../../constants/status')
 const { body, validationResult, sanitizeBody } = require("express-validator");
 
 const userProfile = async (req, res) => {
@@ -7,7 +8,7 @@ const userProfile = async (req, res) => {
       .findOne({ email: req.session.user })
       .populate("address");
     if (user) {
-      return res.render("user/profile-main", {
+      return res.status(httpStatus.OK).render("user/profile-main", {
         home: true,
         errors: null,
         user,
@@ -15,7 +16,7 @@ const userProfile = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to userProfile page entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -52,7 +53,7 @@ const userProfileUpdate = async (req, res) => {
       .populate("address");
 
     if (!errors.isEmpty()) {
-      return res.render("user/profile-main", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-main", {
         errors: errors.mapped(),
         home: true,
         mes: "",
@@ -72,7 +73,7 @@ const userProfileUpdate = async (req, res) => {
     if (user) {
       return res.redirect("/user_profile");
     } else {
-      return res.render("user/profile-main", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-main", {
         errors: null,
         home: true,
         mes: "user not found",
@@ -81,7 +82,7 @@ const userProfileUpdate = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to userProfileUpdate entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -92,7 +93,7 @@ const userProfileAddress = async (req, res) => {
       .populate("address");
 
     if (user) {
-      return res.render("user/profile-address", {
+      return res.status(httpStatus.OK).render("user/profile-address", {
         errors: null,
         home: true,
         user,
@@ -100,7 +101,7 @@ const userProfileAddress = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to userProfileAddress entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -145,7 +146,7 @@ const userProfileAddressAdd = async (req, res) => {
 
     if (!errors.isEmpty()) {
       const user = await userModel.findById(userId).populate("address");
-      return res.render("user/profile-address", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-address", {
         errors: errors.mapped(),
         home: true,
         mes:'',
@@ -170,7 +171,7 @@ const userProfileAddressAdd = async (req, res) => {
 
     if (user) {
       const user = await userModel.findById(userId).populate("address");
-      return res.render("user/profile-address", {
+      return res.status(httpStatus.OK).render("user/profile-address", {
         errors: null,
         home: true,
         mes: "",
@@ -182,7 +183,7 @@ const userProfileAddressAdd = async (req, res) => {
       "Something happed to userProfileAddressAdd entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -192,7 +193,7 @@ const userProfileAddressEdit = async (req, res) => {
       .findOne({ email: req.session.user })
       .populate("address");
     const index = req.params.index;
-    return res.render("user/profile-address-edit", {
+    return res.status(httpStatus.OK).render("user/profile-address-edit", {
       errors: null,
       home: true,
       index,
@@ -203,7 +204,7 @@ const userProfileAddressEdit = async (req, res) => {
       "Something happed to userProfileAddressEdit entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -250,7 +251,7 @@ const userProfileAddressEditIn = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty) {
-      return res.render("user/profile-address-edit", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/profile-address-edit", {
         errors: errors.mapped(),
         home: true,
         mes: "",
@@ -296,7 +297,7 @@ const userProfileAddressEditIn = async (req, res) => {
       "Something happed to userProfileAddressEditIn entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -313,7 +314,7 @@ const userProfileAddressDelete = async (req, res) => {
       .populate("address");
 
     if (user) {
-      return res.render("user/profile-address", {
+      return res.status(httpStatus.OK).render("user/profile-address", {
         errors: null,
         home: true,
         mes: "",
@@ -325,7 +326,7 @@ const userProfileAddressDelete = async (req, res) => {
       "Something happed to userProfileAddressDelete entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

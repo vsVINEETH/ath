@@ -53,6 +53,5 @@ const status = {
     HTTP_VERSION_NOT_SUPPORTED : 505,
 }
 
-module.exports = {
-    status
-}
+module.exports = status
+

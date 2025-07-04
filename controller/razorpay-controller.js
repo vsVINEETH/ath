@@ -1,6 +1,7 @@
 const userModel = require("../models/user");
 const Razorpay = require("razorpay");
 const cartModel = require("../models/cart");
+const httpStatus = require('../constants/status')
 require("dotenv").config();
 
 const razorpay = async (req, res) => {
@@ -19,7 +20,7 @@ const razorpay = async (req, res) => {
 
       if (!index) {
         const address = true;
-        return res.status(400).json({ address });
+        return res.status(httpStatus.BAD_REQUEST).json({ address });
       }
 
     const { amount } = req.body;
@@ -37,7 +38,7 @@ const razorpay = async (req, res) => {
     instance.orders.create(options, function (err, order) {
       if (err) {
         console.error(err);
-        res.status(500).send("Error creating order");
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Error creating order");
         return;
       }
 
@@ -45,7 +46,7 @@ const razorpay = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
-    res.status(500).send("Error creating Razorpay order");
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Error creating Razorpay order");
   }
 };
 
@@ -67,7 +68,7 @@ const razorpayWallet = (req, res) => {
     instance.orders.create(options, function (err, order) {
       if (err) {
         console.error(err);
-        res.status(500).send("Error creating order");
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Error creating order");
         return;
       }
       res.send({ orderId: order.id });
@@ -75,7 +76,7 @@ const razorpayWallet = (req, res) => {
 
   } catch (error) {
     console.error("Error creating razorpayWallet:", error);
-    res.status(500).send("Error creating Razorpay order");
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Error creating Razorpay order");
   }
 }
 
@@ -97,14 +98,14 @@ const razorpayPaymentRetry = async (req, res) => {
     instance.orders.create(options, function (err, order) {
       if (err) {
         console.error(err);
-        res.status(500).send("Error creating order");
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Error creating order");
         return;
       }
      return  res.send({ orderId: order.id });
     });
   } catch (error) {
     console.error("Error creating razorpayPaymentRetry", error);
-    res.status(500).send("Error creating Razorpay order");
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Error creating Razorpay order");
   }
 }
 

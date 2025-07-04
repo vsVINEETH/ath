@@ -1,13 +1,13 @@
 const userModel = require("../models/user");
 const walletModel = require("../models/wallet");
-
+const httpStatus = require('../constants/status')
 const wallet = async (req, res) => {
     try {
         const email = req.session.user;
         const user = await userModel.findOne({email: email})
         const walletData = await walletModel.find({user:user._id}).sort({ "transactions.createdAt": -1 })
         
-        return res.render("user/wallet-page",{
+        return res.status(httpStatus.OK).render("user/wallet-page",{
             errors:null,
             home:true,
             mes:"",
@@ -15,7 +15,7 @@ const wallet = async (req, res) => {
         })
     } catch (error) {
         console.error("Something happed to wallet entry issue", error);
-        return res.status(404).render("user/error-page");
+        return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
 }
 
@@ -34,8 +34,8 @@ const walletAddMoney = async (req, res) => {
               $push:{ transactions:{type:"credited", amount:amount,description:"Razorpay"}} 
             },
             { upsert: true, new: true }
-        );
-        return res.json(walletData)
+           );
+           return res.status(httpStatus.OK).json(walletData)
         } else {
               await walletModel.findOneAndUpdate(
                 { user: user._id },
@@ -43,7 +43,7 @@ const walletAddMoney = async (req, res) => {
                 },
                 { upsert: true, new: true }
             );
-            return res.json(walletData)
+            return res.status(httpStatus.OK).json(walletData)
         };
 
     } catch (error) {
@@ -51,7 +51,7 @@ const walletAddMoney = async (req, res) => {
         "Something happed to walletAddMoney entry issue",
         error
       );
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
 }
 
@@ -91,7 +91,7 @@ const refferalToWallet = async (req, res) => {
         "Something happed to refferalToWallet entry issue",
         error
       );
-      return res.status(404).render("user/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
     }
   }
 module.exports = {

@@ -1,6 +1,7 @@
 const productModel = require("../../models/products");
 const orderModel = require("../../models/order");
 const walletModel = require("../../models/wallet");
+const httpStatus = require('../../constants/messages');
 
 const orderListAdmin = async (req, res) => {
   try {
@@ -8,12 +9,14 @@ const orderListAdmin = async (req, res) => {
       .find({})
       .sort({ createdAt: -1 })
       .populate("items.product");
-    res.render("admin/order-list", {
+
+    res.status(httpStatus.OK).render("admin/order-list", {
       orderData: orderData || [],
     });
+    return;
   } catch (error) {
     console.error("Something happed to orderListAdmin entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -25,12 +28,14 @@ const orderDetailAdmin = async (req, res) => {
     const orderData = await orderModel
       .find({ _id: orderId })
       .populate("items.product");
-    res.render("admin/order-detail", {
+
+    res.status(httpStatus.OK).render("admin/order-detail", {
       orderData: orderData || [],
     });
+    return;
   } catch (error) {
     console.error("Something happed to orderDetailAdmin entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -47,7 +52,6 @@ const orderCancelAdmin = async (req, res) => {
           "items.$.status": "cancelled",
         },
       },
-
       { new: true }
     );
 
@@ -95,7 +99,7 @@ const orderCancelAdmin = async (req, res) => {
 
   } catch (error) {
     console.error("Something happed to orderCancelAdmin entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -176,19 +180,19 @@ const orderStatusAdmin = async (req, res) => {
     return res.redirect("/admin/order_list");
   } catch (error) {
     console.error("Something happed to orderStatusAdmin entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
 const returnOrderAdmin = async (req, res) => {
   try {
     const orderData = await orderModel.find({}).populate("items.product");
-    res.render("admin/return-detail", {
+    res.status(httpStatus.OK).render("admin/return-detail", {
       orderData: orderData || [],
     });
   } catch (error) {
     console.error("Something happed to returnOrderAdmin entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 

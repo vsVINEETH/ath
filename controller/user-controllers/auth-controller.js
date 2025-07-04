@@ -3,17 +3,18 @@ const bcrypt = require("bcrypt");
 const sendOTPEmail = require('../../service/nodeMailer');
 const passwordValidator = require('../../utils/passwordValidator');
 const { body, validationResult, sanitizeBody } = require("express-validator");
+const httpStatus = require('../../constants/status');
 
 const login = (req, res) => {
   try {
     if (req.session.user) {
       return res.redirect("/home");
     } else {
-      return res.render("user/login", { mes: "", home: false });
+      return res.status(httpStatus.OK).render("user/login", { mes: "", home: false, old:{} });
     }
   } catch (error) {
     console.error("User login entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -25,23 +26,26 @@ const loginPost = async (req, res) => {
     if(email){
        user = await userModel.findOne({ email: email });
     }else{
-      return res.render("user/login", {
+      return res.status(httpStatus.ACCEPTED).render("user/login", {
         mes: "User not found",
         home: false,
+        old:req.body,
       });
     }
 
     if (!user) {
-      return res.render("user/login", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/login", {
         mes: "User not found",
         home: false,
+        old: req.body,
       });
     }
 
     if (user.is_block) {
-      return res.render("user/login", {
+      return res.status(httpStatus.UNAUTHORIZED).render("user/login", {
         mes: "You are blocked",
         home: false,
+        old:req.body,
       });
     }
 
@@ -56,14 +60,15 @@ const loginPost = async (req, res) => {
 
       return res.redirect("/home");
     } else {
-      return res.render("user/login", {
+      return res.status(httpStatus.BAD_REQUEST).render("user/login", {
         mes: "Incorrect password",
         home: false,
+        old:req.body,
       });
     }
   } catch (error) {
     console.error("User login post entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -73,7 +78,7 @@ const logout = (req, res) => {
     return res.redirect("/login");
   } catch (err) {
     console.error("Something happed while logout issue", err);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -84,6 +89,7 @@ const signup = async (req, res) => {
     } else {
       return res.render("user/signup", {
         errors: null,
+        old:{},
         checkPass: true,
         home: false,
         mes: "",
@@ -130,6 +136,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: errors.mapped(),
         checkPass: true,
+        old: req.body,
         home: false,
         mes: "",
       });
@@ -150,6 +157,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: null,
         checkPass: true,
+        old:req.body,
         home: false,
         mes: "poor password",
       });
@@ -161,6 +169,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: null,
         checkPass: true,
+        old: req.body,
         home: false,
         mes: "Existing user",
       });
@@ -177,6 +186,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: null,
         checkPass: false,
+        old: req.body,
         home: false,
         mes: "",
       });

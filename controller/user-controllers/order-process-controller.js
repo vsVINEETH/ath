@@ -3,6 +3,7 @@ const productModel = require("../../models/products");
 const cartModel = require("../../models/cart");
 const orderModel = require("../../models/order");
 const walletModel = require("../../models/wallet");
+const httpStatus = require('../../constants/status')
 require("dotenv").config();
 const { body, validationResult } = require("express-validator");
 
@@ -37,7 +38,7 @@ const productCheckout = async (req, res) => {
   });
 
     if (stockAvailable === true) {
-      return res.render("user/checkout-page", {
+      return res.status(httpStatus.OK).render("user/checkout-page", {
         errors: null,
         home: true,
         mes: "",
@@ -54,7 +55,7 @@ const productCheckout = async (req, res) => {
     }
   } catch (error) {
     console.log("Something happed to productCheckout entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -174,7 +175,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
         .populate("address");
 
       if (userData) {
-        return res.render("user/checkout-page", {
+        return res.status(httpStatus.OK).render("user/checkout-page", {
           errors: null,
           home: true,
           mes: "Address confirmed",
@@ -189,7 +190,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
         { $push: { address: data } }, 
         { new: true } 
       );
-      return res.render("user/checkout-page", {
+      return res.status(httpStatus.OK).render("user/checkout-page", {
         errors: null,
         home: true,
         mes: "New address created",
@@ -204,7 +205,7 @@ const checkoutAddressAddEditUpdate = async (req, res) => {
       "Something happed to checkoutAddressAddEditUpdate entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -241,19 +242,19 @@ const placeOrderCheckout = async (req, res) => {
     if (payment_details.payment_method.toString() === "online") {
       if (!index) {
         const address = true;
-        return res.status(400).json({ address });
+        return res.status(httpStatus.BAD_REQUEST).json({ address });
       }
       await confirm();
     } else if (payment_details.payment_method.toString() === "COD") {
 
       if(cartData.total_price > 1000){
         const minAmount = true;
-        return res.status(400).json({ minAmount });
+        return res.status(httpStatus.BAD_REQUEST).json({ minAmount });
       }
 
       if (!index) {
         const address = true;
-        return res.status(400).json({ address });
+        return res.status(httpStatus.BAD_REQUEST).json({ address });
       }
 
       await confirm();
@@ -261,19 +262,19 @@ const placeOrderCheckout = async (req, res) => {
       
       if (!index) {
         const address = true;
-        return res.status(400).json({ address });
+        return res.status(httpStatus.BAD_REQUEST).json({ address });
       }
 
       const walletData = await walletModel.findOne({user:userId});
 
       if(walletData === null || walletData === undefined){
         const balance = true
-        return res.status(400).json({balance})
+        return res.status(httpStatus.BAD_REQUEST).json({balance})
       }
 
       if(walletData.balance < cartData.total_price) {
         const balance = true
-        return res.status(400).json({balance})
+        return res.status(httpStatus.BAD_REQUEST).json({balance})
       }
 
       if(cartData.total_price <= walletData.balance){
@@ -333,11 +334,11 @@ const placeOrderCheckout = async (req, res) => {
       req.session.checkoutIndex = false;
 
       const showModal = true; 
-      return res.status(200).json({ showModal });
+      return res.status(httpStatus.OK).json({ showModal });
     }
   } catch (error) {
     console.log("Something happed to placeOrderCheckout entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

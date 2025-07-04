@@ -61,7 +61,8 @@ router.get('/user_profile_address_delete/:address_id', blockCheck, userCheck, pr
 router.get('/user_profile_security', blockCheck, userCheck, securityController.userProfileSecurity);
 router.post('/user_profile_security', blockCheck, userCheck, securityController.userProfileSecurityPost);
 
-router.get('/filter', blockCheck, userCheck, mainController.filterSortSearch);
+//router.get('/filter', blockCheck, userCheck, mainController.filterSortSearch);
+router.get('/filter', (req, res) => res.redirect('/home?' + new URLSearchParams(req.query).toString()));
 router.get('/product_detail/:product_id', blockCheck, userCheck, mainController.productDetail);
 
 router.get('/product_cart', blockCheck, userCheck, cartController.productCart);

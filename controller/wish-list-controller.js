@@ -3,6 +3,7 @@ const productModel = require("../models/products");
 const categoryModel = require("../models/category");
 const cartModel = require("../models/cart");
 const wishListModel = require("../models/wish-list");
+const httpStatus = require('../constants/status');
 
 const wishList = async (req, res) => {
   try {
@@ -22,7 +23,7 @@ const wishList = async (req, res) => {
       })
       .populate("items.product");
 
-    return res.render("user/wish-list", {
+    return res.status(httpStatus.OK).render("user/wish-list", {
       errors: null,
       home: true,
       mes: "",
@@ -30,7 +31,7 @@ const wishList = async (req, res) => {
     });
   } catch (error) {
     console.error("Something happed to wishList entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -74,7 +75,7 @@ const wishListAdd = async (req, res) => {
     return res.redirect("/wish_list_view");
   } catch (error) {
     console.error("Something happed to wishListAdd entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -122,7 +123,7 @@ const wishListAction = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to wishListAction entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -145,7 +146,7 @@ const wishListRemove = async (req, res) => {
       })
       .populate("items.product");
 
-    return res.render("user/wish-list", {
+    return res.status(httpStatus.OK).render("user/wish-list", {
       home: true,
       mes: "",
       errors: null,
@@ -153,7 +154,7 @@ const wishListRemove = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in wishListRemove:", error);
-    return res.status(500).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -209,7 +210,7 @@ const wishListToCart = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in whishListToCart:", error);
-    return res.status(500).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

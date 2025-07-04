@@ -1,15 +1,17 @@
 require("dotenv").config();
+const httpStatus = require('../../constants/status')
+
 
 const login = (req, res) => {
   try {
     if (req.session.admin) {
-      return res.status(200).redirect("/admin/admin_dashboard");
+      return res.redirect("/admin/admin_dashboard");
     } else {
-      return res.status(200).render("admin/login", { mes: "" });
+      return res.status(httpStatus.OK).render("admin/login", { mes: "" });
     }
   } catch (error) {
     console.error("Login entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -23,13 +25,13 @@ const loginpost = (req, res) => {
       admin_password === req.body.password
     ) {
       req.session.admin = req.body.email;
-      return res.status(200).redirect("/admin/admin_dashboard");
+      return res.redirect("/admin/admin_dashboard");
     } else {
-      return res.render("admin/login", { mes: "Invalid username or password" });
+      return res.status(httpStatus.UNAUTHORIZED).render("admin/login", { mes: "Invalid username or password" });
     }
   } catch (error) {
     console.error("Loginpost entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -39,7 +41,7 @@ const logout = (req, res) => {
     return res.redirect("/admin/admin_login");
   } catch (error) {
     console.error("Logout issue", error);
-    return res.status(500).render("admin/error-page");
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).render("admin/error-page");
   }
 };
 

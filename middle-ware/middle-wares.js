@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 const userModel = require("../models/user");
 const multer = require("multer");
 const path = require("path");
+const httpStatus = require('../constants/status')
 const categoryModel = require("../models/category");
 
 
@@ -15,8 +16,7 @@ const blockCheck = async (req, res, next) => {
   const email = req.session.user;
   const user = await userModel.findOne({ email: email });
   if (user && user.is_block === true) {
-    console.log("hoi");
-    return res.render("user/login", {
+    return res.status(httpStatus.UNAUTHORIZED).render("user/login", {
       mes: "You are blocked",
       home: false,
     });
@@ -45,7 +45,7 @@ const userCheck = (req, res, next) => {
 
 const ignoreFavicon = (req, res, next) => {
   if (req.originalUrl.includes("favicon.ico")) {
-    res.status(204).end();
+    res.status(httpStatus.NO_CONTENT).end();
   } else {
     next();
   }

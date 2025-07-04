@@ -1,5 +1,6 @@
 const categoryModel = require("../../models/category");
 const productModel = require("../../models/products");
+const httpStatus = require('../../constants/status')
 const { body, validationResult } = require("express-validator");
 require("dotenv").config();
 
@@ -7,22 +8,22 @@ require("dotenv").config();
 const category = async (req, res) => {
   try {
     const categoryData = await categoryModel.find({});
-    return res.render("admin/category", { categoryData });
+    return res.status(httpStatus.OK).render("admin/category", { categoryData });
   } catch (error) {
     console.error("category entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
 const categoryAdd = async (req, res) => {
   try {
-    return res.render("admin/add-category", {
+    return res.status(httpStatus.OK).render("admin/add-category", {
       errors: null,
       mes: "",
     });
   } catch (error) {
     console.error("categoryAdd entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -38,8 +39,7 @@ const categoryAddPost = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log("h");
-      return res.render("admin/add-category", {
+      return res.status(httpStatus.BAD_REQUEST).render("admin/add-category", {
         errors: errors.mapped(),
         mes: "",
       });
@@ -57,16 +57,16 @@ const categoryAddPost = async (req, res) => {
       await newCategory.save();
       const categoryData = await categoryModel.find({});
       
-      return res.render("admin/category", { categoryData });
+      return res.status(httpStatus.OK).render("admin/category", { categoryData });
     } else {
-      return res.render("admin/add-category", {
+      return res.status(httpStatus.CONFLICT).render("admin/add-category", {
         mes: "This category already exists",
         errors: null,
       });
     }
   } catch (error) {
     console.error("categoryAddPost entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -76,13 +76,13 @@ const categoryAction = async (req, res) => {
     const foundCategory = await categoryModel.findById(categoryId);
 
     if (!foundCategory) {
-      return res.status(404).render("admin/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
     }
 
     foundCategory.is_listed = !foundCategory.is_listed;
     await foundCategory.save();
 
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       is_listed: foundCategory.is_listed,
       category_id: foundCategory._id,
@@ -91,7 +91,7 @@ const categoryAction = async (req, res) => {
     //return res.redirect("/admin/category");
   } catch (error) {
     console.error("categoryAction entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -103,13 +103,13 @@ const categoryEdit = async (req, res) => {
 
     const categoryData = await categoryModel.findById(catData._id);
     req.session.catData = catData;
-    return res.render("admin/edit-category", {
+    return res.status(httpStatus.OK).render("admin/edit-category", {
       errors: null,
       categoryData,
     });
   } catch (error) {
     console.error("categoryEdit entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -128,7 +128,7 @@ const categoryEditIn = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.render("admin/edit-category", {
+      return res.status(httpStatus.BAD_REQUEST).render("admin/edit-category", {
         errors: errors.mapped(),
         categoryData,
       });
@@ -143,7 +143,7 @@ const categoryEditIn = async (req, res) => {
     });
 
     if (existinCategory) {
-      return res.render("admin/add-category", {
+      return res.status(httpStatus.CONFLICT).render("admin/add-category", {
         mes: "This category already exists",
         errors: null,
       });
@@ -154,7 +154,7 @@ const categoryEditIn = async (req, res) => {
     });
     if (!foundCategory) {
       
-      return res.render("admin/edit-category", {
+      return res.status(httpStatus.OK).render("admin/edit-category", {
         mes: "category not found",
         categoryData,
       });
@@ -163,7 +163,7 @@ const categoryEditIn = async (req, res) => {
     };
   } catch (error) {
     console.error("categoryEditIn entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 

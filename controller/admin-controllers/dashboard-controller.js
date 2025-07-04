@@ -1,6 +1,8 @@
 const categoryModel = require("../../models/category");
 const productModel = require("../../models/products");
 const orderModel = require("../../models/order");
+const httpStatus = require('../../constants/status');
+
 require("dotenv").config();
 
 const dashboard = async (req, res) => {
@@ -8,7 +10,6 @@ const dashboard = async (req, res) => {
     if (req.session.admin) {
 
       const orderData = await orderModel.find();
-
       const result = await orderModel.aggregate([
         { $unwind: "$items" },
         {
@@ -63,7 +64,7 @@ const dashboard = async (req, res) => {
 
       req.session.topCategory = topCategory;
 
-      return res.status(200).render("admin/dashboard", {
+      return res.status(httpStatus.OK).render("admin/dashboard", {
         orderData: orderData || [],
         topProduct: topProduct || [],
         topCategory: topCategory || [],
@@ -73,7 +74,7 @@ const dashboard = async (req, res) => {
     }
   } catch (error) {
     console.error("dashboard entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -168,14 +169,14 @@ const dashBoardFilter = async (req, res) => {
     }
 
     const orderData = await orderModel.find({ createdAt: dateRange });
-    return res.status(200).render("admin/dashboard", {
+    return res.status(httpStatus.OK).render("admin/dashboard", {
       orderData,
       topProduct,
       topCategory,
     });
   } catch (error) {
     console.error("dashBoardFilter entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 

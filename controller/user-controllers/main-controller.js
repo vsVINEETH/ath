@@ -4,6 +4,7 @@ const productModel = require("../../models/products");
 const categoryModel = require("../../models/category");
 const ratingModel = require("../../models/rating")
 const wishListModel = require("../../models/wish-list");
+const httpStatus = require('../../constants/status')
 const { body, validationResult, sanitizeBody } = require("express-validator");
 
 const landing = async (req, res) => {
@@ -13,13 +14,13 @@ const landing = async (req, res) => {
     const categoryData = await categoryModel.find({});
     
     if (user) {
-      return res.render("user/home", {
+      return res.status(httpStatus.OK).render("user/home", {
         home: true,
         productData,
         categoryData,
       });
     } else {
-      return res.render("user/landing", {
+      return res.status(httpStatus.OK).render("user/landing", {
         home: false,
         productData,
         categoryData,
@@ -27,54 +28,140 @@ const landing = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to landing page entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
 const home = async (req, res) => {
   try {
-    const categoryData = await categoryModel.find({is_listed:true});
-    const categoryIds = categoryData.map(category => category._id);
+    const user = await userModel.findOne({ email: req.session.user });
+    if (!user) return res.redirect("/login");
+
+    const categoryData = await categoryModel.find({ is_listed: true });
+    const categoryIds = categoryData.map(c => c._id);
 
     const page = parseInt(req.query.page) || 1;
-    const limit =  2;
-    let totalProduct = await productModel.find({is_listed:true,category: { $in: categoryIds }}).countDocuments();
+    const limit = 2;
+
+    const data = {
+      quantity: parseInt(req.query.stock) || -1,
+      category: req.query.category || "",
+      colour: req.query.colour || "",
+      price: parseInt(req.query["price-range"]) || 10000,
+      search: req.query.search || "",
+      sort: parseInt(req.query.sort) || 1,
+    };
+
+    let query = { is_listed: true, category: { $in: categoryIds } };
+    if (data.quantity === 1) query.quantity = { $gt: 0 };
+    else if (data.quantity === 2) query.quantity = { $eq: 0 };
+
+    if (data.price > 0) query.price = { $lte: data.price };
+
+    if (data.category) {
+      const category = await categoryModel.findOne({ category_name: data.category });
+      if (category) query.category = category._id;
+    }
+
+    if (data.colour) query.colour = data.colour.toLowerCase();
+
+    // Search
+    if (data.search) {
+      query.$or = [
+        { product_name: { $regex: data.search, $options: "i" } },
+        { colour: { $regex: data.search, $options: "i" } },
+        { model: { $regex: data.search, $options: "i" } },
+        { description: { $regex: data.search, $options: "i" } },
+      ];
+    }
+
+    // Sorting
+    const sortOptions = {
+      2: { price: 1 },
+      3: { price: -1 },
+      4: { model: 1 },
+      5: { model: -1 },
+    };
+    const sortCriteria = sortOptions[data.sort] || {};
+
+    // Pagination and fetch
+    const totalProduct = await productModel.countDocuments(query);
     const totalPage = Math.ceil(totalProduct / limit);
     const nextPage = page < totalPage ? page + 1 : null;
 
-    const user = await userModel.findOne({ email: req.session.user });
-
     const productData = await productModel
-    .find({is_listed:true,category: { $in: categoryIds }})
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .populate("category")
+      .find(query)
+      .sort(sortCriteria)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("category");
 
-    const wishListData = await wishListModel.find({user: user._id}).populate("items");
+    const wishListData = await wishListModel.find({ user: user._id }).populate("items");
 
-    req.session.old_query = false
-    req.session.old_sortCriteria = false
-    if (user) {
-      
-      return res.render("user/home", {
-        home: true,
-        page,
-        limit,
-        totalProduct,
-        totalPage,
-        nextPage,
-        productData,
-        categoryData,
-        wishListData,
-      });
-    } else {
-      res.redirect("/login");
-    }
+    res.render("user/home", {
+      home: true,
+      productData,
+      categoryData,
+      wishListData,
+      page,
+      totalProduct,
+      totalPage,
+      nextPage,
+      limit,
+      errors: null,
+      query: req.query,
+    });
   } catch (error) {
-    console.error("Something happed to home page entry issue", error);
-    return res.status(404).render("user/error-page");
+    console.error("Home page error:", error);
+    return res.status(500).render("user/error-page");
   }
 };
+
+
+// const home = async (req, res) => {
+//   try {
+//     const categoryData = await categoryModel.find({is_listed:true});
+//     const categoryIds = categoryData.map(category => category._id);
+
+//     const page = parseInt(req.query.page) || 1;
+//     const limit =  2;
+//     let totalProduct = await productModel.find({is_listed:true,category: { $in: categoryIds }}).countDocuments();
+//     const totalPage = Math.ceil(totalProduct / limit);
+//     const nextPage = page < totalPage ? page + 1 : null;
+
+//     const user = await userModel.findOne({ email: req.session.user });
+
+//     const productData = await productModel
+//     .find({is_listed:true,category: { $in: categoryIds }})
+//     .skip((page - 1) * limit)
+//     .limit(limit)
+//     .populate("category")
+
+//     const wishListData = await wishListModel.find({user: user._id}).populate("items");
+
+//     req.session.old_query = false
+//     req.session.old_sortCriteria = false
+//     if (user) {
+      
+//       return res.status(httpStatus.OK).render("user/home", {
+//         home: true,
+//         page,
+//         limit,
+//         totalProduct,
+//         totalPage,
+//         nextPage,
+//         productData,
+//         categoryData,
+//         wishListData,
+//       });
+//     } else {
+//       res.redirect("/login");
+//     }
+//   } catch (error) {
+//     console.error("Something happed to home page entry issue", error);
+//     return res.status(httpStatus.NOT_FOUND).render("user/error-page");
+//   }
+// };
 
 const productDetail = async (req, res) => {
   try {
@@ -93,7 +180,7 @@ const productDetail = async (req, res) => {
     const ratingData = await ratingModel.find({product:productId}).populate('user')
 
     const wishListData = await wishListModel.find({user: user._id}).populate("items")
-    return res.render("user/product-detail", {
+    return res.status(httpStatus.OK).render("user/product-detail", {
       home: true,
       user,
       productData,
@@ -103,7 +190,7 @@ const productDetail = async (req, res) => {
     });
   } catch (error) {
     console.error("Something happed to productDetail page entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -144,7 +231,7 @@ const refferalToWallet = async (req, res) => {
       "Something happed to refferalToWallet entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 }
 
@@ -165,7 +252,7 @@ const filterSortSearch = async (req, res) => {
       const productData = await productModel.find({})
       .populate("category");
       const categoryData = await categoryModel.find({});
-      return res.render("user/home", {
+      return res.status(httpStatus.PARTIAL_CONTENT).render("user/home", {
         home: true,
         productData,
         categoryData,
@@ -288,7 +375,7 @@ const filterSortSearch = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to filter entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

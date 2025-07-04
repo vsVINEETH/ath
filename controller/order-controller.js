@@ -4,7 +4,7 @@ const ratingModel = require("../models/rating");
 const orderModel = require("../models/order");
 const walletModel = require("../models/wallet");
 const easyinvoice = require("easyinvoice");
-
+const httpStatus = require('../constants/status')
 const orderHistory = async (req, res) => {
   try {
     const email = req.session.user;
@@ -17,7 +17,7 @@ const orderHistory = async (req, res) => {
       .sort({ createdAt: -1 });
 
     if (orderData) {
-      res.render("user/orders-page", {
+      res.status(httpStatus.OK).render("user/orders-page", {
         home: true,
         mes: "",
         orderData: orderData || [],
@@ -27,7 +27,7 @@ const orderHistory = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to orderDetail entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -45,7 +45,7 @@ const orderDetail = async (req, res) => {
       .populate("items.product");
 
     if (orderData) {
-      return res.render("user/orders-view", {
+      return res.status(httpStatus.OK).render("user/orders-view", {
         home: true,
         mes: "",
         orderData: orderData || [],
@@ -55,7 +55,7 @@ const orderDetail = async (req, res) => {
     }
   } catch (error) {
     console.error("Something happed to orderDetail entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -126,7 +126,7 @@ const orderCancel = async (req, res) => {
 
   } catch (error) {
     console.error("Something happed to orderCancel entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -158,7 +158,7 @@ const orderReturn = async (req, res) => {
     return res.redirect("/order_history");
   } catch (error) {
     console.error("Something happed to orderReturn entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -201,7 +201,7 @@ const ratingAndReview = async (req, res) => {
 
   } catch (error) {
     console.error("Something happed to ratingAndReview entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -214,13 +214,12 @@ const ratingDelete = async (req, res) => {
     return res.redirect(`/product_detail/${productId}`)
   } catch (error) {
     console.error("Something happed to ratingDelete entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
 const retryOrderPayment = async (req, res) => {
   try {
-    console.log("hel waht");
     const paymentState = true;
     const orderId = req.body.order_id;
     const amount = req.body.amount;
@@ -232,7 +231,7 @@ const retryOrderPayment = async (req, res) => {
         { "payment_details.payment_status": "completed" }
       );
 
-      return res.json(paymentState);
+      return res.status(httpStatus.OK).json(paymentState);
     } else {
 
       await orderModel.findOneAndUpdate(
@@ -240,11 +239,11 @@ const retryOrderPayment = async (req, res) => {
         { "payment_details.payment_status": "failed" }
       );
 
-      return res.json(paymentState);
+      return res.status(httpStatus.OK).json(paymentState);
     }
   } catch (error) {
     console.error("Something happed to retryOrderPayment entry issue", error);
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 
@@ -309,7 +308,7 @@ const downloadOrderInvoice = async (req, res) => {
       "Something happed to downloadOrderInvoice entry issue",
       error
     );
-    return res.status(404).render("user/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("user/error-page");
   }
 };
 

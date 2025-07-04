@@ -1,16 +1,17 @@
 const categoryModel = require("../../models/category");
 const productModel = require("../../models/products");
 const { body, validationResult } = require("express-validator");
+const httpStatus = require('../../constants/status');
 require("dotenv").config();
 
 const product = async (req, res) => {
   try {
     const productData = await productModel.find({}).populate("category");
 
-    return res.render("admin/product", { productData });
+    return res.status(httpStatus.OK).render("admin/product", { productData });
   } catch (error) {
     console.error("product entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -18,14 +19,14 @@ const productAdd = async (req, res) => {
   try {
     const categoryData = await categoryModel.find({});
 
-    return res.render("admin/add-product", {
+    return res.status(httpStatus.OK).render("admin/add-product", {
       errors: null,
       mes: "",
       categoryData,
     });
   } catch (error) {
     console.error("Add product entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -76,7 +77,7 @@ const productAddPost = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
 
-      return res.render("admin/add-product", {
+      return res.status(httpStatus.BAD_REQUEST).render("admin/add-product", {
         errors: errors.mapped(),
         mes: "",
         categoryData,
@@ -101,21 +102,20 @@ const productAddPost = async (req, res) => {
     });
 
     if (existinCategory) {
-      console.log('hello dear')
       const newProduct = new productModel(data);
       await newProduct.save();
 
       return res.redirect('/admin/product');
       
     } else {
-      return res.render("admin/add-product", {
+      return res.status(httpStatus.OK).render("admin/add-product", {
         errors: null,
         mes: "",
       });
     }
   } catch (error) {
     console.error("productAddPost entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -125,13 +125,13 @@ const productAction = async (req, res) => {
     const foundProduct = await productModel.findById(productId);
 
     if (!foundProduct) {
-      return res.status(404).render("admin/error-page");
+      return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
     }
 
     foundProduct.is_listed = !foundProduct.is_listed;
     await foundProduct.save();
 
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       is_listed: foundProduct.is_listed,
       product_id: foundProduct._id,
@@ -139,7 +139,7 @@ const productAction = async (req, res) => {
    // return res.redirect("/admin/product");
   } catch (error) {
     console.error("productAction entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -152,7 +152,7 @@ const productEdit = async (req, res) => {
       .populate("category");
 
     req.session.product_id = productId;
-    return res.render("admin/edit-product", {
+    return res.status(httpStatus.OK).render("admin/edit-product", {
       errors: null,
       mes: "",
       categoryData,
@@ -160,7 +160,7 @@ const productEdit = async (req, res) => {
     });
   } catch (error) {
     console.error("productEdit entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -213,7 +213,7 @@ const productEditIn = async (req, res) => {
 
     if (!errors.isEmpty()) {
 
-      return res.render("admin/edit-product", {
+      return res.status(httpStatus.BAD_REQUEST).render("admin/edit-product", {
         errors: errors.mapped(),
         mes: "",
         categoryData,
@@ -241,14 +241,14 @@ const productEditIn = async (req, res) => {
       await productModel.findByIdAndUpdate(productId, data);
       const productData = await productModel.find({});
       const categoryData = await categoryModel.find({});
-      return res.render("admin/product", {
+      return res.status(httpStatus.ACCEPTED).render("admin/product", {
         errors: null,
         mes: "",
         productData: productData || [],
         categoryData,
       });
     } else {
-      return res.render("admin/edit-product", {
+      return res.status(httpStatus.BAD_REQUEST).render("admin/edit-product", {
         errors: errors.mapped(),
         mes: "Unable to find product",
         categoryData,
@@ -257,7 +257,7 @@ const productEditIn = async (req, res) => {
     }
   } catch (error) {
     console.error("productEditIn entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -273,7 +273,7 @@ const productImageDelete = async (req, res) => {
       { new: true }
     );
 
-    return res.render("admin/edit-product", {
+    return res.status(httpStatus.OK).render("admin/edit-product", {
       errors: null,
       mes: "",
       categoryData,
@@ -281,7 +281,7 @@ const productImageDelete = async (req, res) => {
     });
   } catch (error) {
     console.error("productImageDelete entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.NOT_FOUND).render("admin/error-page");
   }
 };
 
@@ -292,12 +292,12 @@ const productDetailAdmin = async (req, res) => {
       .findById(productId)
       .populate("category");
 
-    return res.render("admin/product-detail", {
+    return res.status(httpStatus.OK).render("admin/product-detail", {
       productData: productData || [],
     });
   } catch (error) {
     console.error("productDetailAdmin entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.BAD_REQUEST).render("admin/error-page");
   }
 };
 
@@ -337,7 +337,7 @@ const productOffer = async (req, res) => {
     }
   } catch (error) {
     console.error("productOffer entry issue", error);
-    return res.status(404).render("admin/error-page");
+    return res.status(httpStatus.BAD_REQUEST).render("admin/error-page");
   }
 };
 
