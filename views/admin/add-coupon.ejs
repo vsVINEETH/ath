@@ -31,14 +31,18 @@
               <p class="text-center text-danger fw-bold"><%= mes %></p>
                 <div class="col text-start fw-bold">
                     <label for="coupon_code">Coupon code</label>
-                    <input type="text" class="form-control form-control-md mt-2" id="coupon_code" name="coupon_code" value="" placeholder="Enter coupon code" required>
+                    <!-- <input type="text" class="form-control form-control-md mt-2" id="coupon_code" name="coupon_code" value="" placeholder="Enter coupon code" required> -->
+                    <input type="text" class="form-control form-control-md mt-2" id="coupon_code" name="coupon_code" value="<%= old?.coupon_code || '' %>" placeholder="Enter coupon code" required>
+
                     <% if (errors && errors.coupon_code) { %>
                         <span class="text-danger"><%= errors.coupon_code.msg %></span>
                     <% } %>  
                 </div>
                 <div class="col text-start fw-bold">
                     <label for="discount_percentage">discount percentage</label>
-                    <input type="text" class="form-control form-control-md mt-2" id="discount_percentage" name="discount_percentage" value="" placeholder="Enter discount_percentage" required>
+                    <input type="text" class="form-control form-control-md mt-2" id="discount_percentage" name="discount_percentage" value="<%= old?.discount_percentage || '' %>" placeholder="Enter discount_percentage" required>
+
+                    <!-- <input type="text" class="form-control form-control-md mt-2" id="discount_percentage" name="discount_percentage" value="" placeholder="Enter discount_percentage" required> -->
                     <% if (errors && errors.discount_percentage) { %>
                         <span class="text-danger"><%= errors.discount_percentage.msg %></span>
                     <% } %> 
@@ -48,14 +52,18 @@
             <div class="row form-group mb-2">
                 <div class="col text-start fw-bold">
                     <label for="coupon_name"  >Coupon name</label>
-                    <input type="text" class="form-control form-control-md mt-2" id="coupon_name" name="coupon_name" value="" placeholder="Enter coupon name" required>
+                    <input type="text" class="form-control form-control-md mt-2" id="coupon_name" name="coupon_name" value="<%= old?.coupon_name || '' %>" placeholder="Enter coupon name" required>
+
+                    <!-- <input type="text" class="form-control form-control-md mt-2" id="coupon_name" name="coupon_name" value="" placeholder="Enter coupon name" required> -->
                     <% if (errors && errors.coupon_name) { %>
                         <span class="text-danger"><%= errors.coupon_name.msg %></span>
                     <% } %> 
                 </div>
                 <div class="col text-start fw-bold">
                     <label for="expire_date">Expire Date</label>
-                    <input type="date" class="form-control form-control-md mt-2" id="expire_date" name="expire_date" value="" placeholder="Enter expire date" required>
+                    <input type="date" class="form-control form-control-md mt-2" id="expire_date" name="expire_date" value="<%= old?.expire_date ? old.expire_date.substring(0, 10) : '' %>" required>
+
+                    <!-- <input type="date" class="form-control form-control-md mt-2" id="expire_date" name="expire_date" value="" placeholder="Enter expire date" required> -->
                       <% if (errors && errors.expire_date) { %>
                         <span class="text-danger"><%= errors.expire_date.msg %></span>
                     <% } %> 
@@ -67,7 +75,9 @@
             <div class="row form-group mb-2">
               <div class="col text-start fw-bold">
                   <label for="minimum_amount">Minimum amount</label>
-                  <input type="text" class="form-control form-control-md mt-2" id="minimum_amount" name="minimum_amount" value="" placeholder="Enter minimum amount" required>
+                  <input type="text" class="form-control form-control-md mt-2" id="minimum_amount" name="minimum_amount" value="<%= old?.minimum_amount || '' %>" placeholder="Enter minimum amount" required>
+
+                  <!-- <input type="text" class="form-control form-control-md mt-2" id="minimum_amount" name="minimum_amount" value="" placeholder="Enter minimum amount" required> -->
                   <% if (errors && errors.minimum_amount) { %>
                       <span class="text-danger"><%= errors.minimum_amount.msg %></span>
                   <% } %> 

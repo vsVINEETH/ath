@@ -20,6 +20,7 @@ const categoryAdd = async (req, res) => {
     return res.status(httpStatus.OK).render("admin/add-category", {
       errors: null,
       mes: "",
+      old:{}
     });
   } catch (error) {
     console.error("categoryAdd entry issue", error);
@@ -42,6 +43,7 @@ const categoryAddPost = async (req, res) => {
       return res.status(httpStatus.BAD_REQUEST).render("admin/add-category", {
         errors: errors.mapped(),
         mes: "",
+        old:req.body
       });
     }
 
@@ -62,6 +64,7 @@ const categoryAddPost = async (req, res) => {
       return res.status(httpStatus.CONFLICT).render("admin/add-category", {
         mes: "This category already exists",
         errors: null,
+        old: req.body
       });
     }
   } catch (error) {

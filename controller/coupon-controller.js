@@ -22,6 +22,7 @@ const couponAdd = async (req, res) => {
       couponData,
       errors: null,
       mes: "",
+      old: {},
     });
   } catch (error) {
     console.error("couponAdd entry issue", error);
@@ -67,6 +68,7 @@ const couponAddPost = async (req, res) => {
       return res.status(httpStatus.BAD_REQUEST).render("admin/add-coupon", {
         errors: errors.mapped(),
         mes: "",
+        old: req.body,
       });
     }
 
@@ -86,6 +88,23 @@ const couponAddPost = async (req, res) => {
       return res.status(httpStatus.BAD_REQUEST).render("admin/add-coupon", {
         errors: null,
         mes: "Select a valid expire date",
+        old: req.body,
+      });
+    }
+
+    if(data.discount_percentage < 1){
+      return res.status(httpStatus.BAD_REQUEST).render("admin/add-coupon", {
+        errors: null,
+        mes: "Discount percentage should greater 0",
+        old: req.body,
+      });
+    }
+
+    if(data.discount_percentage < 1){
+      return res.status(httpStatus.BAD_REQUEST).render("admin/add-coupon", {
+        errors: null,
+        mes: "Discount percentage should greater zero",
+        old: req.body,
       });
     }
 
@@ -98,6 +117,7 @@ const couponAddPost = async (req, res) => {
       return res.status(httpStatus.CONFLICT).render("admin/add-coupon", {
         errors: null,
         mes: "existing coupon",
+        old: req.body,
       });
     }
   } catch (error) {
