@@ -14,11 +14,12 @@ const landing = async (req, res) => {
     const categoryData = await categoryModel.find({});
     
     if (user) {
-      return res.status(httpStatus.OK).render("user/home", {
-        home: true,
-        productData,
-        categoryData,
-      });
+      // return res.status(httpStatus.OK).render("user/home", {
+      //   home: true,
+      //   productData,
+      //   categoryData,
+      // });
+      return res.redirect('/home')
     } else {
       return res.status(httpStatus.OK).render("user/landing", {
         home: false,

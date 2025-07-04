@@ -243,28 +243,6 @@
   }, 3000);
 
 
-//   document.addEventListener("DOMContentLoaded", function() {
-//   const form = document.getElementById("form1");
-
-//   form.addEventListener("submit", function(event) {
-//     // Collect form data
-//     const sort = document.getElementById("sort").value;
-//     const stock = document.getElementById("stock").value;
-//     const category = document.getElementById("category").value;
-//     const colour = document.getElementById("colour").value;
-//     const priceRange = document.getElementById("price-range").value;
-
-//     // Construct the query string
-//     const queryString = `sort=${sort}&stock=${stock}&category=${category}&colour=${colour}&price-range=${priceRange}`;
-
-//     // Construct the URL with the query string
-//     const url = `/filter?${queryString}`;
-
-//     // Update the form's action attribute
-//     form.action = url;
-//   });
-// });
-
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form1");
 
@@ -297,44 +275,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = newUrl;
   });
 });
-
-
-// document.addEventListener("DOMContentLoaded", function() {
-//   const formSearch = document.getElementById("search");
-
-//   formSearch.addEventListener("submit", function(event) {
-//     // Collect form data
-//     const search = document.getElementById("search").value;
-
-//     // Construct the query string
-//     const queryString = `search=${search}`;
-
-//     // Construct the URL with the query string
-//     const url = `/filter?${queryString}`;
-
-//     // Update the form's action attribute
-//     form.action = url;
-//   });
-// });
-
-// document.addEventListener("DOMContentLoaded", function () {
-//   const formSearch = document.getElementById("searchForm"); // give your form an `id="searchForm"`
-  
-//   formSearch.addEventListener("submit", function (event) {
-//     event.preventDefault();
-
-//     const urlParams = new URLSearchParams(window.location.search);
-//     const searchInput = document.getElementById("searchInput").value; // also give your input an `id="searchInput"`
-
-//     if (searchInput) urlParams.set("search", searchInput);
-//     else urlParams.delete("search");
-
-//     urlParams.delete("page"); // reset pagination on search
-
-//     const newUrl = "/home?" + urlParams.toString();
-//     window.location.href = newUrl;
-//   });
-// });
 
 
 document.addEventListener("DOMContentLoaded", function () {
