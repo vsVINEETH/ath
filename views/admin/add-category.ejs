@@ -36,8 +36,7 @@
               <span class="text-danger text-start"><%= errors.category.msg %></span>
               <% } %>
               <span class="text-danger"><%= mes %></span>
-              <input type="text" class="form-control form-control-md mt-4 text-center" id="categoryname" name="category" value="" placeholder="Enter category name" required>
-
+              <input type="text" class="form-control form-control-md mt-4 text-center" id="categoryname" name="category" value="<%= old?.category || '' %>" placeholder="Enter category name" required>
               <button type="submit" class="btn btn-outline-dark mt-4">submit</button>
             </div>
           </div>
