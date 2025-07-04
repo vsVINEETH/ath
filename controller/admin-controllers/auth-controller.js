@@ -1,5 +1,5 @@
 require("dotenv").config();
-const httpStatus = require('../../constants/status')
+const httpStatus = require('../../constants/status');
 
 
 const login = (req, res) => {

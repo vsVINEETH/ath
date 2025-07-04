@@ -2,7 +2,7 @@ const orderModel = require("../../models/order");
 const PDFDocument = require("pdfkit");
 const Excel = require("exceljs");
 const json2csv = require("json2csv");
-const httpStatus = require('../../constants/status')
+const httpStatus = require('../../constants/status');
 require("dotenv").config();
 
 const salesReport = async (req, res) => {

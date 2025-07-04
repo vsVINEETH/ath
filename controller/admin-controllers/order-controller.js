@@ -1,7 +1,7 @@
 const productModel = require("../../models/products");
 const orderModel = require("../../models/order");
 const walletModel = require("../../models/wallet");
-const httpStatus = require('../../constants/messages');
+const httpStatus = require('../../constants/status');
 
 const orderListAdmin = async (req, res) => {
   try {
