@@ -10,7 +10,7 @@ const login = (req, res) => {
     if (req.session.user) {
       return res.redirect("/home");
     } else {
-      return res.status(httpStatus.OK).render("user/login", { mes: "", home: false });
+      return res.status(httpStatus.OK).render("user/login", { mes: "", home: false, old:{} });
     }
   } catch (error) {
     console.error("User login entry issue", error);
@@ -29,6 +29,7 @@ const loginPost = async (req, res) => {
       return res.status(httpStatus.ACCEPTED).render("user/login", {
         mes: "User not found",
         home: false,
+        old:req.body,
       });
     }
 
@@ -36,6 +37,7 @@ const loginPost = async (req, res) => {
       return res.status(httpStatus.BAD_REQUEST).render("user/login", {
         mes: "User not found",
         home: false,
+        old: req.body,
       });
     }
 
@@ -43,6 +45,7 @@ const loginPost = async (req, res) => {
       return res.status(httpStatus.UNAUTHORIZED).render("user/login", {
         mes: "You are blocked",
         home: false,
+        old:req.body,
       });
     }
 
@@ -60,6 +63,7 @@ const loginPost = async (req, res) => {
       return res.status(httpStatus.BAD_REQUEST).render("user/login", {
         mes: "Incorrect password",
         home: false,
+        old:req.body,
       });
     }
   } catch (error) {
@@ -85,6 +89,7 @@ const signup = async (req, res) => {
     } else {
       return res.render("user/signup", {
         errors: null,
+        old:{},
         checkPass: true,
         home: false,
         mes: "",
@@ -131,6 +136,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: errors.mapped(),
         checkPass: true,
+        old: req.body,
         home: false,
         mes: "",
       });
@@ -151,6 +157,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: null,
         checkPass: true,
+        old:req.body,
         home: false,
         mes: "poor password",
       });
@@ -162,6 +169,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: null,
         checkPass: true,
+        old: req.body,
         home: false,
         mes: "Existing user",
       });
@@ -178,6 +186,7 @@ const signupPost = async (req, res) => {
       return res.render("user/signup", {
         errors: null,
         checkPass: false,
+        old: req.body,
         home: false,
         mes: "",
       });

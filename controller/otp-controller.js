@@ -21,33 +21,35 @@ const getOtp = (req, res) => {
   
  const postOtp = async (req, res) => {
     try {
-      const otpCode = formatOTP.otpFormatter(req.body);
-  
+      // const otpCode = formatOTP.otpFormatter(req.body);
+      // console.log(otpCode,'hrere', req.body);
+      const otpCode = req.body.otp;
       const otpDbCode = await otpModel.findOne({ otp: otpCode });
       const userData = req.session.signupData;
+
+      if (!otpDbCode || otpCode !== otpDbCode.otp) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          success: false,
+          message: "Incorrect OTP",
+        });
+      };
+
+      const newUser = new userModel(userData);
+      await newUser.save();
+
       req.session.user = userData.email;
-  
-      if (!otpDbCode) {
-        return res.status(httpStatus.BAD_REQUEST).render("user/otp",{
-          errors:null,
-          home:false,
-          mes:"Incorrect OTP ..!",
-          
-        });
-      } else if (otpCode === otpDbCode.otp) {
-        const newUser = new userModel(userData);
-        await newUser.save();
-        return res.redirect("/home");
-      } else {
-        return res.status(httpStatus.BAD_REQUEST).render("user/otp",{
-          errors:null,
-          home:false,
-          mes:"OTP not found",
-        });
-      }
+
+      return res.status(httpStatus.OK).json({
+        success: true,
+        message: "OTP verified"
+      });
+
     } catch (error) {
       console.error("Something happed  post-otp entry issue", error);
-      return res.status(httpStatus.NOT_FOUND).render("user/error-page");
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Server error",
+    });
     }
   };
   
@@ -80,27 +82,33 @@ const getOtp = (req, res) => {
   
   const forgotPasswordOtp = async (req, res) => {
     try {
-      const otpCode = formatOTP.otpFormatter(req.body);
+      //const otpCode = formatOTP.otpFormatter(req.body);
+      const otpCode = req.body.otp;
       const otpDbCode = await otpModel.findOne({ otp: otpCode });
       const userData = req.session.newPassword;
-  
-      if (!otpDbCode) {
-        return res.status(httpStatus.BAD_REQUEST).render("user/forgot-otp",{
-          errors:null,
-          home:false,
-          mes:"Incorrect OTP ..!",
+
+      if (!otpDbCode || otpCode !== otpDbCode.otp) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          success: false,
+          message: "Incorrect OTP",
         });
-      } else if (otpCode === otpDbCode.otp) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(userData.password, salt);
-        userData.password = hashedPassword;
-  
-        await userModel.updateOne(
-          { email: userData.email },
-          { password: userData.password }
-        );
-        return res.redirect("/login");
-      }
+      };
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(userData.password, salt);
+      userData.password = hashedPassword;
+
+
+      await userModel.updateOne(
+        { email: userData.email },
+        { password: userData.password }
+      );
+
+      return res.status(httpStatus.OK).json({
+        success: true,
+        message: "Password reset successful",
+      });
+    
     } catch (error) {
       console.error("User forgot password otp entry issue", error);
       return res.status(httpStatus.NOT_FOUND).render("user/error-page");

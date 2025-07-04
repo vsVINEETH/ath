@@ -76,11 +76,11 @@
         Filter & Sort
       </button>
 
-      <form name="form1" id="form1" action="/filter" method="get"  class="hidden-form row align-items-center justify-content-between bg-dark rounded">
+      <form name="form1" id="form1" action="/home" method="get"  class="hidden-form row align-items-center justify-content-between bg-dark rounded">
         <div class="col-auto justify-content-between">
           <label for="" class="text-white">Sort By:</label>
-          <select name="sort" id="stock" class="rounded border-1">
-            <option selected disabled>Select an option</option>
+          <select name="sort" id="sort" class="rounded border-1">
+            <option value="" selected disabled>Select an option</option>
             <option value="2">Price: Low to High</option>
             <option value="3">Price: high to low</option>
             <option value="4">aA - zZ</option>
@@ -90,7 +90,7 @@
         <div class="col-auto justify-content-between">
           <label for="" class="text-white">Availabity:</label>
           <select name="stock" id="stock" class="rounded border-1">
-            <option selected disabled>Select an option</option>
+            <option value="" selected disabled>Select an option</option>
             <option value="1">In Stock</option>
             <option value="2">Out of Stock</option>
           </select>
@@ -98,7 +98,7 @@
         <div class="col-auto">
           <label for="" class="text-white">Category:</label>
           <select name="category" id="category" class="rounded border-1">
-            <option selected disabled>Select category</option>
+            <option value="" selected disabled>Select category</option>
             <% categoryData.forEach((element,index)=> { %>
             <option value="<%= element.category_name %>">
               <%= element.category_name %>
@@ -109,7 +109,7 @@
         <div class="col-auto">
           <label for="" class="text-white">Colour: </label>
           <select name="colour" id="colour" class="rounded border-1">
-            <option selected disabled>Select colour</option>
+            <option value="" selected disabled>Select colour</option>
             <option value="Red">Red</option>
             <option value="Blue">Blue</option>
             <option value="Green">Green</option>
@@ -198,29 +198,32 @@
   </div>
 </div>
 
-<div class="d-flex justify-content-center " id="paginationContainer">
+<% function buildQuery(newPage) {
+  const params = new URLSearchParams(query);
+  params.set('page', newPage);
+  return params.toString();
+} %>
+
+<div class="d-flex justify-content-center" id="paginationContainer">
   <nav aria-label="Page navigation example">
     <ul class="pagination" id="paginationList">
       <% if (page > 1) { %>
-        <!-- Link to previous page -->
         <li class="page-item">
-          <a class="page-link" href="?page=<%= page - 1 %>" aria-label="Previous">
+          <a class="page-link" href="/home?<%= buildQuery(page - 1) %>" aria-label="Previous">
             <span aria-hidden="true" class="text-dark">&laquo;</span>
           </a>
         </li>
       <% } %>
 
       <% for (let i = 1; i <= totalPage; i++) { %>
-        <!-- Display page numbers -->
         <li class="page-item <%= page === i ? 'active' : '' %>">
-          <a class="page-link text-dark" href="?page=<%= i %>"><%= i %></a>
+          <a class="page-link text-dark" href="/home?<%= buildQuery(i) %>"><%= i %></a>
         </li>
       <% } %>
 
       <% if (nextPage) { %>
-        <!-- Link to next page -->
         <li class="page-item">
-          <a class="page-link" href="?page=<%= nextPage %>" aria-label="Next">
+          <a class="page-link" href="/home?<%= buildQuery(nextPage) %>" aria-label="Next">
             <span aria-hidden="true" class="text-dark">&raquo;</span>
           </a>
         </li>
@@ -240,43 +243,133 @@
   }, 3000);
 
 
-  document.addEventListener("DOMContentLoaded", function() {
+//   document.addEventListener("DOMContentLoaded", function() {
+//   const form = document.getElementById("form1");
+
+//   form.addEventListener("submit", function(event) {
+//     // Collect form data
+//     const sort = document.getElementById("sort").value;
+//     const stock = document.getElementById("stock").value;
+//     const category = document.getElementById("category").value;
+//     const colour = document.getElementById("colour").value;
+//     const priceRange = document.getElementById("price-range").value;
+
+//     // Construct the query string
+//     const queryString = `sort=${sort}&stock=${stock}&category=${category}&colour=${colour}&price-range=${priceRange}`;
+
+//     // Construct the URL with the query string
+//     const url = `/filter?${queryString}`;
+
+//     // Update the form's action attribute
+//     form.action = url;
+//   });
+// });
+
+document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form1");
 
-  form.addEventListener("submit", function(event) {
-    // Collect form data
+  form.addEventListener("submit", function (event) {
+    event.preventDefault(); // prevent normal form submit
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const searchField = document.getElementById("searchInput");
+    if (searchField && searchField.value) {
+      urlParams.set("search", searchField.value);
+    }
+
+    // Update/append new filter values
     const sort = document.getElementById("sort").value;
     const stock = document.getElementById("stock").value;
     const category = document.getElementById("category").value;
     const colour = document.getElementById("colour").value;
     const priceRange = document.getElementById("price-range").value;
 
-    // Construct the query string
-    const queryString = `sort=${sort}&stock=${stock}&category=${category}&colour=${colour}&price-range=${priceRange}`;
+    if (sort) urlParams.set("sort", sort);
+    if (stock) urlParams.set("stock", stock);
+    if (category) urlParams.set("category", category);
+    if (colour) urlParams.set("colour", colour);
+    if (priceRange) urlParams.set("price-range", priceRange);
 
-    // Construct the URL with the query string
-    const url = `/filter?${queryString}`;
+    urlParams.delete("page"); // reset pagination when filter is applied
 
-    // Update the form's action attribute
-    form.action = url;
+    const newUrl = "/home?" + urlParams.toString();
+    window.location.href = newUrl;
   });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  const formSearch = document.getElementById("search");
 
-  formSearch.addEventListener("submit", function(event) {
-    // Collect form data
-    const search = document.getElementById("search").value;
+// document.addEventListener("DOMContentLoaded", function() {
+//   const formSearch = document.getElementById("search");
 
-    // Construct the query string
-    const queryString = `search=${search}`;
+//   formSearch.addEventListener("submit", function(event) {
+//     // Collect form data
+//     const search = document.getElementById("search").value;
 
-    // Construct the URL with the query string
-    const url = `/filter?${queryString}`;
+//     // Construct the query string
+//     const queryString = `search=${search}`;
 
-    // Update the form's action attribute
-    form.action = url;
+//     // Construct the URL with the query string
+//     const url = `/filter?${queryString}`;
+
+//     // Update the form's action attribute
+//     form.action = url;
+//   });
+// });
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   const formSearch = document.getElementById("searchForm"); // give your form an `id="searchForm"`
+  
+//   formSearch.addEventListener("submit", function (event) {
+//     event.preventDefault();
+
+//     const urlParams = new URLSearchParams(window.location.search);
+//     const searchInput = document.getElementById("searchInput").value; // also give your input an `id="searchInput"`
+
+//     if (searchInput) urlParams.set("search", searchInput);
+//     else urlParams.delete("search");
+
+//     urlParams.delete("page"); // reset pagination on search
+
+//     const newUrl = "/home?" + urlParams.toString();
+//     window.location.href = newUrl;
+//   });
+// });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const searchForm = document.getElementById("searchForm"); // your header form
+
+  searchForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchInput = document.getElementById("searchInput").value;
+
+    if (searchInput) {
+      urlParams.set("search", searchInput);
+    } else {
+      urlParams.delete("search");
+    }
+
+    // Also check if filter values exist on the page
+    const sort = document.getElementById("sort");
+    const stock = document.getElementById("stock");
+    const category = document.getElementById("category");
+    const colour = document.getElementById("colour");
+    const priceRange = document.getElementById("price-range");
+
+    if (sort && sort.value) urlParams.set("sort", sort.value);
+    if (stock && stock.value) urlParams.set("stock", stock.value);
+    if (category && category.value) urlParams.set("category", category.value);
+    if (colour && colour.value) urlParams.set("colour", colour.value);
+    if (priceRange && priceRange.value) urlParams.set("price-range", priceRange.value);
+
+    urlParams.delete("page"); // reset pagination
+
+    const newUrl = "/home?" + urlParams.toString();
+
+    window.location.href = newUrl;
   });
 });
 

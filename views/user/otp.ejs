@@ -7,8 +7,8 @@
                     <h4>Verify</h4>
                     <p>Your code was sent to you via email</p>
                     <span class="text-danger"><%= mes %></span>
-                    
-                    <form action="/signup_otp" method="post">
+                    <div id="otpError" class="text-danger mt-2 fw-bold"></div>
+                    <form id="otpForm" >
                         <div class="otp-field mb-4">
                             <input type="number" name="otp1" />
                             <input type="number" name="otp2" disabled />
@@ -37,5 +37,35 @@
 
 <script src="/js/script.js"></script>
 <script src="/js/otp-timer.js"></script>
+
+<script>
+document.getElementById("otpForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const inputs = document.querySelectorAll(".otp-field > input");
+  const otp = Array.from(inputs).map(input => input.value).join("");
+
+  try {
+    const res = await fetch("/signup_otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ otp })
+    });
+
+    const data = await res.json();
+
+    const errorBox = document.getElementById("otpError");
+    if (res.ok && data.success) {
+      window.location.href = "/home";
+    } else {
+      errorBox.textContent = data.message || "Incorrect OTP";
+    }
+  } catch (err) {
+    document.getElementById("otpError").textContent = "Something went wrong";
+  }
+});
+</script>
 
 <div class="fixed-bottom"><%- include('footer') %></div>
