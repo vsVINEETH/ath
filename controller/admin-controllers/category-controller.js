@@ -1,6 +1,6 @@
 const categoryModel = require("../../models/category");
 const productModel = require("../../models/products");
-const httpStatus = require('../../constants/status')
+const httpStatus = require('../../constants/status');
 const { body, validationResult } = require("express-validator");
 require("dotenv").config();
 

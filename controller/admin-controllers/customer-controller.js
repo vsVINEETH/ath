@@ -1,6 +1,6 @@
 const userModel = require("../../models/user");
 require("dotenv").config();
-const httpStatus = require('../../constants/status')
+const httpStatus = require('../../constants/status');
 
 const customers = async (req, res) => {
   try {
