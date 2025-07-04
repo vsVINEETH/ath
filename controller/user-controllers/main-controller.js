@@ -13,19 +13,15 @@ const landing = async (req, res) => {
     const productData = await productModel.find({}).populate("category");
     const categoryData = await categoryModel.find({});
     
-    if (user) {
-      // return res.status(httpStatus.OK).render("user/home", {
-      //   home: true,
-      //   productData,
-      //   categoryData,
-      // });
-      return res.redirect('/home')
-    } else {
+    if (!user) {
       return res.status(httpStatus.OK).render("user/landing", {
         home: false,
         productData,
         categoryData,
       });
+      
+    } else {
+      return res.redirect('/home');
     }
   } catch (error) {
     console.error("Something happed to landing page entry issue", error);
