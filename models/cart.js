@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { strike } = require("pdfkit");
+
 mongoose
   .connect(process.env.DATA_BASE_KEY)
   .then((con) => {

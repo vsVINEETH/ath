@@ -9,7 +9,7 @@ It follows the MVC+ architecture, integrates modern tools like Razorpay for paym
 ## 📁 Project Structure
 
 ```
-project\_ath/
+project\ath/
 ├── config/           # Config files (DB, sessions, passport, etc.)
 ├── constants/        # Static values like messages, HTTP codes
 ├── controller/       # All route handler logic (controllers)
